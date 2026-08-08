@@ -23,12 +23,25 @@ Queda en `http://localhost:8767`.
 the-temple-fitness-club/
 ├─ index.html            ← todo el sitio (HTML + CSS + JS en un archivo)
 ├─ imagenes/
-│  ├─ portada.webp       ← fondo de la portada
-│  ├─ sala.webp          ← encuadre vertical de Filosofía
-│  ├─ fuerza.webp        ← fondo del llamado final
-│  ├─ maquinas.webp      ← sin usar todavía
-│  ├─ logo-banner.webp   ← logo real de la marca
-│  ├─ training-group.webp
+│  │  ── VIDEOS ──
+│  ├─ clip-entrenamiento.mp4  ← 1,6 MB · fondo de la portada
+│  ├─ tour-gimnasio.mp4       ← 13 MB · sección El recinto, bajo demanda
+│  │
+│  │  ── FOTOGRAMAS DEL TOUR (720×1280) ──
+│  ├─ pasillo-luces.jpg   ← respaldo de la portada y póster del tour
+│  ├─ luces-hexagonales.jpg, peso-libre.jpg, logo-piso.jpg,
+│  ├─ maquinas-fila.jpg, sala-amplia.jpg, equipamiento.jpg,
+│  ├─ zona-funcional.jpg, sala-general.jpg, vista-final.jpg,
+│  ├─ maquinas-detalle.jpg, zona-pantalla.jpg
+│  │
+│  │  ── FOTOGRAMAS DEL CLIP (480×854) ──
+│  ├─ logo-pared.jpg      ← el letrero de neón
+│  ├─ kettlebells.jpg, mancuernas.jpg, discos.jpg
+│  │
+│  │  ── FOTOS ANTIGUAS (680px, del local anterior) ──
+│  ├─ fuerza.webp, sala.webp, portada.webp, maquinas.webp
+│  ├─ logo-banner.webp   ← logo real de la marca (og:image)
+│  ├─ training-group.webp ← es un flyer con texto, no una foto
 │  └─ plan-basico.webp   ← plan publicado: $30.000, 3 días x semana
 ├─ versiones/
 │  └─ v1-clasica.html    ← el primer diseño, por si quieres volver a él
@@ -36,6 +49,19 @@ the-temple-fitness-club/
 ├─ .gitignore
 └─ LEEME.md
 ```
+
+### De dónde salieron los fotogramas
+
+Las fotos que tenía el gimnasio no pasaban de 680px. Los dos videos, en
+cambio, están en 720×1280 y 480×854. Los `.jpg` de la lista **son capturas
+sacadas de esos videos**, así que tienen mejor resolución que cualquier foto
+disponible.
+
+Si algún día necesitas sacar más, el método es: servir la carpeta con
+`serve.ps1`, abrir el mp4 en una página con un `<video>` oculto, mover
+`currentTime` al segundo que quieras y dibujar el cuadro en un `<canvas>`
+con `drawImage`. No hay forma de hacerlo por línea de comandos en este
+equipo: no hay ffmpeg.
 
 ## Librerías (las tres por CDN, todas opcionales)
 
@@ -170,37 +196,85 @@ en la portada y en la hoja de horarios. El día actual se marca con una barra do
 
 ---
 
-## Fotos
+## Fotos y videos
 
-Ya hay tres colocadas. Para cambiarlas basta con reemplazar el archivo en
-`imagenes/` respetando el nombre, o cambiar la ruta en el `style="..."`:
+Para cambiar cualquiera basta con reemplazar el archivo en `imagenes/`
+respetando el nombre, o cambiar la ruta en el `style="..."`:
 
 | Dónde | Archivo | Formato ideal |
 |---|---|---|
-| Fondo de portada | `imagenes/portada.webp` | horizontal, ≥1920px |
-| Encuadre de Filosofía | `imagenes/sala.webp` | vertical 3:4, ≥1000px |
-| Fondo del llamado final | `imagenes/fuerza.webp` | horizontal, ≥1920px |
+| Fondo de portada (respaldo) | `pasillo-luces.jpg` | vertical u horizontal |
+| Video de la portada | `clip-entrenamiento.mp4` | **máx. 2 MB** |
+| Encuadre de Filosofía | `vista-final.jpg` | vertical 3:4 |
+| Tour de El recinto | `tour-gimnasio.mp4` | vertical 9:16 |
+| Póster del tour | `pasillo-luces.jpg` | igual que el video |
+| Fondo del llamado final | `sala-general.jpg` | horizontal |
+| Galería | 12 archivos, ver más abajo | cualquiera |
+
+### Los dos videos, y por qué se cargan distinto
+
+**El de la portada (1,6 MB)** se descarga siempre, salvo en tres casos donde
+el JS ni lo pide: si el visitante activó *reducir movimiento*, si el navegador
+declara ahorro de datos, o si la conexión es 2G/3G. Debajo hay una foto
+completa, así que no cargarlo no rompe nada.
+
+**El tour (13 MB)** nace **sin `src`**. Hasta que alguien no pulsa play, lo que
+se ve es un fotograma de 200 KB y el mp4 no se toca. Esto importa: la mayoría
+va a entrar por celular con datos.
+
+> ⚠️ Si reemplazas el clip de la portada, **respeta el límite de 2 MB**. Ese
+> archivo sí se descarga en cada visita.
+
+El tour está grabado **en vertical** (720×1280, formato celular). Por eso su
+marco es 9:16 con la ficha al costado, y no un rectángulo 16:9: en 16:9
+quedaría con dos franjas negras enormes a los lados.
 
 ### El tratamiento de foto
 
-Las fotos del gimnasio son muy coloridas (discos rosados, muros azules, pasto
-verde) y peleaban con el negro y dorado. En vez de retocar archivos, la clase
-`.foto` las pasa a **blanco y negro** y encima pone un **velo dorado en
-`mix-blend-mode: overlay`**. Así cualquier foto nueva se integra sola.
+Las fotos van detrás de texto, así que hay que apagarlas para que el titular
+se lea. La clase `.foto` las baja de brillo y les quita parte del color, y
+encima pone un velo que mezcla dorado y verde.
 
-Si alguna vez quieres verlas a color, borra el `filter` de `.foto`.
+Antes iban a **blanco y negro puro**. Se cambió a `grayscale(.72)` porque el
+verde del pasto sintético cubre todo el piso del gimnasio y es parte de cómo
+se ve el lugar: en B/N el sitio se veía muerto.
 
-⚠️ **Las fotos actuales son de baja resolución** (680px de ancho). En la portada
-se estiran a más del doble y se ven blandas. Si el gimnasio tiene los
-originales, vale mucho la pena reemplazarlas.
+Hay una segunda variante, **`.foto--viva`**, casi a color pleno. Es para
+cuando la foto *es* el contenido y no hay texto encima que proteger.
+
+Si quieres las fotos a color en todos lados, borra el `filter` de `.foto`.
+
+### La galería
+
+Las 12 piezas están escritas en el HTML dentro de `<div class="galeria">`.
+Cada una lleva:
+
+- `data-grande` → la imagen que abre el visor (puede ser una versión mayor)
+- `data-pie` → el texto que sale abajo en el visor
+- `.pieza-pie` → la etiqueta que aparece al pasar el cursor
+
+El visor **toma las imágenes de ahí mismo**, no hay una segunda lista que
+mantener sincronizada. Agregar una foto es copiar un bloque `<a class="pieza">`.
+
+> ⚠️ **Si agregas o quitas fotos, cuenta las celdas.** En escritorio la
+> galería es un mosaico de 4 columnas donde la pieza 01 ocupa 4 celdas y la
+> 07 ocupa 2. Con 12 piezas el total da 16, es decir 4 filas exactas. Si el
+> total deja de ser múltiplo de 4, aparece un hueco al final de la grilla.
+
+⚠️ **Las fotos `.webp` antiguas son de 680px** y además parecen ser del local
+anterior (estructura azul, discos rosados). Los `.jpg` sacados del video están
+en 720×1280 y muestran el gimnasio como está hoy. Conviene pedirle al cliente
+fotos nuevas en alta y jubilar las `.webp`.
 
 ### Otros elementos visuales
 
 **Íconos de servicios** — la clase es `.ic` dentro de cada `.fila-nombre`.
 Puedes cambiar el `<svg>` por otro sin tocar el CSS.
 
-**Open Graph** — `<meta property="og:image">` apunta a `imagenes/portada.webp`.
-Lo ideal es una imagen dedicada de 1200×630.
+**Open Graph** — `<meta property="og:image">` apunta a `imagenes/logo-banner.webp`,
+que es la única horizontal con la marca. Los fotogramas del tour no sirven acá:
+son verticales y WhatsApp los recorta por el centro. Lo ideal sería una imagen
+dedicada de 1200×630.
 
 **Favicon / logo** — el `<link rel="icon">` usa un SVG en línea. El logo real
 está en `imagenes/logo-banner.webp`; falta recortarlo y hacer un PNG limpio.

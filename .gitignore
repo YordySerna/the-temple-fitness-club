@@ -7,11 +7,16 @@ imagenes/the temple fitness club - Buscar con Google_files/
 # Originales sin renombrar (ya están copiados con nombre limpio)
 imagenes/unnamed*.webp
 
-# Videos originales: 15 MB entre los dos. Pesan demasiado para el repo
-# y para GitHub Pages. Si se van a usar, primero comprimir a WebM/MP4
-# de menos de 2 MB y quitarlos de aquí.
+# Videos: se excluyen TODOS y después se readmiten los dos que el sitio
+# usa de verdad. Los originales quedan fuera porque son copias idénticas
+# de estos, con emojis y comillas en el nombre que rompen las URLs.
+#   · clip-entrenamiento.mp4 → 1,6 MB, fondo de la portada
+#   · tour-gimnasio.mp4      → 13 MB, sección "El recinto", bajo demanda
+# El de 13 MB pesa, pero no se descarga hasta que alguien pulsa play.
 imagenes/*.mp4
 imagenes/*.mov
+!imagenes/clip-entrenamiento.mp4
+!imagenes/tour-gimnasio.mp4
 
 # Sistema
 Thumbs.db
