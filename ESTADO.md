@@ -52,13 +52,27 @@ Sitio de una sola página, sin build, todo en `index.html`.
 
 Los detalles de cómo editar cada cosa están en [LEEME.md](LEEME.md).
 
+## Datos de contacto vigentes
+
+Confirmados por el cliente el 8 de agosto de 2026:
+
+| Dato | Valor |
+|---|---|
+| Dirección | **Av. José Manuel Balmaceda 921, Loncoche** (al lado del terminal) |
+| WhatsApp | **+56 9 7751 2219** (comercial) |
+| Sábado | cierran a las **15:00** |
+
+⚠️ **Se mudaron.** Pedro Montt 541 y Aníbal Pinto 381 ya no se usan. El
+Facebook del gimnasio sigue mostrando Pedro Montt 541: conviene que el
+cliente lo corrija, o Google va a seguir mandando gente a la dirección vieja.
+
 ## Decisiones que conviene revisar con el cliente
 
 1. **La marca real es negro + amarillo**, no dorado, y el logo lleva azul.
-   El sitio usa dorado por decisión de diseño.
-2. **Las fotos son de 680px** de ancho y en la portada se estiran al doble.
-   Se ven blandas. Hay que pedir los originales.
+   El sitio usa dorado con verde de acento, por decisión de diseño.
+2. **Las fotos `.webp` viejas son de 680px** y además parecen ser del local
+   anterior: muestran estructura azul y discos rosados, mientras que el video
+   muestra la nave negra con pasto verde. Vale la pena pedir fotos nuevas.
 3. **Boxeo se quitó** de los servicios. Confirmar que efectivamente ya no lo hacen.
-4. **Dos direcciones** en circulación: Pedro Montt 541 y Aníbal Pinto 381.
-5. Hay un **precio publicado** ($30.000, plan básico) que todavía no tiene
+4. Hay un **precio publicado** ($30.000, plan básico) que todavía no tiene
    sección en el sitio.

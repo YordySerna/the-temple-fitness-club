@@ -2,8 +2,8 @@
 
 Sitio de una sola página para **The Temple Fitness Club**, Loncoche, Región de La Araucanía.
 
-> Versión **plantilla**: sin fotos reales todavía. Se ve completo usando capas de fondo animadas,
-> tipografía e íconos SVG.
+> **Publicado** en https://yordyserna.github.io/the-temple-fitness-club/
+> Con fotos y video reales del gimnasio.
 
 ## Cómo abrirlo
 
@@ -164,8 +164,8 @@ En táctil ni se dibuja. Se apaga con `prefers-reduced-motion`.
 
 | Quiero cambiar… | Búscalo en `index.html` |
 |---|---|
-| **Teléfono / WhatsApp** | `56965706172` (en enlaces y en la constante `WHATSAPP` del JS) |
-| **Direcciones** | `Pedro Montt 541` |
+| **Teléfono / WhatsApp** | `56977512219` (en enlaces y en la constante `WHATSAPP` del JS) |
+| **Dirección** | `Balmaceda 921` (y el `q=` del iframe del mapa) |
 | **Horarios (texto)** | Sección `id="horarios"`, lista `.dias` |
 | **Horarios (lógica abierto/cerrado)** | Objeto `HORARIOS` al inicio del `<script>` |
 | **Servicios** | Sección `id="servicios"`, cada `<li class="fila">` |
@@ -281,23 +281,29 @@ está en `imagenes/logo-banner.webp`; falta recortarlo y hacer un PNG limpio.
 
 ## Google Maps
 
-El contenedor ya está, con estilo Dark/Gold. Para activarlo:
+Ya está puesto y funcionando. Es un **iframe con el mapa normal de Google**,
+en colores.
 
-1. Saca una clave en [console.cloud.google.com](https://console.cloud.google.com)
-   y habilita **Maps JavaScript API**.
-2. Al final del `<body>` hay un `<script>` comentado. Descoméntalo y reemplaza
-   `TU_CLAVE_AQUI`.
-3. Ajusta `MAPA_CENTRO` en el JS con las coordenadas exactas del local
-   (clic derecho en Google Maps → "¿Qué hay aquí?").
+**No necesita clave ni cuenta de Google.** El modo `?output=embed` es público
+y gratis. Antes había un mapa con estilo Dark/Gold que sí exigía una clave de
+pago con tarjeta asociada; nunca se activó y se quitó en agosto de 2026.
 
-Las actuales son referenciales de Loncoche, **no** la puerta del gimnasio.
+Para cambiar la dirección hay que tocar **dos** lugares, los dos en la sección
+`id="horarios"`:
 
-Sin clave se ve el estado de espera (`.mapa-espera`), que ya lleva el pin con
-ondas de radar y un enlace real a Google Maps que sí funciona.
+1. El parámetro `q=` del `src` del `<iframe>`
+2. El `destination=` del enlace **Cómo llegar** que va justo debajo
 
-El estilo está en la constante `ESTILO_MAPA`: geometría casi negra, etiquetas
-grises y autopistas trazadas en dorado. Sigue el formato de Snazzy Maps, así
-que puedes pegar cualquier otro estilo de ahí en su lugar.
+Van con la dirección codificada para URL (los espacios como `%20` en el
+primero y como `+` en el segundo). La forma fácil de sacarla: buscar el lugar
+en Google Maps y copiar la dirección tal cual la muestra.
+
+El iframe lleva `loading="lazy"`, así que el mapa no se descarga hasta que el
+visitante llega a esa altura de la página.
+
+> El mapa a todo color es lo único claro de un sitio íntegramente negro. Por
+> eso lleva marco dorado y un `filter: brightness(.92)`: sin eso parece un
+> error de carga.
 
 ---
 
@@ -355,22 +361,36 @@ Además:
 
 ## Datos reales confirmados
 
-Salieron del material de marca que había en `imagenes/`:
-
+- **Dirección: Av. José Manuel Balmaceda 921, Loncoche**, al lado del terminal
+  de buses. Confirmado por el cliente en agosto de 2026 y verificado en Google
+  Maps. Ya **no** trabajan en Pedro Montt 541 ni en Aníbal Pinto 381, que era
+  lo que decía el sitio antes (y lo que todavía dice su Facebook).
+- **WhatsApp comercial: +56 9 7751 2219**
+- **Horario:** lunes a viernes 09:00–23:00, sábado 09:00–**15:00**, domingo cerrado
 - Instagram: **@fitnessthetemple** (ya enlazado en el pie)
 - Plan publicado: **Básico, 3 días x semana, lunes a sábado, $30.000**
   (está en `imagenes/plan-basico.webp`, todavía **no** hay sección de planes en el sitio)
 - El logo real es **negro + amarillo** con azul en el emblema, no dorado.
-  El sitio usa dorado por decisión de diseño.
+  El sitio usa dorado, con verde como acento, por decisión de diseño.
 
-## Pendientes antes de publicar
+## Pendientes
 
-- [ ] **Fotos en alta resolución** — las actuales son de 680px y se ven blandas
+- [ ] **Fotos en alta resolución** — las `.webp` antiguas son de 680px y además
+      parecen ser del local anterior
 - [ ] Logo definitivo recortado + favicon PNG
 - [ ] Correo real de contacto (hoy hay uno de ejemplo)
 - [ ] Enlaces reales de Facebook y TikTok
-- [ ] Confirmar la dirección definitiva (figuran dos: Pedro Montt 541 y Aníbal Pinto 381)
-- [ ] Coordenadas exactas del local
-- [ ] Clave de Google Maps
-- [ ] ¿Sección de planes con los precios reales?
+- [ ] ¿Sección de planes con los precios reales? Hay uno publicado: $30.000,
+      3 días x semana, en `plan-basico.webp`
+- [ ] Confirmar si boxeo se sigue dictando (se quitó del índice de servicios)
 - [ ] Decidir si la paleta se mantiene dorada o se ajusta al amarillo de la marca
+
+### Resuelto
+
+- [x] **Dirección** — Av. José Manuel Balmaceda 921, al lado del terminal de
+      buses. Se mudaron: Pedro Montt 541 y Aníbal Pinto 381 ya no se usan.
+      Verificado en Google Maps: el pin cae pegado al Terminal JAC/Turbus.
+- [x] **WhatsApp** — cambiado al comercial, +56 9 7751 2219
+- [x] **Horario del sábado** — cierran a las 15:00, no a las 16:00
+- [x] **Google Maps** — puesto con iframe, sin necesidad de clave
+- [x] **Fotos y video** — 16 fotogramas sacados de los dos videos del gimnasio

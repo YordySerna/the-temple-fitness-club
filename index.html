@@ -923,56 +923,21 @@ body.trabado{ overflow:hidden; }
 .ficha dd a:hover{ color:var(--oro-claro); }
 .ficha dd small{ display:block; margin-top:5px; font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.04em; color:var(--tenue); }
 
-/* ---------- MAPA (Google Maps, estilo Dark/Gold) -------------------------
-   El contenedor está listo. Mientras no haya clave de API se muestra el
-   estado vacío .mapa-espera, que ya trae el pin y el enlace real a Maps.
-   Instrucciones completas en el LEEME y junto a ESTILO_MAPA en el JS.     */
+/* ---------- MAPA (Google Maps normal, en iframe) -------------------------
+   Es el mapa de Google de siempre, en colores. Antes había uno con estilo
+   Dark/Gold que exigía clave de API de pago; este funciona sin cuenta.
+   El mapa a todo color es lo único claro de la página: el marco dorado y
+   el margen negro lo separan del resto para que no parezca un error.     */
 .mapa{
   position:relative; margin-top:26px; aspect-ratio:16/11; overflow:hidden;
-  border:1px solid var(--linea); background:var(--carbon);
+  border:1px solid var(--linea-oro); background:var(--carbon);
 }
-/* Aquí monta Google Maps */
-.mapa-lienzo{ position:absolute; inset:0; }
-.mapa-lienzo:empty{ display:none; }
-
-/* Estado vacío: retícula dorada + pin con ondas de radar */
-.mapa-espera{
-  position:absolute; inset:0; display:grid; place-items:center; text-align:center; padding:20px;
-  background:
-    linear-gradient(rgba(201,162,39,.07) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(201,162,39,.07) 1px,transparent 1px),
-    radial-gradient(circle at 50% 46%,rgba(201,162,39,.12),transparent 62%),
-    var(--carbon);
-  background-size:34px 34px,34px 34px,100% 100%,100% 100%;
+.mapa iframe{
+  position:absolute; inset:0; width:100%; height:100%; border:0;
+  /* Un punto menos de brillo para que no encandile sobre el fondo negro */
+  filter:brightness(.92) saturate(.95);
 }
-.mapa.cargado .mapa-espera{ display:none; }
-
-.mapa-pin{ position:relative; width:11px; height:11px; margin:0 auto 22px; }
-.mapa-pin b{
-  position:absolute; inset:0; border-radius:50%; background:var(--oro);
-  box-shadow:0 0 16px rgba(201,162,39,.9);
-}
-.mapa-pin i{
-  position:absolute; inset:0; border-radius:50%; border:1px solid var(--oro);
-  animation:expandir 3.6s ease-out infinite;
-}
-.mapa-pin i:nth-child(3){ animation-delay:1.2s; }
-.mapa-pin i:nth-child(4){ animation-delay:2.4s; }
-@keyframes expandir{
-  from{ transform:scale(1); opacity:.85; }
-  to  { transform:scale(15); opacity:0; }
-}
-.mapa-espera p{
-  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.12em;
-  text-transform:uppercase; color:var(--texto); margin-bottom:16px;
-}
-.mapa-espera .enlace-luz{ font-size:var(--etiqueta); }
-
-/* Google pinta controles claros por defecto: los oscurecemos */
-.mapa-lienzo .gm-style-cc,
-.mapa-lienzo .gmnoprint a,
-.mapa-lienzo .gm-style-iw{ filter:invert(1) hue-rotate(180deg) saturate(.5); }
-.mapa-lienzo .gm-style-iw-d{ overflow:hidden !important; }
+.mapa-ir{ display:inline-flex; margin-top:16px; font-size:var(--etiqueta-md); }
 
 /* ---------- 11b · EL RECINTO: TOUR EN VIDEO ------------------------------
    OJO: el video está grabado en vertical (720×1280, formato celular). Un
@@ -1445,8 +1410,8 @@ body.trabado{ overflow:hidden; }
   </nav>
   <a href="#contacto" class="boton boton-oro">Agenda tu clase <span class="flecha">→</span></a>
   <div class="panel-pie">
-    <span>Pedro Montt 541 · Aníbal Pinto 381, Loncoche</span>
-    <a href="tel:+56965706172">+56 9 6570 6172</a>
+    <span>Av. José Manuel Balmaceda 921, Loncoche</span>
+    <a href="tel:+56977512219">+56 9 7751 2219</a>
   </div>
 </div>
 
@@ -2039,7 +2004,7 @@ body.trabado{ overflow:hidden; }
           <li data-dia="3"><span class="cod">Mié</span><span class="guia"></span><span class="rango">09:00 — 23:00</span></li>
           <li data-dia="4"><span class="cod">Jue</span><span class="guia"></span><span class="rango">09:00 — 23:00</span></li>
           <li data-dia="5"><span class="cod">Vie</span><span class="guia"></span><span class="rango">09:00 — 23:00</span></li>
-          <li data-dia="6"><span class="cod">Sáb</span><span class="guia"></span><span class="rango">09:00 — 16:00</span></li>
+          <li data-dia="6"><span class="cod">Sáb</span><span class="guia"></span><span class="rango">09:00 — 15:00</span></li>
           <li data-dia="0" class="libre"><span class="cod">Dom</span><span class="guia"></span><span class="rango">Cerrado</span></li>
         </ul>
 
@@ -2053,11 +2018,11 @@ body.trabado{ overflow:hidden; }
         <dl class="ficha">
           <div>
             <dt>Dirección</dt>
-            <dd>Pedro Montt 541<small>Aníbal Pinto 381 · Loncoche, La Araucanía</small></dd>
+            <dd>Av. José Manuel Balmaceda 921<small>Al lado del terminal · Loncoche, La Araucanía</small></dd>
           </div>
           <div>
             <dt>Teléfono</dt>
-            <dd><a href="tel:+56965706172">+56 9 6570 6172</a><small>WhatsApp en horario de atención</small></dd>
+            <dd><a href="tel:+56977512219">+56 9 7751 2219</a><small>WhatsApp en horario de atención</small></dd>
           </div>
           <div>
             <dt>Coordenadas</dt>
@@ -2066,32 +2031,27 @@ body.trabado{ overflow:hidden; }
         </dl>
 
         <!-- ============================================================
-             MAPA · listo para Google Maps con estilo Dark/Gold
-             Para activarlo:
-               1. Consigue una clave en console.cloud.google.com
-                  (habilita "Maps JavaScript API").
-               2. Descomenta el <script> del final del documento y pega
-                  tu clave donde dice TU_CLAVE_AQUI.
-               3. Ajusta las coordenadas en MAPA_CENTRO (en el JS).
-             Sin clave se ve el estado de espera de aquí abajo, que ya
-             lleva el pin y el enlace real a Google Maps.
+             MAPA · Google Maps normal, con iframe
+             No necesita clave ni cuenta de Google: el modo ?output=embed
+             es público. Antes había un mapa con estilo Dark/Gold, pero
+             ese sí exigía una clave de pago y nunca se activó.
+             👉 EDITAR: cambia la dirección en el parámetro q= del src y
+                también en el enlace "Cómo llegar" de abajo.
+             loading="lazy" evita que el mapa cargue hasta que el
+             visitante se acerca a esta sección.
              ============================================================ -->
-        <div class="mapa" id="mapa-caja">
-          <div class="mapa-lienzo" id="mapa"></div>
-
-          <div class="mapa-espera">
-            <div>
-              <div class="mapa-pin" aria-hidden="true">
-                <b></b><i></i><i></i><i></i>
-              </div>
-              <p>Pedro Montt 541 · Loncoche</p>
-              <a class="enlace-luz" target="_blank" rel="noopener"
-                 href="https://www.google.com/maps/search/?api=1&amp;query=Pedro+Montt+541%2C+Loncoche%2C+La+Araucan%C3%ADa%2C+Chile">
-                Abrir en Google Maps <span class="flecha">→</span>
-              </a>
-            </div>
-          </div>
+        <div class="mapa">
+          <iframe
+            title="Mapa de The Temple Fitness Club, Avenida José Manuel Balmaceda 921, Loncoche"
+            src="https://maps.google.com/maps?q=Avenida%20Jos%C3%A9%20Manuel%20Balmaceda%20921%2C%20Loncoche%2C%20La%20Araucan%C3%ADa%2C%20Chile&amp;hl=es&amp;z=16&amp;output=embed"
+            loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen></iframe>
         </div>
+
+        <a class="enlace-luz mapa-ir" target="_blank" rel="noopener"
+           href="https://www.google.com/maps/dir/?api=1&amp;destination=Avenida+Jos%C3%A9+Manuel+Balmaceda+921%2C+Loncoche%2C+La+Araucan%C3%ADa%2C+Chile">
+          Cómo llegar <span class="flecha">→</span>
+        </a>
       </div>
 
     </div>
@@ -2125,20 +2085,20 @@ body.trabado{ overflow:hidden; }
 
     <div class="llamado-acciones" data-ent="sube" style="--retardo:.4s">
       <a class="boton boton-oro" target="_blank" rel="noopener"
-         href="https://wa.me/56965706172?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20los%20planes%20de%20The%20Temple%20Fitness%20Club">
+         href="https://wa.me/56977512219?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20los%20planes%20de%20The%20Temple%20Fitness%20Club">
         Únete ahora <span class="flecha">→</span>
       </a>
       <a href="#contacto" class="enlace-luz">Agenda tu clase <span class="flecha">→</span></a>
     </div>
 
     <div class="llamado-datos" data-ent="sube" style="--retardo:.5s">
-      <a href="tel:+56965706172">
+      <a href="tel:+56977512219">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 5.5c0-1 .8-1.8 1.8-1.8h1.6c.8 0 1.5.5 1.7 1.3l.8 2.7c.2.7 0 1.4-.6 1.8l-1.2.9a12 12 0 0 0 5 5l.9-1.2c.4-.6 1.1-.8 1.8-.6l2.7.8c.8.2 1.3.9 1.3 1.7v1.6c0 1-.8 1.8-1.8 1.8A15.5 15.5 0 0 1 4.5 5.5z"/></svg>
-        +56 9 6570 6172
+        +56 9 7751 2219
       </a>
       <a href="#horarios">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
-        Pedro Montt 541, Loncoche
+        Av. J. M. Balmaceda 921, Loncoche
       </a>
     </div>
   </div>
@@ -2212,15 +2172,15 @@ body.trabado{ overflow:hidden; }
         <dl class="ficha">
           <div>
             <dt>WhatsApp</dt>
-            <dd><a href="https://wa.me/56965706172" target="_blank" rel="noopener">+56 9 6570 6172</a><small>La vía más rápida para reservar</small></dd>
+            <dd><a href="https://wa.me/56977512219" target="_blank" rel="noopener">+56 9 7751 2219</a><small>La vía más rápida para reservar</small></dd>
           </div>
           <div>
             <dt>Dirección</dt>
-            <dd>Pedro Montt 541<small>Aníbal Pinto 381 · Loncoche</small></dd>
+            <dd>Av. José Manuel Balmaceda 921<small>Al lado del terminal · Loncoche</small></dd>
           </div>
           <div>
             <dt>Horario</dt>
-            <dd>Lun a Vie · 09:00 — 23:00<small>Sábado 09:00 — 16:00 · Domingo cerrado</small></dd>
+            <dd>Lun a Vie · 09:00 — 23:00<small>Sábado 09:00 — 15:00 · Domingo cerrado</small></dd>
           </div>
           <div>
             <dt>Correo</dt>
@@ -2308,11 +2268,10 @@ body.trabado{ overflow:hidden; }
       <div>
         <h4>Contacto</h4>
         <ul class="pie-lista">
-          <li>Pedro Montt 541, Loncoche</li>
-          <li>Aníbal Pinto 381, Loncoche</li>
-          <li><a href="tel:+56965706172">+56 9 6570 6172</a></li>
+          <li>Av. José Manuel Balmaceda 921, Loncoche</li>
+          <li><a href="tel:+56977512219">+56 9 7751 2219</a></li>
           <li>Lun a Vie · 09:00 — 23:00</li>
-          <li>Sábado · 09:00 — 16:00</li>
+          <li>Sábado · 09:00 — 15:00</li>
           <li>Domingo · Cerrado</li>
         </ul>
       </div>
@@ -2331,7 +2290,7 @@ body.trabado{ overflow:hidden; }
 </footer>
 
 <a class="flotante" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp"
-   href="https://wa.me/56965706172?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20The%20Temple%20Fitness%20Club">
+   href="https://wa.me/56977512219?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20The%20Temple%20Fitness%20Club">
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
     <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.6 14.1c-.2.7-1.4 1.3-1.9 1.3-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-2.9-1.3-4.8-4.3-5-4.5-.1-.2-1.2-1.5-1.2-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.1.3.7 1.2 1.5 1.9 1 .9 1.8 1.2 2.1 1.3.3.1.4.1.6-.1l.8-1c.2-.2.4-.2.6-.1l2 .9c.2.1.4.2.4.3.1.1.1.7-.1 1.4z"/>
   </svg>
@@ -2345,17 +2304,17 @@ body.trabado{ overflow:hidden; }
   "additionalType":"https://schema.org/ExerciseGym",
   "name":"The Temple Fitness Club",
   "slogan":"Tu cuerpo es un templo",
-  "telephone":"+56965706172",
+  "telephone":"+56977512219",
   "address":{
     "@type":"PostalAddress",
-    "streetAddress":"Pedro Montt 541",
+    "streetAddress":"Avenida José Manuel Balmaceda 921",
     "addressLocality":"Loncoche",
     "addressRegion":"La Araucanía",
     "addressCountry":"CL"
   },
   "openingHoursSpecification":[
     {"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"09:00","closes":"23:00"},
-    {"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"09:00","closes":"16:00"}
+    {"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"09:00","closes":"15:00"}
   ]
 }
 </script>
@@ -2392,9 +2351,9 @@ body.trabado{ overflow:hidden; }
   'use strict';
 
   /* ---------- A · CONFIGURACIÓN EDITABLE ----------------------------------
-     Los minutos se cuentan desde medianoche: 09:00 = 540, 16:00 = 960,
+     Los minutos se cuentan desde medianoche: 09:00 = 540, 15:00 = 900,
      23:00 = 1380. Día: 0 = domingo … 6 = sábado. null = cerrado.          */
-  const WHATSAPP = '56965706172';
+  const WHATSAPP = '56977512219';
   const HORARIOS = {
     0: null,          // Domingo
     1: [540, 1380],   // Lunes    09:00 — 23:00
@@ -2402,7 +2361,7 @@ body.trabado{ overflow:hidden; }
     3: [540, 1380],   // Miércoles
     4: [540, 1380],   // Jueves
     5: [540, 1380],   // Viernes
-    6: [540,  960]    // Sábado   09:00 — 16:00
+    6: [540,  900]    // Sábado   09:00 — 15:00
   };
   const DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
 
@@ -2885,78 +2844,6 @@ body.trabado{ overflow:hidden; }
   refrescarHorario();
   setInterval(refrescarHorario, 60000);
 
-  /* ---------- I · GOOGLE MAPS · ESTILO DARK/GOLD --------------------------
-     CÓMO ACTIVARLO
-       1. Saca una clave en console.cloud.google.com y habilita
-          "Maps JavaScript API".
-       2. Al final del <body> hay un <script> comentado: descoméntalo y
-          reemplaza TU_CLAVE_AQUI por tu clave.
-       3. Ajusta MAPA_CENTRO con las coordenadas exactas del local
-          (clic derecho en Google Maps → "¿Qué hay aquí?").
-     Mientras tanto se ve el estado de espera, que ya lleva pin y enlace.
-
-     El estilo sigue el formato de Snazzy Maps: geometría casi negra,
-     etiquetas grises y las vías principales trazadas en dorado.           */
-  const MAPA_CENTRO = { lat: -39.3720, lng: -72.6330 };   // Loncoche (referencial)
-
-  const ESTILO_MAPA = [
-    {elementType:'geometry',            stylers:[{color:'#0E0E0E'}]},
-    {elementType:'labels.icon',         stylers:[{visibility:'off'}]},
-    {elementType:'labels.text.fill',    stylers:[{color:'#8A8177'}]},
-    {elementType:'labels.text.stroke',  stylers:[{color:'#080808'}]},
-    {featureType:'administrative',           elementType:'geometry',         stylers:[{visibility:'off'}]},
-    {featureType:'administrative.locality',  elementType:'labels.text.fill', stylers:[{color:'#C9A227'}]},
-    {featureType:'poi',                      elementType:'labels.text.fill', stylers:[{color:'#6B675F'}]},
-    {featureType:'poi.business',                                             stylers:[{visibility:'off'}]},
-    {featureType:'poi.park',                 elementType:'geometry',         stylers:[{color:'#121212'}]},
-    {featureType:'poi.park',                 elementType:'labels.text.fill', stylers:[{color:'#4E4A44'}]},
-    {featureType:'road',                     elementType:'geometry',         stylers:[{color:'#191919'}]},
-    {featureType:'road',                     elementType:'geometry.stroke',  stylers:[{color:'#131313'}]},
-    {featureType:'road',                     elementType:'labels.text.fill', stylers:[{color:'#8A8177'}]},
-    {featureType:'road.arterial',            elementType:'geometry',         stylers:[{color:'#211D14'}]},
-    {featureType:'road.highway',             elementType:'geometry',         stylers:[{color:'#2A2419'}]},
-    {featureType:'road.highway',             elementType:'geometry.stroke',  stylers:[{color:'#C9A227'},{weight:.5}]},
-    {featureType:'road.highway',             elementType:'labels.text.fill', stylers:[{color:'#EBD48A'}]},
-    {featureType:'transit',                  elementType:'geometry',         stylers:[{color:'#191919'}]},
-    {featureType:'transit.station',          elementType:'labels.text.fill', stylers:[{color:'#6B675F'}]},
-    {featureType:'water',                    elementType:'geometry',         stylers:[{color:'#050505'}]},
-    {featureType:'water',                    elementType:'labels.text.fill', stylers:[{color:'#3A3730'}]}
-  ];
-
-  // Google llama a esta función cuando termina de cargar su API
-  window.iniciarMapa = function(){
-    const lienzo = document.getElementById('mapa');
-    if(!lienzo || !window.google || !google.maps) return;
-
-    const mapa = new google.maps.Map(lienzo, {
-      center: MAPA_CENTRO,
-      zoom: 16,
-      styles: ESTILO_MAPA,
-      disableDefaultUI: true,
-      zoomControl: true,
-      gestureHandling: 'cooperative',   // no secuestra el scroll de la página
-      backgroundColor: '#0E0E0E'
-    });
-
-    // Pin dorado dibujado en SVG, a juego con el resto del sitio
-    new google.maps.Marker({
-      position: MAPA_CENTRO,
-      map: mapa,
-      title: 'The Temple Fitness Club',
-      icon: {
-        path: 'M12 2C7.6 2 4 5.6 4 10c0 6 8 12 8 12s8-6 8-12c0-4.4-3.6-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z',
-        fillColor: '#C9A227', fillOpacity: 1,
-        strokeColor: '#EBD48A', strokeWeight: 1,
-        scale: 1.7, anchor: new google.maps.Point(12, 22)
-      }
-    });
-
-    document.getElementById('mapa-caja').classList.add('cargado');
-  };
-
-  // Si la API ya estaba lista antes de llegar acá, montamos de inmediato
-  if(window.google && window.google.maps) window.iniciarMapa();
-
   /* ---------- J · FORMULARIO → WHATSAPP ----------------------------------- */
   const form = $('#formulario');
   if(form){
@@ -3111,17 +2998,6 @@ body.trabado{ overflow:hidden; }
 
 })();
 </script>
-
-<!-- ============================================================
-     GOOGLE MAPS — descomenta y pega tu clave para activarlo.
-     Va después del script principal porque necesita que
-     window.iniciarMapa ya exista.
-     ============================================================ -->
-<!--
-<script async defer
-  src="https://maps.googleapis.com/maps/api/js?key=TU_CLAVE_AQUI&callback=iniciarMapa&loading=async">
-</script>
--->
 
 </body>
 </html>
