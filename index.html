@@ -1,0 +1,2594 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Temple Fitness Club · Loncoche | Tu cuerpo es un templo</title>
+
+<!-- ============================================================
+     SEO / METADATOS
+     ============================================================ -->
+<meta name="description" content="The Temple Fitness Club en Loncoche, La Araucanía. Entrenamiento personalizado, funcional, fuerza, HIIT, yoga, zumba, nutrición y rehabilitación. Tu cuerpo es un templo.">
+<meta name="theme-color" content="#080808">
+<meta name="author" content="The Temple Fitness Club">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CL">
+<meta property="og:title" content="The Temple Fitness Club · Loncoche">
+<meta property="og:description" content="Tu cuerpo es un templo. Entrena con propósito en Loncoche.">
+<meta property="og:image" content="imagenes/portada.webp">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23080808'/%3E%3Cpath d='M32 12 50 26v26H14V26z' fill='none' stroke='%23C9A227' stroke-width='3'/%3E%3Cpath d='M32 52V34' stroke='%23C9A227' stroke-width='3'/%3E%3C/svg%3E">
+
+<!-- ============================================================
+     TIPOGRAFÍA — el corazón de la identidad
+       · Archivo         → titulares pesados, condensados, con carácter
+       · Instrument Serif → itálica de alto contraste para las palabras
+                            "sagradas". Es lo que le da el aire de templo.
+       · JetBrains Mono   → etiquetas, índices y datos. Aire de ficha técnica.
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Marca que el JS está vivo. Si no corre, se desactivan las animaciones
+     de entrada y el contenido se ve igual. -->
+<script>document.documentElement.classList.add('js');</script>
+
+<style>
+/* ============================================================================
+   THE TEMPLE FITNESS CLUB · LONCOCHE
+   ----------------------------------------------------------------------------
+   IDEA: un templo es arquitectura. Nada de tarjetas flotantes: aquí manda
+   la línea fina, la retícula, el número de índice y el vacío. El color se
+   mueve muy lento por detrás, como luz entrando por una rendija.
+
+   ÍNDICE
+     00 · Tokens
+     01 · Base y reset
+     02 · Capas de fondo (aurora, retícula, constelación, humo)
+     03 · Piezas: botones, marcos, brillos, líneas
+     04 · Sistema de entrada al scroll
+     05 · Header, menú y raíl de secciones
+     06 · Portada
+     07 · Cinta de datos
+     08 · Índice de servicios
+     09 · Filosofía
+     10 · Cifras y argumentos
+     11 · Hoja de horarios
+     12 · Llamado final
+     13 · Contacto
+     14 · Pie
+     15 · Responsive
+   ========================================================================== */
+
+/* ---------- 00 · TOKENS -------------------------------------------------- */
+:root{
+  /* Paleta (la que ya te gustaba, con el negro un punto más profundo) */
+  --negro:      #080808;
+  --carbon:     #0E0E0E;
+  --gris-900:   #131313;
+  --gris-800:   #191919;
+
+  --oro:        #C9A227;
+  --oro-brillo: #D4AF37;
+  --oro-claro:  #EBD48A;
+  --oro-luz:    #FFF3CE;
+  --terracota:  #7E2E1C;
+
+  --blanco:     #F7F5F1;
+  --texto:      #A6A199;
+  --tenue:      #6B675F;
+
+  --linea:      rgba(255,255,255,.075);
+  --linea-oro:  rgba(201,162,39,.26);
+  --lavado-oro: rgba(201,162,39,.07);
+
+  /* Tipografías */
+  --display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --serif:   'Instrument Serif', 'Times New Roman', Georgia, serif;
+  --mono:    'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  /* Medidas */
+  --ancho:    1320px;
+  --margen:   24px;
+  --header-h: 74px;
+
+  /* ACCESIBILIDAD: piso tipográfico.
+     Ninguna etiqueta baja de 12px. Todas las etiquetas mono usan estas
+     dos variables, así el mínimo se controla desde un solo lugar. */
+  --etiqueta:    .75rem;   /* 12px — mínimo absoluto */
+  --etiqueta-md: .8125rem; /* 13px — etiquetas con más peso en la jerarquía */
+
+  /* Curvas de animación */
+  --salida:   cubic-bezier(.16,1,.3,1);
+  --suave:    cubic-bezier(.33,1,.68,1);
+}
+
+/* Ángulo animable para los marcos con luz en movimiento.
+   Si el navegador no soporta @property, el borde queda estático (se ve bien igual). */
+@property --giro{ syntax:'<angle>'; inherits:false; initial-value:0deg; }
+
+/* ---------- 01 · BASE Y RESET -------------------------------------------- */
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+
+html{
+  scroll-behavior:smooth;              /* respaldo si Lenis no carga */
+  scroll-padding-top:calc(var(--header-h) + 20px);
+  -webkit-text-size-adjust:100%;
+}
+/* Lenis pone la clase .lenis en <html>. El scroll suave nativo debe
+   apagarse o los dos sistemas pelean por la misma posición. */
+html.lenis{ scroll-behavior:auto; }
+html.lenis,html.lenis body{ height:auto; }
+.lenis.lenis-smooth{ scroll-behavior:auto !important; }
+.lenis.lenis-stopped{ overflow:hidden; }
+
+body{
+  font-family:var(--display);
+  font-size:16px; font-weight:400; line-height:1.65;
+  background:var(--negro); color:var(--texto);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+img,svg,canvas{ display:block; max-width:100%; }
+a{ color:inherit; text-decoration:none; }
+ul,ol{ list-style:none; }
+button,input,textarea,select{ font:inherit; color:inherit; background:none; border:0; }
+::selection{ background:var(--oro); color:var(--negro); }
+
+:focus-visible{ outline:1px solid var(--oro-brillo); outline-offset:4px; }
+
+.envoltura{ width:100%; max-width:var(--ancho); margin-inline:auto; padding-inline:var(--margen); }
+
+/* Bloque de sección: siempre abierto por una línea fina, nunca por una caja */
+.bloque{ position:relative; padding:96px 0; }
+.bloque + .bloque{ border-top:1px solid var(--linea); }
+
+/* Etiqueta monoespaciada: el sello de "ficha técnica" */
+.sello{
+  display:inline-flex; align-items:center; gap:11px;
+  font-family:var(--mono); font-size:var(--etiqueta); font-weight:500;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--oro);
+}
+.sello::before{ content:''; width:22px; height:1px; background:currentColor; opacity:.6; }
+
+/* Titular grande: Archivo muy pesado + tracking negativo */
+.titular{
+  font-weight:800; font-size:clamp(2.4rem,6.4vw,4.6rem);
+  line-height:.94; letter-spacing:-.035em; text-transform:uppercase;
+  color:var(--blanco);
+}
+/* La palabra "sagrada" en itálica de alto contraste */
+.sagrada{
+  font-family:var(--serif); font-style:italic; font-weight:400;
+  text-transform:none; letter-spacing:-.01em;
+  font-size:1.16em; line-height:.9;
+}
+.entrada-texto{ margin-top:22px; max-width:56ch; font-size:1.02rem; color:var(--texto); }
+
+/* ---------- 02 · CAPAS DE FONDO ------------------------------------------ */
+/* Todas viven dentro de .escenario, que se recorta a sí mismo. */
+.escenario{ position:absolute; inset:0; overflow:hidden; z-index:0; pointer-events:none; }
+.escenario > *{ position:absolute; }
+
+/* AURORA — manchas de color que respiran. Ciclos larguísimos para que
+   el movimiento se sienta pero no distraiga al leer. */
+.aurora{ inset:-25%; filter:blur(90px); opacity:.62; }
+.aurora i{ position:absolute; border-radius:50%; display:block; }
+.aurora i:nth-child(1){
+  width:46vw; aspect-ratio:1/.82; left:6%; top:8%;
+  background:radial-gradient(circle,rgba(201,162,39,.50),transparent 66%);
+  animation:deriva-a 68s ease-in-out infinite;
+}
+.aurora i:nth-child(2){
+  width:38vw; aspect-ratio:1/1.1; right:4%; top:26%;
+  background:radial-gradient(circle,rgba(212,175,55,.34),transparent 64%);
+  animation:deriva-b 86s ease-in-out infinite;
+}
+.aurora i:nth-child(3){
+  width:52vw; aspect-ratio:1/.6; left:24%; bottom:-6%;
+  background:radial-gradient(circle,rgba(126,46,28,.30),transparent 66%);
+  animation:deriva-c 104s ease-in-out infinite;
+}
+@keyframes deriva-a{
+  0%,100%{ transform:translate3d(0,0,0) scale(1); }
+  33%    { transform:translate3d(14vw,7vh,0) scale(1.18); }
+  66%    { transform:translate3d(-6vw,14vh,0) scale(.9); }
+}
+@keyframes deriva-b{
+  0%,100%{ transform:translate3d(0,0,0) scale(1.05); }
+  40%    { transform:translate3d(-16vw,10vh,0) scale(.86); }
+  75%    { transform:translate3d(-4vw,-8vh,0) scale(1.2); }
+}
+@keyframes deriva-c{
+  0%,100%{ transform:translate3d(0,0,0) scale(1); }
+  50%    { transform:translate3d(10vw,-10vh,0) scale(1.22); }
+}
+
+/* RETÍCULA PLANA — líneas finas con máscara radial */
+.reticula{
+  inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.032) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.032) 1px,transparent 1px);
+  background-size:76px 76px;
+  -webkit-mask-image:radial-gradient(ellipse 72% 62% at 50% 42%,#000 12%,transparent 76%);
+          mask-image:radial-gradient(ellipse 72% 62% at 50% 42%,#000 12%,transparent 76%);
+}
+/* Variante en puntos, para la sección de argumentos */
+.reticula.puntos{
+  background-image:radial-gradient(rgba(201,162,39,.30) 1px,transparent 1px);
+  background-size:30px 30px;
+  -webkit-mask-image:radial-gradient(ellipse 60% 70% at 50% 50%,#000,transparent 72%);
+          mask-image:radial-gradient(ellipse 60% 70% at 50% 50%,#000,transparent 72%);
+  opacity:.5;
+}
+
+/* SUELO EN PERSPECTIVA — la nave del templo alejándose */
+.suelo{
+  left:50%; bottom:-4%; width:320%; height:62vh;
+  transform:translateX(-50%) perspective(300px) rotateX(64deg);
+  transform-origin:bottom center;
+  background-image:
+    linear-gradient(rgba(201,162,39,.32) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(201,162,39,.32) 1px,transparent 1px);
+  background-size:74px 74px;
+  -webkit-mask-image:linear-gradient(to top,#000 2%,transparent 72%);
+          mask-image:linear-gradient(to top,#000 2%,transparent 72%);
+  opacity:.55;
+  animation:avanzar 16s linear infinite;
+}
+@keyframes avanzar{ to{ background-position:0 74px, 0 0; } }
+
+/* CONSTELACIÓN — canvas de puntos conectados (se dibuja en JS) */
+.constelacion{ inset:0; width:100%; height:100%; opacity:.75; }
+
+/* HUMO — ruido generativo que deriva lentísimo */
+.humo{
+  inset:-10%;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='h'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.008' numOctaves='4'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23h)'/%3E%3C/svg%3E");
+  background-size:760px 760px;
+  opacity:.055; mix-blend-mode:overlay;
+  animation:vagar 120s linear infinite;
+}
+@keyframes vagar{ to{ background-position:760px 380px; } }
+
+/* VIÑETA — cierra los bordes y garantiza contraste del texto */
+.vineta{
+  inset:0;
+  background:
+    radial-gradient(ellipse 88% 76% at 50% 46%,transparent 34%,rgba(8,8,8,.82) 100%),
+    linear-gradient(180deg,rgba(8,8,8,.72) 0%,transparent 26%,transparent 62%,var(--negro) 100%);
+}
+
+/* GRANO — textura de película sobre todo el sitio */
+body::after{
+  content:''; position:fixed; inset:0; z-index:9999; pointer-events:none;
+  opacity:.032; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+
+/* ---------- 03 · PIEZAS -------------------------------------------------- */
+
+/* · BOTONES — esquina viva, nada de píldoras redondas · */
+.boton{
+  position:relative; display:inline-flex; align-items:center; gap:12px;
+  padding:17px 30px; border-radius:0; cursor:pointer; overflow:hidden;
+  font-family:var(--mono); font-size:var(--etiqueta); font-weight:500;
+  letter-spacing:.16em; text-transform:uppercase; white-space:nowrap;
+  transition:color .4s var(--suave), background .4s var(--suave), transform .4s var(--suave);
+}
+.boton .flecha{ transition:transform .45s var(--salida); }
+.boton:hover .flecha{ transform:translateX(5px); }
+
+/* Relleno dorado + destello que lo recorre al pasar el mouse */
+.boton-oro{ background:var(--oro); color:#0B0900; font-weight:500; }
+.boton-oro::before{
+  content:''; position:absolute; inset:0; transform:translateX(-110%) skewX(-16deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);
+  transition:transform .85s var(--salida);
+}
+.boton-oro:hover::before{ transform:translateX(110%) skewX(-16deg); }
+.boton-oro:hover{ background:var(--oro-claro); }
+
+/* Contorno con corchetes que se abren */
+.boton-linea{ color:var(--blanco); border:1px solid var(--linea); }
+.boton-linea::before,.boton-linea::after{
+  content:''; position:absolute; width:10px; height:10px; border:1px solid var(--oro);
+  opacity:0; transition:all .45s var(--salida);
+}
+.boton-linea::before{ top:5px; left:5px; border-right:0; border-bottom:0; }
+.boton-linea::after{ bottom:5px; right:5px; border-left:0; border-top:0; }
+.boton-linea:hover{ color:var(--oro-claro); border-color:var(--linea-oro); }
+.boton-linea:hover::before{ opacity:1; top:-1px; left:-1px; }
+.boton-linea:hover::after{ opacity:1; bottom:-1px; right:-1px; }
+
+/* Enlace de texto con subrayado que se dibuja */
+.enlace-luz{
+  position:relative; display:inline-flex; align-items:center; gap:10px;
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.16em; text-transform:uppercase;
+  color:var(--blanco); padding-bottom:5px;
+}
+.enlace-luz::after{
+  content:''; position:absolute; left:0; bottom:0; height:1px; width:100%;
+  background:linear-gradient(90deg,var(--oro),var(--oro-claro));
+  transform:scaleX(0); transform-origin:right; transition:transform .5s var(--salida);
+}
+.enlace-luz:hover{ color:var(--oro-claro); }
+.enlace-luz:hover::after{ transform:scaleX(1); transform-origin:left; }
+
+/* · BRILLO SOBRE TEXTO — la luz que "luce" cada tanto · */
+.brillo{
+  background:linear-gradient(100deg,var(--oro) 22%,var(--oro-luz) 44%,var(--oro-claro) 52%,var(--oro) 72%);
+  background-size:260% 100%;
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  animation:lucir 7s ease-in-out infinite;
+}
+@keyframes lucir{
+  0%      { background-position:190% 0; }
+  55%,100%{ background-position:-70% 0; }
+}
+
+/* · MARCO CON LUZ QUE LO RECORRE (para encuadres de foto) · */
+.marco{ position:relative; }
+.marco::before{
+  content:''; position:absolute; inset:0; z-index:2; padding:1px; pointer-events:none;
+  background:conic-gradient(from var(--giro),
+      transparent 0%, transparent 58%,
+      rgba(201,162,39,.15) 68%, var(--oro-claro) 80%, var(--oro) 86%, transparent 94%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  animation:girar 9s linear infinite;
+}
+@keyframes girar{ to{ --giro:360deg; } }
+
+/* Corchetes de encuadre, como marcas de imprenta.
+   Van como elementos hijos y NO como ::before/::after: .marco ya ocupa
+   ::before con el marco de luz y los dos se pisarían. */
+.esquinas .corte{
+  position:absolute; z-index:3; width:26px; height:26px;
+  border:1px solid var(--oro); opacity:.75; pointer-events:none;
+}
+.esquinas .corte-1{ top:12px; left:12px; border-right:0; border-bottom:0; }
+.esquinas .corte-2{ bottom:12px; right:12px; border-left:0; border-top:0; }
+
+/* · ENCUADRE CON ZOOM LENTO (Ken Burns) ·
+     👉 PARA LA FOTO REAL: pon background-image en .encuadre-foto.
+        El zoom, el marco y el degradado ya están puestos. */
+.encuadre{ position:relative; overflow:hidden; }
+.encuadre-foto{
+  position:absolute; inset:0;
+  background-color:var(--gris-900);
+  background-position:center; background-size:cover; background-repeat:no-repeat;
+  background-image:
+    radial-gradient(ellipse 70% 50% at 50% 22%,rgba(201,162,39,.16),transparent 62%),
+    linear-gradient(158deg,var(--gris-800) 0%,var(--negro) 76%);
+  transform:scale(1.08);
+  animation:respirar 22s ease-in-out infinite alternate;
+  transition:transform 1.4s var(--salida);
+}
+
+/* · TRATAMIENTO DE FOTO ·
+   Las fotos reales del gimnasio son muy coloridas (discos rosados, muros
+   azules, pasto verde) y peleaban con el negro y dorado. Se pasan a blanco
+   y negro y encima va un velo dorado en modo multiply: quedan integradas
+   sin tener que retocar ningún archivo. */
+.foto{
+  position:absolute; inset:0;
+  background-position:center; background-size:cover; background-repeat:no-repeat;
+  filter:grayscale(1) contrast(1.08) brightness(.74);
+}
+.foto::after{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(150deg,rgba(201,162,39,.34),rgba(126,46,28,.18) 55%,transparent);
+  mix-blend-mode:overlay;
+}
+/* Velo extra para que el texto encima siempre se lea */
+.foto-velo{
+  position:absolute; inset:0;
+  background:linear-gradient(180deg,rgba(8,8,8,.55),rgba(8,8,8,.25) 45%,rgba(8,8,8,.92));
+}
+.encuadre:hover .encuadre-foto{ transform:scale(1.16); }
+@keyframes respirar{ from{ transform:scale(1.08); } to{ transform:scale(1.2) translate(-1.5%,1.5%); } }
+
+/* · PUNTO QUE LATE · */
+.late{
+  width:7px; height:7px; border-radius:50%; background:var(--oro); flex:none;
+  box-shadow:0 0 0 0 rgba(201,162,39,.55); animation:latir 2.6s infinite;
+}
+@keyframes latir{
+  0%  { box-shadow:0 0 0 0 rgba(201,162,39,.55); }
+  70% { box-shadow:0 0 0 10px rgba(201,162,39,0); }
+  100%{ box-shadow:0 0 0 0 rgba(201,162,39,0); }
+}
+
+/* · CURSOR DORADO PERSONALIZADO ·
+   Dos piezas: un punto que sigue al instante y un anillo que llega tarde.
+   Solo se activa en equipos con mouse fino; en táctil ni se dibuja.
+   Se mueve con transform (GPU), nunca con top/left.                       */
+.cursor{
+  position:fixed; top:0; left:0; z-index:10000; pointer-events:none;
+  display:none; mix-blend-mode:normal;
+}
+.cursor span{
+  position:absolute; top:0; left:0; display:block; border-radius:50%;
+  transform:translate(-50%,-50%);
+}
+.cursor-anillo{
+  width:38px; height:38px; border:1px solid var(--oro);
+  opacity:.55; will-change:transform;
+}
+.cursor-punto{
+  width:6px; height:6px; background:var(--oro-claro);
+  box-shadow:0 0 10px rgba(201,162,39,.8); will-change:transform;
+}
+/* La etiqueta que aparece dentro del anillo sobre elementos marcados */
+.cursor-texto{
+  position:absolute; top:0; left:0; transform:translate(-50%,-50%);
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.1em;
+  text-transform:uppercase; color:var(--oro-claro); opacity:0; white-space:nowrap;
+}
+@media (hover:hover) and (pointer:fine){
+  html.cursor-vivo .cursor{ display:block; }
+  /* Ocultamos el cursor del sistema solo cuando el nuestro está vivo */
+  html.cursor-vivo,
+  html.cursor-vivo *{ cursor:none !important; }
+}
+
+/* · TEXTO DIVIDIDO PARA EL REVELADO (GSAP) ·
+   .pal es la máscara (clip-path, se queda quieta).
+   .pal-i es el trozo de texto que sube desde abajo.                       */
+.pal{
+  display:inline-block; vertical-align:top;
+  clip-path:inset(-32% -14% -32% -14%);
+}
+.pal-i{ display:inline-block; vertical-align:top; }
+/* El separador entre palabras es un espacio de verdad (lo pone el JS),
+   no un margin: así no se rompe la lectura por voz ni el copiar-pegar. */
+/* Palabra completa en modo letras: mantiene las letras juntas al saltar línea */
+.grupo{ display:inline-block; vertical-align:top; }
+/* Cuando el trozo original era de bloque (la itálica del titular),
+   el envoltorio también debe serlo o se pierde el salto de línea */
+.pal-bloque,.pal-bloque > .pal-i{ display:block; }
+.pal-bloque{ margin-left:0 !important; }
+
+/* Con GSAP al mando, las transiciones CSS de entrada estorban:
+   GSAP escribe estilos en línea y controla el estado inicial. */
+html.gsap [data-ent]{
+  opacity:1 !important; transform:none !important;
+  clip-path:none !important; transition:none !important;
+}
+html.gsap [data-ent="linea"]{ overflow:visible; }
+html.gsap [data-ent="linea"] > *{ transform:none !important; transition:none !important; }
+html.gsap .portada h1 .compas{ overflow:visible; }
+
+/* ---------- 04 · ENTRADA AL SCROLL --------------------------------------- */
+/* Tres gestos: la línea de texto que sube tras una máscara, el bloque que
+   aparece, y la línea fina que se estira. Solo se ocultan si hay JS. */
+html.js [data-ent]{ will-change:transform,opacity; }
+
+html.js [data-ent="linea"]{ display:block; overflow:hidden; }
+html.js [data-ent="linea"] > *{
+  display:block; transform:translateY(112%);
+  transition:transform 1.05s var(--salida) var(--retardo,0s);
+}
+html.js [data-ent="linea"].dentro > *{ transform:translateY(0); }
+
+html.js [data-ent="sube"]{
+  opacity:0; transform:translateY(30px);
+  transition:opacity .95s var(--salida) var(--retardo,0s),transform .95s var(--salida) var(--retardo,0s);
+}
+html.js [data-ent="sube"].dentro{ opacity:1; transform:none; }
+
+html.js [data-ent="cortina"]{
+  clip-path:inset(0 0 100% 0);
+  transition:clip-path 1.25s var(--salida) var(--retardo,0s);
+}
+html.js [data-ent="cortina"].dentro{ clip-path:inset(0 0 0 0); }
+
+/* ---------- 05 · HEADER, MENÚ Y RAÍL ------------------------------------- */
+.progreso{
+  position:fixed; top:0; left:0; height:1px; width:0; z-index:1002;
+  background:linear-gradient(90deg,var(--oro),var(--oro-luz));
+  box-shadow:0 0 12px rgba(201,162,39,.6);
+  transition:width .12s linear;
+}
+
+.cabecera{
+  position:fixed; inset:0 0 auto; z-index:1000; height:var(--header-h);
+  display:flex; align-items:center;
+  border-bottom:1px solid transparent;
+  transition:height .45s var(--suave),background .45s var(--suave),border-color .45s var(--suave);
+}
+.cabecera.pegada{
+  height:62px; background:rgba(8,8,8,.86);
+  backdrop-filter:blur(16px) saturate(1.2); -webkit-backdrop-filter:blur(16px) saturate(1.2);
+  border-bottom-color:var(--linea);
+}
+.cabecera .envoltura{ display:flex; align-items:center; justify-content:space-between; gap:24px; }
+
+/* Marca */
+.marca{ display:flex; align-items:center; gap:13px; }
+.marca-glifo{ width:26px; height:26px; color:var(--oro); flex:none; }
+.marca-texto{ display:flex; flex-direction:column; line-height:1; }
+.marca-nombre{
+  font-weight:800; font-size:1.02rem; letter-spacing:.03em; text-transform:uppercase; color:var(--blanco);
+}
+.marca-nombre em{ font-family:var(--serif); font-style:italic; font-weight:400; color:var(--oro-claro); letter-spacing:0; }
+.marca-lugar{
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.14em;
+  text-transform:uppercase; color:var(--tenue); margin-top:6px;
+}
+
+/* Menú de escritorio: mono, sin cajas.
+   Tracking y gap ajustados para que a 12px las 5 entradas sigan cabiendo. */
+.menu{ display:none; }
+.menu ul{ display:flex; align-items:center; gap:22px; }
+.menu a{
+  position:relative; display:flex; align-items:baseline; gap:6px; padding:4px 0;
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.08em; text-transform:uppercase;
+  color:var(--tenue); transition:color .4s var(--suave);
+}
+.menu a .n{ font-size:var(--etiqueta); color:var(--oro); opacity:.45; transition:opacity .4s; }
+.menu a::after{
+  content:''; position:absolute; left:0; bottom:-2px; height:1px; width:100%;
+  background:var(--oro); transform:scaleX(0); transform-origin:right;
+  transition:transform .45s var(--salida);
+}
+.menu a:hover,.menu a.viva{ color:var(--blanco); }
+.menu a:hover .n,.menu a.viva .n{ opacity:1; }
+.menu a:hover::after,.menu a.viva::after{ transform:scaleX(1); transform-origin:left; }
+
+.acciones{ display:flex; align-items:center; gap:16px; }
+.cabecera .boton-oro{ display:none; }
+
+/* Botón de menú: tres líneas desnudas */
+.abrir{ width:40px; height:40px; display:grid; place-items:center; gap:6px; cursor:pointer; }
+.abrir span{ display:block; width:22px; height:1px; background:var(--blanco); transition:transform .4s var(--salida),opacity .3s; }
+.abrir[aria-expanded="true"] span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+.abrir[aria-expanded="true"] span:nth-child(2){ opacity:0; }
+.abrir[aria-expanded="true"] span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+
+/* Panel móvil */
+.panel{
+  position:fixed; inset:0; z-index:999; background:var(--negro);
+  display:flex; flex-direction:column; justify-content:center;
+  padding:var(--header-h) var(--margen) 40px;
+  clip-path:inset(0 0 100% 0); transition:clip-path .7s var(--salida);
+}
+.panel.abierto{ clip-path:inset(0 0 0 0); }
+.panel .escenario{ z-index:-1; }
+.panel nav{ position:relative; }
+.panel li{ border-bottom:1px solid var(--linea); }
+.panel a{
+  display:flex; align-items:baseline; gap:16px; padding:15px 0;
+  font-size:2rem; font-weight:800; letter-spacing:-.03em; text-transform:uppercase; color:var(--blanco);
+  transition:color .4s,padding-left .4s var(--salida);
+}
+.panel a .n{ font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.16em; color:var(--oro); font-weight:400; }
+.panel a:hover{ color:var(--oro-claro); padding-left:10px; }
+.panel .boton{ margin-top:32px; justify-content:center; }
+.panel-pie{
+  position:relative; margin-top:26px; display:flex; flex-direction:column; gap:8px;
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.08em; color:var(--tenue);
+}
+body.trabado{ overflow:hidden; }
+
+/* Raíl lateral de secciones (solo pantallas grandes) */
+.rail{
+  position:fixed; right:20px; top:50%; transform:translateY(-50%); z-index:900;
+  display:none; flex-direction:column; gap:16px; align-items:flex-end;
+}
+.rail a{
+  display:flex; align-items:center; gap:9px;
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.1em; text-transform:uppercase;
+  color:var(--tenue); opacity:.5; transition:opacity .4s,color .4s;
+}
+.rail a i{ display:block; width:18px; height:1px; background:currentColor; transition:width .45s var(--salida); }
+.rail a span{ opacity:0; transform:translateX(6px); transition:all .45s var(--salida); }
+.rail a:hover,.rail a.viva{ opacity:1; color:var(--oro-claro); }
+.rail a:hover span,.rail a.viva span{ opacity:1; transform:none; }
+.rail a.viva i{ width:34px; }
+
+/* ---------- 06 · PORTADA ------------------------------------------------- */
+.portada{
+  position:relative; min-height:100svh; display:flex; align-items:flex-end;
+  padding:calc(var(--header-h) + 90px) 0 0;
+}
+.portada .envoltura{ position:relative; z-index:1; width:100%; }
+
+/* Coordenadas verticales en el borde (puro adorno técnico) */
+.coordenadas{
+  position:absolute; left:calc(var(--margen) - 4px); top:50%;
+  transform:translateY(-50%) rotate(180deg); writing-mode:vertical-rl;
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.22em; text-transform:uppercase;
+  color:var(--tenue); display:none; z-index:1;
+}
+
+.portada-encabezado{
+  display:flex; flex-wrap:wrap; align-items:center; gap:14px 24px; margin-bottom:34px;
+}
+.portada-encabezado .sello{ color:var(--oro-claro); }
+.portada-encabezado .estado-mini{
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.12em; text-transform:uppercase;
+  color:var(--tenue); display:flex; align-items:center; gap:9px;
+}
+
+/* El titular: tres compases, uno por línea */
+.portada h1{ font-weight:400; margin:0; }
+.portada h1 .compas{ display:block; overflow:hidden; }
+.portada h1 .fuerte{
+  display:block; font-weight:900; letter-spacing:-.045em; text-transform:uppercase;
+  font-size:clamp(2.9rem,12.2vw,9rem); line-height:.86; color:var(--blanco);
+}
+.portada h1 .sacra{
+  display:block; font-family:var(--serif); font-style:italic; font-weight:400;
+  font-size:clamp(3.4rem,14.5vw,11rem); line-height:.82; letter-spacing:-.02em;
+  margin-left:-.04em;
+}
+.portada h1 .remate{
+  display:block; font-family:var(--mono); font-weight:400;
+  font-size:clamp(var(--etiqueta),2.1vw,1rem); letter-spacing:.3em; text-transform:uppercase;
+  color:var(--texto); margin-top:26px;
+}
+
+.portada-bajada{
+  margin-top:30px; max-width:46ch; font-size:1.03rem; color:var(--texto);
+}
+.portada-acciones{ margin-top:36px; display:flex; flex-wrap:wrap; align-items:center; gap:14px 26px; }
+
+/* Franja de datos al pie de la portada: hilos verticales, sin cajas */
+.franja{
+  margin-top:60px; border-top:1px solid var(--linea);
+  display:grid; grid-template-columns:repeat(2,1fr);
+}
+/* Hilo vertical entre columnas. El primero de CADA fila no lleva hilo,
+   por eso se anula con :nth-child según cuántas columnas haya. */
+.franja div{ padding:20px 0 26px 20px; border-left:1px solid var(--linea); }
+.franja div:nth-child(2n+1){ border-left:0; padding-left:0; }
+.franja b{
+  display:block; font-weight:800; font-size:clamp(1.5rem,4.4vw,2.1rem);
+  letter-spacing:-.03em; line-height:1; color:var(--oro-claro);
+}
+.franja span{
+  display:block; margin-top:8px; font-family:var(--mono);
+  font-size:var(--etiqueta); letter-spacing:.1em; text-transform:uppercase; color:var(--tenue);
+}
+
+/* ---------- 07 · CINTA DE DATOS ------------------------------------------ */
+.cinta{
+  position:relative; overflow:hidden; padding:14px 0;
+  border-top:1px solid var(--linea); border-bottom:1px solid var(--linea);
+  background:var(--carbon);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);
+          mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);
+}
+.cinta-pista{ display:flex; width:max-content; animation:rodar 46s linear infinite; }
+.cinta ul{ display:flex; align-items:center; }
+.cinta li{
+  display:flex; align-items:center; gap:26px; padding-right:26px;
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.24em; text-transform:uppercase;
+  color:var(--tenue); white-space:nowrap;
+}
+.cinta li::after{ content:''; width:4px; height:4px; background:var(--oro); transform:rotate(45deg); }
+.cinta li:nth-child(3n+1){ color:var(--blanco); }
+.cinta:hover .cinta-pista{ animation-play-state:paused; }
+@keyframes rodar{ to{ transform:translateX(-50%); } }
+
+/* ---------- 08 · ÍNDICE DE SERVICIOS ------------------------------------- */
+/* Un índice de libro, no una grilla de tarjetas. */
+.doble{ display:grid; gap:34px; align-items:end; margin-bottom:52px; }
+
+.indice{ border-top:1px solid var(--linea); }
+
+.fila{ position:relative; border-bottom:1px solid var(--linea); }
+.fila > a{
+  position:relative; z-index:1; display:grid; gap:6px 22px;
+  grid-template-columns:auto 1fr auto; align-items:baseline;
+  padding:22px 16px 22px 0;
+  transition:padding-left .55s var(--salida);
+}
+.fila:hover > a{ padding-left:16px; }
+
+/* Lavado dorado que entra desde la izquierda */
+.fila::before{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(90deg,var(--lavado-oro),transparent 62%);
+  transform:scaleX(0); transform-origin:left; opacity:0;
+  transition:transform .6s var(--salida),opacity .5s;
+}
+.fila:hover::before{ transform:scaleX(1); opacity:1; }
+
+/* Hilo de luz que recorre el borde inferior */
+.fila::after{
+  content:''; position:absolute; left:0; bottom:-1px; height:1px; width:100%;
+  background:linear-gradient(90deg,transparent,var(--oro-claro),var(--oro),transparent);
+  transform:scaleX(0); transform-origin:left;
+  transition:transform .75s var(--salida);
+}
+.fila:hover::after{ transform:scaleX(1); }
+
+.fila-num{
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.12em; color:var(--tenue);
+  transition:color .4s; grid-row:1;
+}
+.fila:hover .fila-num{ color:var(--oro); }
+
+.fila-nombre{
+  grid-row:1;
+  /* flex-start para que el ícono se alinee con la PRIMERA línea
+     cuando el nombre parte en dos, no con el centro del bloque */
+  display:flex; align-items:flex-start; gap:13px;
+  font-weight:700; font-size:clamp(1.15rem,3.4vw,1.6rem);
+  letter-spacing:-.025em; text-transform:uppercase; color:var(--blanco);
+  transition:color .4s;
+}
+.fila-nombre .ic{
+  width:19px; height:19px; flex:none; margin-top:.22em; color:var(--tenue);
+  transition:color .45s,transform .55s var(--salida);
+}
+.fila:hover .fila-nombre{ color:var(--oro-claro); }
+.fila:hover .fila-nombre .ic{ color:var(--oro); transform:translateY(-2px); }
+
+.fila-desc{
+  grid-column:1/-1; grid-row:2;
+  font-size:.92rem; color:var(--tenue); max-width:62ch;
+  transition:color .45s;
+}
+.fila:hover .fila-desc{ color:var(--texto); }
+
+.fila-mas{
+  grid-row:1; font-family:var(--mono); font-size:.8rem; color:var(--tenue);
+  transition:transform .5s var(--salida),color .4s;
+}
+.fila:hover .fila-mas{ color:var(--oro); transform:translateX(6px) rotate(-45deg); }
+
+.indice-pie{
+  margin-top:44px; display:flex; flex-wrap:wrap; align-items:center;
+  justify-content:space-between; gap:20px;
+}
+.indice-pie p{ font-family:var(--mono); font-size:var(--etiqueta-md); letter-spacing:.06em; color:var(--tenue); max-width:44ch; }
+
+/* ---------- 09 · FILOSOFÍA ----------------------------------------------- */
+.filosofia{ position:relative; }
+.filo-cita{
+  font-family:var(--serif); font-style:italic; font-weight:400;
+  font-size:clamp(2rem,6.2vw,4.4rem); line-height:1.02; letter-spacing:-.02em;
+  color:var(--blanco); max-width:20ch; margin-bottom:56px;
+}
+.filo-cita span{ color:var(--oro-claro); }
+
+.filo-cuerpo{ display:grid; gap:44px; align-items:start; }
+
+/* Encuadre vertical con zoom */
+.filo-encuadre{ aspect-ratio:3/4; }
+.filo-encuadre .glifo{
+  position:absolute; inset:0; z-index:1; display:grid; place-items:center;
+  font-family:var(--serif); font-style:italic; font-size:clamp(6rem,20vw,11rem); line-height:1;
+  color:transparent;
+  background:linear-gradient(180deg,rgba(235,212,138,.5),rgba(201,162,39,.06));
+  -webkit-background-clip:text; background-clip:text;
+}
+.filo-encuadre .pie{
+  position:absolute; z-index:3; left:0; right:0; bottom:0;
+  padding:16px 18px; display:flex; justify-content:space-between; gap:12px;
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.12em; text-transform:uppercase; color:var(--tenue);
+  background:linear-gradient(0deg,rgba(8,8,8,.92),transparent);
+}
+
+.filo-texto{ position:relative; padding-left:24px; }
+.filo-texto::before{
+  content:''; position:absolute; left:0; top:4px; bottom:4px; width:1px;
+  background:linear-gradient(180deg,var(--oro),transparent 88%);
+}
+.filo-texto p + p{ margin-top:16px; }
+.filo-texto p{ font-size:1rem; }
+.filo-texto strong{ color:var(--blanco); font-weight:600; }
+
+/* Valores: columnas separadas por hilos, sin recuadros */
+.valores{
+  margin-top:70px; border-top:1px solid var(--linea);
+  display:grid; grid-template-columns:1fr;
+}
+.valor{ position:relative; padding:26px 0; border-bottom:1px solid var(--linea); transition:background .5s; }
+.valor::before{
+  content:''; position:absolute; left:0; right:0; top:0; height:1px;
+  background:var(--oro); transform:scaleX(0); transform-origin:left;
+  transition:transform .6s var(--salida);
+}
+.valor:hover::before{ transform:scaleX(1); }
+.valor:hover{ background:linear-gradient(180deg,var(--lavado-oro),transparent); }
+.valor .n{ font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.14em; color:var(--oro); }
+.valor h4{
+  margin:12px 0 7px; font-weight:800; font-size:.92rem;
+  letter-spacing:.02em; text-transform:uppercase; color:var(--blanco);
+}
+.valor p{ font-size:.86rem; color:var(--tenue); max-width:30ch; }
+
+/* ---------- 10 · CIFRAS Y ARGUMENTOS ------------------------------------- */
+.argumentos{ display:grid; grid-template-columns:1fr; border-top:1px solid var(--linea); }
+.argumento{
+  position:relative; padding:34px 0; border-bottom:1px solid var(--linea); overflow:hidden;
+}
+/* Número gigante de fondo, en itálica serif */
+.argumento .fantasma{
+  position:absolute; right:4px; top:-10px; z-index:0;
+  font-family:var(--serif); font-style:italic; font-size:6.5rem; line-height:1;
+  color:rgba(255,255,255,.035); transition:color .6s;
+}
+.argumento:hover .fantasma{ color:rgba(201,162,39,.14); }
+.argumento > * { position:relative; z-index:1; }
+.argumento .ic{ width:24px; height:24px; color:var(--oro); margin-bottom:18px; }
+.argumento h3{
+  font-weight:800; font-size:1.08rem; letter-spacing:-.01em; text-transform:uppercase;
+  color:var(--blanco); margin-bottom:9px;
+}
+.argumento p{ font-size:.9rem; color:var(--tenue); max-width:34ch; }
+
+.cifras{
+  margin-top:56px; display:grid; grid-template-columns:repeat(2,1fr);
+  border-top:1px solid var(--linea); border-bottom:1px solid var(--linea);
+}
+.cifra{ padding:30px 16px 30px 20px; border-left:1px solid var(--linea); }
+.cifra:nth-child(2n+1){ border-left:0; padding-left:0; }
+.cifra b{
+  display:block; font-weight:900; font-size:clamp(2.4rem,7.6vw,3.9rem);
+  line-height:.9; letter-spacing:-.05em; color:var(--oro-claro);
+}
+.cifra span{
+  display:block; margin-top:12px; font-family:var(--mono);
+  font-size:var(--etiqueta); letter-spacing:.1em; text-transform:uppercase; color:var(--tenue);
+}
+
+/* ---------- 11 · HOJA DE HORARIOS ---------------------------------------- */
+.hoja{ display:grid; gap:48px; align-items:start; }
+
+.lectura{
+  display:flex; align-items:center; gap:12px; padding:14px 0;
+  border-top:1px solid var(--linea-oro); border-bottom:1px solid var(--linea);
+  font-family:var(--mono); font-size:var(--etiqueta-md); letter-spacing:.12em; text-transform:uppercase;
+  color:var(--tenue); margin-bottom:8px;
+}
+.lectura.abierto{ color:var(--oro-claro); }
+.lectura.cerrado{ color:#C08A78; }
+.lectura.cerrado .late{ background:#C08A78; animation:none; box-shadow:none; }
+
+.dias li{
+  display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:16px;
+  padding:17px 0; border-bottom:1px solid var(--linea); position:relative;
+  transition:padding-left .5s var(--salida);
+}
+.dias li:hover{ padding-left:10px; }
+.dias .cod{ font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.12em; color:var(--tenue); }
+.dias .guia{ height:1px; background:repeating-linear-gradient(90deg,var(--linea) 0 3px,transparent 3px 8px); }
+.dias .rango{ font-weight:700; font-size:1.02rem; letter-spacing:-.01em; color:var(--blanco); }
+.dias li.libre .rango{ color:var(--tenue); font-weight:400; font-family:var(--mono); font-size:var(--etiqueta-md); letter-spacing:.1em; text-transform:uppercase; }
+.dias li.hoy::before{
+  content:''; position:absolute; left:-14px; top:50%; transform:translateY(-50%);
+  width:4px; height:20px; background:var(--oro);
+}
+.dias li.hoy .cod{ color:var(--oro); }
+.dias li.hoy .rango{ color:var(--oro-claro); }
+.nota{ margin-top:22px; font-family:var(--mono); font-size:var(--etiqueta); line-height:1.85; letter-spacing:.03em; color:var(--tenue); }
+
+/* Datos de contacto en formato ficha */
+.ficha{ display:grid; gap:0; border-top:1px solid var(--linea); }
+.ficha > div{ padding:20px 0; border-bottom:1px solid var(--linea); display:grid; gap:8px; grid-template-columns:1fr; }
+.ficha dt{ font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.14em; text-transform:uppercase; color:var(--tenue); }
+.ficha dd{ font-size:1rem; color:var(--blanco); }
+.ficha dd a{ transition:color .35s; }
+.ficha dd a:hover{ color:var(--oro-claro); }
+.ficha dd small{ display:block; margin-top:5px; font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.04em; color:var(--tenue); }
+
+/* ---------- MAPA (Google Maps, estilo Dark/Gold) -------------------------
+   El contenedor está listo. Mientras no haya clave de API se muestra el
+   estado vacío .mapa-espera, que ya trae el pin y el enlace real a Maps.
+   Instrucciones completas en el LEEME y junto a ESTILO_MAPA en el JS.     */
+.mapa{
+  position:relative; margin-top:26px; aspect-ratio:16/11; overflow:hidden;
+  border:1px solid var(--linea); background:var(--carbon);
+}
+/* Aquí monta Google Maps */
+.mapa-lienzo{ position:absolute; inset:0; }
+.mapa-lienzo:empty{ display:none; }
+
+/* Estado vacío: retícula dorada + pin con ondas de radar */
+.mapa-espera{
+  position:absolute; inset:0; display:grid; place-items:center; text-align:center; padding:20px;
+  background:
+    linear-gradient(rgba(201,162,39,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(201,162,39,.07) 1px,transparent 1px),
+    radial-gradient(circle at 50% 46%,rgba(201,162,39,.12),transparent 62%),
+    var(--carbon);
+  background-size:34px 34px,34px 34px,100% 100%,100% 100%;
+}
+.mapa.cargado .mapa-espera{ display:none; }
+
+.mapa-pin{ position:relative; width:11px; height:11px; margin:0 auto 22px; }
+.mapa-pin b{
+  position:absolute; inset:0; border-radius:50%; background:var(--oro);
+  box-shadow:0 0 16px rgba(201,162,39,.9);
+}
+.mapa-pin i{
+  position:absolute; inset:0; border-radius:50%; border:1px solid var(--oro);
+  animation:expandir 3.6s ease-out infinite;
+}
+.mapa-pin i:nth-child(3){ animation-delay:1.2s; }
+.mapa-pin i:nth-child(4){ animation-delay:2.4s; }
+@keyframes expandir{
+  from{ transform:scale(1); opacity:.85; }
+  to  { transform:scale(15); opacity:0; }
+}
+.mapa-espera p{
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.12em;
+  text-transform:uppercase; color:var(--texto); margin-bottom:16px;
+}
+.mapa-espera .enlace-luz{ font-size:var(--etiqueta); }
+
+/* Google pinta controles claros por defecto: los oscurecemos */
+.mapa-lienzo .gm-style-cc,
+.mapa-lienzo .gmnoprint a,
+.mapa-lienzo .gm-style-iw{ filter:invert(1) hue-rotate(180deg) saturate(.5); }
+.mapa-lienzo .gm-style-iw-d{ overflow:hidden !important; }
+
+/* ---------- 12 · LLAMADO FINAL ------------------------------------------- */
+.llamado{ position:relative; padding:120px 0; overflow:hidden; text-align:center; }
+.llamado .envoltura{ position:relative; z-index:1; }
+.llamado h2{
+  font-weight:900; font-size:clamp(2.6rem,10.5vw,7rem); line-height:.88;
+  letter-spacing:-.05em; text-transform:uppercase; color:var(--blanco);
+}
+.llamado h2 .sagrada{ font-size:1.06em; }
+.llamado p{ margin:26px auto 0; max-width:48ch; font-size:1.04rem; }
+.llamado-acciones{ margin-top:40px; display:flex; flex-wrap:wrap; gap:16px 26px; justify-content:center; align-items:center; }
+.llamado-datos{
+  margin-top:44px; display:flex; flex-wrap:wrap; gap:12px 30px; justify-content:center;
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.1em; text-transform:uppercase; color:var(--tenue);
+}
+.llamado-datos a{ display:inline-flex; align-items:center; gap:9px; transition:color .35s; }
+.llamado-datos a:hover{ color:var(--oro-claro); }
+.llamado-datos svg{ width:14px; height:14px; color:var(--oro); }
+
+/* ---------- 13 · CONTACTO ------------------------------------------------ */
+.contacto-cuerpo{ display:grid; gap:52px; align-items:start; }
+
+/* Campos con línea, no con caja */
+.campo{ position:relative; margin-bottom:30px; }
+.campo label{
+  display:block; margin-bottom:10px;
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.14em; text-transform:uppercase; color:var(--tenue);
+}
+.campo input,.campo select,.campo textarea{
+  width:100%; padding:10px 0; font-size:1rem; color:var(--blanco);
+  border-bottom:1px solid var(--linea); transition:border-color .4s;
+}
+.campo textarea{ resize:vertical; min-height:76px; }
+.campo input::placeholder,.campo textarea::placeholder{ color:var(--tenue); }
+.campo input:focus,.campo select:focus,.campo textarea:focus{ outline:none; border-bottom-color:var(--oro); }
+/* Luz que se dibuja bajo el campo activo */
+.campo .subrayado{
+  position:absolute; left:0; bottom:0; height:1px; width:100%;
+  background:linear-gradient(90deg,var(--oro),var(--oro-claro));
+  transform:scaleX(0); transform-origin:left; transition:transform .5s var(--salida);
+}
+.campo input:focus ~ .subrayado,.campo select:focus ~ .subrayado,.campo textarea:focus ~ .subrayado{ transform:scaleX(1); }
+.campo select{
+  appearance:none; cursor:pointer; padding-right:26px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C9A227' stroke-width='1.6'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right center; background-size:15px;
+}
+.campo select option{ background:var(--carbon); color:var(--blanco); }
+.form-nota{ margin-top:16px; font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.04em; color:var(--tenue); }
+
+/* ---------- 14 · PIE ----------------------------------------------------- */
+.pie{ position:relative; border-top:1px solid var(--linea); padding-top:70px; overflow:hidden; }
+.pie .envoltura{ position:relative; z-index:1; }
+.pie-red{ display:grid; gap:38px; padding-bottom:56px; }
+.pie-marca p{ margin-top:20px; font-size:.92rem; color:var(--tenue); max-width:34ch; }
+
+.redes{ display:flex; gap:22px; margin-top:26px; }
+.redes a{
+  position:relative; font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.1em;
+  text-transform:uppercase; color:var(--tenue); padding-bottom:4px; transition:color .35s;
+}
+.redes a::after{
+  content:''; position:absolute; left:0; bottom:0; height:1px; width:100%;
+  background:var(--oro); transform:scaleX(0); transform-origin:right; transition:transform .45s var(--salida);
+}
+.redes a:hover{ color:var(--oro-claro); }
+.redes a:hover::after{ transform:scaleX(1); transform-origin:left; }
+
+.pie h4{
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.16em; text-transform:uppercase;
+  color:var(--oro); margin-bottom:20px;
+}
+.pie-lista li{ margin-bottom:12px; font-size:.9rem; }
+.pie-lista a{ color:var(--texto); transition:color .35s,padding-left .4s var(--salida); }
+.pie-lista a:hover{ color:var(--oro-claro); padding-left:6px; }
+
+/* Logotipo enorme al pie, recortado por el borde */
+.pie-firma{
+  border-top:1px solid var(--linea); padding-top:34px; overflow:hidden;
+}
+.pie-firma .letras{
+  display:block; font-weight:900; font-size:clamp(3rem,15.5vw,13rem); line-height:.8;
+  letter-spacing:-.055em; text-transform:uppercase; white-space:nowrap;
+  color:transparent; -webkit-text-stroke:1px rgba(255,255,255,.10);
+}
+.pie-firma .letras em{
+  font-family:var(--serif); font-style:italic; font-weight:400; letter-spacing:-.01em;
+  -webkit-text-stroke:1px rgba(201,162,39,.34);
+}
+.pie-abajo{
+  margin-top:30px; padding:20px 0 26px; border-top:1px solid var(--linea);
+  display:flex; flex-direction:column; gap:10px;
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.08em; text-transform:uppercase; color:var(--tenue);
+}
+
+/* WhatsApp flotante: sin píldora, un cuadro con corchetes */
+.flotante{
+  position:fixed; right:16px; bottom:16px; z-index:900;
+  display:flex; align-items:center; gap:10px; padding:14px 16px;
+  background:var(--oro); color:#0B0900;
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.1em; text-transform:uppercase;
+  box-shadow:0 16px 40px rgba(0,0,0,.6);
+  transition:transform .45s var(--salida),background .35s;
+}
+.flotante:hover{ transform:translateY(-4px); background:var(--oro-claro); }
+.flotante svg{ width:18px; height:18px; }
+.flotante .txt{ display:none; }
+
+/* ---------- 15 · RENDIMIENTO EN MÓVIL ------------------------------------
+   Objetivo: 60 FPS en un teléfono de gama media. Lo que más cuesta en un
+   móvil no son las animaciones de transform sino:
+     · mix-blend-mode a pantalla completa (obliga a recomponer todo)
+     · filter:blur muy grande sobre elementos enormes
+     · animar background-position (repinta el elemento cada fotograma)
+   Así que en pantallas chicas apagamos exactamente eso, y dejamos vivo
+   todo lo que sí corre en la GPU (transform y opacity).                    */
+@media (max-width:899px){
+  /* El grano fijo con mezcla es el peor enemigo del scroll en móvil */
+  body::after{ display:none; }
+  /* Blur más barato y aurora un poco más contenida */
+  .aurora{ filter:blur(56px); opacity:.5; }
+  /* Estas dos animan background-position: se quedan quietas, no se van */
+  .suelo{ animation:none; opacity:.4; }
+  .humo{ animation:none; mix-blend-mode:normal; opacity:.035; }
+  /* El marco giratorio repinta un conic-gradient sin parar */
+  .marco::before{ animation:none; }
+  /* El brillo del texto usa background-clip:text, caro en móvil */
+  .brillo{ animation:none; }
+  /* El velo dorado sobre las fotos también mezcla a pantalla completa */
+  .foto::after{ mix-blend-mode:normal; opacity:.5; }
+}
+
+/* Sin hover (táctil): los efectos de hover no aportan y sí cuestan */
+@media (hover:none){
+  .fila::before,.fila::after{ display:none; }
+  .encuadre:hover .encuadre-foto{ transform:scale(1.08); }
+}
+
+/* ---------- 16 · MOVIMIENTO REDUCIDO ------------------------------------- */
+@media (prefers-reduced-motion:reduce){
+  html{ scroll-behavior:auto; }
+  *,*::before,*::after{
+    animation-duration:.001ms !important; animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+  }
+  html.js [data-ent]{ opacity:1 !important; transform:none !important; clip-path:none !important; }
+  html.js [data-ent="linea"] > *{ transform:none !important; }
+  /* Con GSAP: el texto dividido debe quedar visible sí o sí */
+  .pal{ clip-path:none !important; }
+  .pal-i{ transform:none !important; }
+  .encuadre-foto{ transform:none; }
+  .cursor{ display:none !important; }
+  html.cursor-vivo,html.cursor-vivo *{ cursor:auto !important; }
+}
+
+/* ---------- 15 · RESPONSIVE (mobile-first) ------------------------------- */
+@media (min-width:600px){
+  /* 4 columnas: el hilo vuelve a los impares, salvo el primero de la fila */
+  .franja{ grid-template-columns:repeat(4,1fr); }
+  .franja div:nth-child(2n+1){ border-left:1px solid var(--linea); padding-left:20px; }
+  .franja div:nth-child(4n+1){ border-left:0; padding-left:0; }
+  .cifras{ grid-template-columns:repeat(4,1fr); }
+  .cifra:nth-child(2n+1){ border-left:1px solid var(--linea); padding-left:20px; }
+  .cifra:nth-child(4n+1){ border-left:0; padding-left:0; }
+  /* 2 columnas: solo el primero de cada fila (impares) va sin hilo */
+  .valores{ grid-template-columns:repeat(2,1fr); }
+  .valor{ border-left:1px solid var(--linea); padding:26px 0 26px 22px; }
+  .valor:nth-child(2n+1){ border-left:0; padding-left:0; }
+  .argumentos{ grid-template-columns:repeat(2,1fr); }
+  .argumento{ border-left:1px solid var(--linea); padding:34px 26px 34px 26px; }
+  .argumento:nth-child(2n+1){ border-left:0; padding-left:0; }
+  .flotante .txt{ display:inline; }
+  .pie-abajo{ flex-direction:row; justify-content:space-between; }
+  .ficha > div{ grid-template-columns:120px 1fr; gap:20px; align-items:baseline; }
+}
+
+@media (min-width:900px){
+  :root{ --margen:44px; }
+  .bloque{ padding:130px 0; }
+  .coordenadas{ display:block; }
+  .portada{ align-items:center; padding-top:calc(var(--header-h) + 40px); }
+  .doble{ grid-template-columns:1.05fr .95fr; gap:60px; }
+  /* Columna del nombre más ancha: los títulos largos caben en una línea */
+  .fila > a{ grid-template-columns:64px minmax(300px,1.12fr) 1fr 40px; gap:26px; padding:26px 0; }
+  .fila-desc{ grid-column:3; grid-row:1; }
+  .fila-mas{ grid-column:4; text-align:right; }
+  .filo-cuerpo{ grid-template-columns:.8fr 1fr; gap:64px; }
+  /* 5 columnas: vuelve el hilo a los impares, salvo el primero de la fila */
+  .valores{ grid-template-columns:repeat(5,1fr); }
+  .valor,.valor:nth-child(2n+1){ border-left:1px solid var(--linea); padding:30px 18px 34px 20px; }
+  .valor:nth-child(5n+1){ border-left:0; padding-left:0; }
+  .argumentos{ grid-template-columns:repeat(4,1fr); }
+  .argumento,.argumento:nth-child(2n+1){ border-left:1px solid var(--linea); padding:34px 26px 34px 26px; }
+  .argumento:nth-child(4n+1){ border-left:0; padding-left:0; }
+  .hoja{ grid-template-columns:1fr 1fr; gap:70px; }
+  .contacto-cuerpo{ grid-template-columns:1.05fr .95fr; gap:70px; }
+  .campo-par{ display:grid; grid-template-columns:1fr 1fr; gap:26px; }
+  .pie-red{ grid-template-columns:1.5fr 1fr 1fr 1.1fr; gap:40px; }
+}
+
+/* El menú de escritorio aparece recién acá: con las etiquetas a 12px
+   (mínimo accesible) las cinco entradas + logo + CTA necesitan este ancho.
+   Por debajo manda la hamburguesa, que a esos anchos se lee mejor igual. */
+@media (min-width:1140px){
+  .menu{ display:block; }
+  .abrir{ display:none; }
+  .cabecera .boton-oro{ display:inline-flex; }
+}
+
+@media (min-width:1240px){
+  .rail{ display:flex; }
+  .bloque{ padding:150px 0; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="progreso" id="progreso" aria-hidden="true"></div>
+
+<!-- Cursor dorado. Se activa por JS solo si hay mouse fino. -->
+<div class="cursor" id="cursor" aria-hidden="true">
+  <span class="cursor-anillo"></span>
+  <span class="cursor-punto"></span>
+</div>
+
+<!-- ============================================================
+     CABECERA
+     ============================================================ -->
+<header class="cabecera" id="cabecera">
+  <div class="envoltura">
+
+    <a href="#inicio" class="marca" aria-label="The Temple Fitness Club, ir al inicio">
+      <svg class="marca-glifo" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+        <path d="M16 3 29 13v16H3V13z"/><path d="M16 29V17"/><path d="M8 29V18M24 29V18"/>
+      </svg>
+      <span class="marca-texto">
+        <span class="marca-nombre">The <em>Temple</em></span>
+        <span class="marca-lugar">Fitness Club — Loncoche</span>
+      </span>
+    </a>
+
+    <nav class="menu" id="menu" aria-label="Navegación principal">
+      <ul>
+        <li><a href="#inicio" class="viva"><span class="n">01</span> Inicio</a></li>
+        <li><a href="#servicios"><span class="n">02</span> Servicios</a></li>
+        <li><a href="#nosotros"><span class="n">03</span> Nosotros</a></li>
+        <li><a href="#horarios"><span class="n">04</span> Horarios</a></li>
+        <li><a href="#contacto"><span class="n">05</span> Contacto</a></li>
+      </ul>
+    </nav>
+
+    <div class="acciones">
+      <a href="#contacto" class="boton boton-oro">Únete ahora <span class="flecha">→</span></a>
+      <button class="abrir" id="abrir" aria-expanded="false" aria-controls="panel" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+<!-- Panel móvil -->
+<div class="panel" id="panel">
+  <div class="escenario" aria-hidden="true"><div class="aurora"><i></i><i></i><i></i></div><div class="reticula"></div></div>
+  <nav aria-label="Navegación móvil">
+    <ul>
+      <li><a href="#inicio"><span class="n">01</span> Inicio</a></li>
+      <li><a href="#servicios"><span class="n">02</span> Servicios</a></li>
+      <li><a href="#nosotros"><span class="n">03</span> Nosotros</a></li>
+      <li><a href="#horarios"><span class="n">04</span> Horarios</a></li>
+      <li><a href="#contacto"><span class="n">05</span> Contacto</a></li>
+    </ul>
+  </nav>
+  <a href="#contacto" class="boton boton-oro">Agenda tu clase <span class="flecha">→</span></a>
+  <div class="panel-pie">
+    <span>Pedro Montt 541 · Aníbal Pinto 381, Loncoche</span>
+    <a href="tel:+56965706172">+56 9 6570 6172</a>
+  </div>
+</div>
+
+<!-- Raíl lateral de secciones -->
+<nav class="rail" id="rail" aria-label="Índice de secciones">
+  <a href="#inicio" class="viva"><span>Inicio</span><i></i></a>
+  <a href="#servicios"><span>Servicios</span><i></i></a>
+  <a href="#nosotros"><span>Nosotros</span><i></i></a>
+  <a href="#porque"><span>Por qué</span><i></i></a>
+  <a href="#horarios"><span>Horarios</span><i></i></a>
+  <a href="#contacto"><span>Contacto</span><i></i></a>
+</nav>
+
+<main>
+
+<!-- ============================================================
+     PORTADA
+     Capas: aurora + retícula + suelo en perspectiva + constelación
+            + humo + viñeta. Todo lentísimo a propósito.
+     ============================================================ -->
+<section class="portada" id="inicio">
+
+  <div class="escenario" aria-hidden="true">
+    <!-- Foto real del gimnasio, en blanco y negro con velo dorado.
+         Va debajo de todas las capas para que el titular siga legible. -->
+    <div class="foto" style="background-image:url('imagenes/portada.webp')"></div>
+    <div class="foto-velo"></div>
+    <div class="aurora"><i></i><i></i><i></i></div>
+    <div class="reticula"></div>
+    <div class="suelo"></div>
+    <canvas class="constelacion" id="constelacion"></canvas>
+    <div class="humo"></div>
+    <div class="vineta"></div>
+  </div>
+
+  <span class="coordenadas" aria-hidden="true">39°22′S · 72°38′O — Araucanía</span>
+
+  <div class="envoltura">
+
+    <div class="portada-encabezado" data-ent="sube">
+      <span class="sello">Loncoche · La Araucanía</span>
+      <span class="estado-mini"><span class="late" id="late-portada"></span><span id="estado-portada">Consultando horario</span></span>
+    </div>
+
+    <h1>
+      <span class="compas" data-ent="linea"><span class="fuerte">Tu cuerpo</span></span>
+      <span class="compas" data-ent="linea" style="--retardo:.09s"><span class="fuerte">es un <em class="sacra brillo">templo</em></span></span>
+      <span class="compas" data-ent="linea" style="--retardo:.2s"><span class="remate">Entrena con propósito</span></span>
+    </h1>
+
+    <p class="portada-bajada" data-ent="sube" style="--retardo:.34s">
+      No venimos a hacer bulto. Venimos a construir fuerza, disciplina y bienestar real.
+      Cuerpo, mente y espíritu, bajo el mismo techo.
+    </p>
+
+    <div class="portada-acciones" data-ent="sube" style="--retardo:.44s">
+      <a href="#contacto" class="boton boton-oro">Agenda tu clase <span class="flecha">→</span></a>
+      <a href="#servicios" class="enlace-luz">Ver disciplinas <span class="flecha">↓</span></a>
+    </div>
+
+    <div class="franja" data-ent="sube" style="--retardo:.56s">
+      <div><b>12</b><span>Disciplinas</span></div>
+      <div><b>14h</b><span>Abierto al día</span></div>
+      <div><b>6</b><span>Días por semana</span></div>
+      <div><b>01</b><span>Objetivo: el tuyo</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     CINTA
+     ============================================================ -->
+<div class="cinta" aria-hidden="true">
+  <div class="cinta-pista">
+    <ul>
+      <li>Disciplina</li><li>Fuerza</li><li>Comunidad</li><li>Propósito</li>
+      <li>Constancia</li><li>Bienestar</li><li>Resultados</li><li>Respeto</li>
+    </ul>
+    <ul>
+      <li>Disciplina</li><li>Fuerza</li><li>Comunidad</li><li>Propósito</li>
+      <li>Constancia</li><li>Bienestar</li><li>Resultados</li><li>Respeto</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============================================================
+     ÍNDICE DE SERVICIOS
+     Sin tarjetas: filas de índice con luz que las recorre.
+     ============================================================ -->
+<section class="bloque" id="servicios">
+  <div class="envoltura">
+
+    <div class="doble">
+      <div>
+        <span class="sello" data-ent="sube">Índice de disciplinas — 12</span>
+        <h2 class="titular" style="margin-top:20px">
+          <span data-ent="linea"><span>Todo lo que</span></span>
+          <span data-ent="linea" style="--retardo:.08s"><span>necesitas <em class="sagrada">bajo</em></span></span>
+          <span data-ent="linea" style="--retardo:.16s"><span>un mismo techo</span></span>
+        </h2>
+      </div>
+      <p class="entrada-texto" data-ent="sube" style="--retardo:.2s">
+        Da igual si partes de cero o llevas años entrenando. Acá encuentras la disciplina
+        que te mueve y el profesional que te guía. Pasa el cursor por cada línea.
+      </p>
+    </div>
+
+    <ol class="indice">
+
+      <li class="fila" data-ent="sube">
+        <a href="#contacto">
+          <span class="fila-num">01</span>
+          <span class="fila-nombre">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="6.5" r="3"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M18.6 3.6l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z"/></svg>
+            Entrenamiento personalizado
+          </span>
+          <span class="fila-desc">Evaluación inicial, objetivos claros y un entrenador que te acompaña sesión a sesión.</span>
+          <span class="fila-mas" aria-hidden="true">→</span>
+        </a>
+      </li>
+
+      <li class="fila" data-ent="sube" style="--retardo:.04s">
+        <a href="#contacto">
+          <span class="fila-num">02</span>
+          <span class="fila-nombre">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="2.6"/><path d="M3 19a5 5 0 0 1 10 0"/><path d="M16 5.6a2.6 2.6 0 0 1 0 5.2"/><path d="M15.4 14.6A5 5 0 0 1 21 19"/></svg>
+            Clases grupales
+          </span>
+          <span class="fila-desc">La energía del grupo empuja. Entrena rodeado de gente que va por lo mismo que tú.</span>
+          <span class="fila-mas" aria-hidden="true">→</span>
+        </a>
+      </li>
+
+      <li class="fila" data-ent="sube" style="--retardo:.08s">
+        <a href="#contacto">
+          <span class="fila-num">03</span>
+          <span class="fila-nombre">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 8.6a3 3 0 1 1 6 0"/><path d="M9.3 8.4C6.7 9.8 5 12.4 5 15.4c0 1.5.4 2.6.9 3.3.3.4.8.6 1.3.6h9.6c.5 0 1-.2 1.3-.6.5-.7.9-1.8.9-3.3 0-3-1.7-5.6-4.3-7"/></svg>
+            Entrenamiento funcional
+          </span>
+          <span class="fila-desc">Movimientos reales para la vida real. Fuerza, movilidad y coordinación desde el primer día.</span>
+          <span class="fila-mas" aria-hidden="true">→</span>
+        </a>
+      </li>
+
+      <li class="fila" data-ent="sube" style="--retardo:.12s">
+        <a href="#contacto">
+          <span class="fila-num">04</span>
+          <span class="fila-nombre">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6M7 6.5v11M17 6.5v11M20 9v6M7 12h10"/></svg>
+            Fuerza y resistencia
+          </span>
+          <span class="fila-desc">Barras, discos y técnica bien enseñada. Músculo, potencia y una base que no se cae.</span>
+          <span class="fila-mas" aria-hidden="true">→</span>
+        </a>
+      </li>
+
+      <li class="fila" data-ent="sube" style="--retardo:.16s">
+        <a href="#contacto">
+          <span class="fila-num">05</span>
+          <span class="fila-nombre">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5S4 16 4 10.5A4.5 4.5 0 0 1 12 7.8 4.5 4.5 0 0 1 20 10.5c0 5.5-8 10-8 10z"/><path d="M12.9 9.6 10.3 13h3l-1.8 3"/></svg>
+            Cardio HIIT
+          </span>
+          <span class="fila-desc">Alta intensidad en poco tiempo. Quemas grasa, subes condición y sales con el corazón fuerte.</span>
+          <span class="fila-mas" aria-hidden="true">→</span>
+        </a>
+      </li>
+
+      <li class="fila" data-ent="sube" style="--retardo:.2s">
+        <a href="#contacto">
+          <span class="fila-num">06</span>
+          <span class="fila-nombre">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="4.8" r="2"/><path d="M12 8.8v3.6"/><path d="M12 12.4c-2.5 0-4.5 1.6-5.2 3.9-.2.6.3 1.2.9 1.2h8.6c.6 0 1.1-.6.9-1.2-.7-2.3-2.7-3.9-5.2-3.9z"/><path d="M8.4 11.2 5.2 13.4M15.6 11.2l3.2 2.2"/></svg>
+            Yoga y Pilates
+          </span>
+          <span class="fila-desc">Respira, estira y fortalece tu centro. El equilibrio también es entrenamiento.</span>
+          <span class="fila-mas" aria-hidden="true">→</span>
+        </a>
+      </li>
+
+      <li class="fila" data-ent="sube" style="--retardo:.24s">
+        <a href="#contacto">
+          <span class="fila-num">07</span>
+          <span class="fila-nombre">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17.4V6.4l9-2v11"/><circle cx="7" cy="17.4" r="2"/><circle cx="16" cy="15.4" r="2"/></svg>
+            Zumba
+          </span>
+          <span class="fila-desc">Baila, suda y ríete un rato. La forma más entretenida de quemar calorías.</span>
+          <span class="fila-mas" aria-hidden="true">→</span>
+        </a>
+      </li>
+
+      <li class="fila" data-ent="sube" style="--retardo:.28s">
+        <a href="#contacto">
+          <span class="fila-num">08</span>
+          <span class="fila-nombre">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 3.6V8h-4.4"/><circle cx="12" cy="12" r="2.2"/></svg>
+            Circuitos de entrenamiento
+          </span>
+          <span class="fila-desc">Estaciones, ritmo y cero aburrimiento. Cuerpo completo en cada vuelta.</span>
+          <span class="fila-mas" aria-hidden="true">→</span>
+        </a>
+      </li>
+
+      <li class="fila" data-ent="sube" style="--retardo:.32s">
+        <a href="#contacto">
+          <span class="fila-num">09</span>
+          <span class="fila-nombre">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8.2c-3 0-5.2 2.3-5.2 5.6S9.4 20.4 12 20.4s5.2-3.3 5.2-6.6S15 8.2 12 8.2z"/><path d="M12 8.2c0-2.1 1.5-3.7 3.6-4-.1 2.3-1.6 4-3.6 4z"/></svg>
+            Nutrición y dietética
+          </span>
+          <span class="fila-desc">Un plan de alimentación real, adaptado a tu rutina, tu presupuesto y tu meta.</span>
+          <span class="fila-mas" aria-hidden="true">→</span>
+        </a>
+      </li>
+
+      <li class="fila" data-ent="sube" style="--retardo:.36s">
+        <a href="#contacto">
+          <span class="fila-num">10</span>
+          <span class="fila-nombre">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.6 13V6.3a1.4 1.4 0 0 1 2.8 0V12"/><path d="M11.4 11.5V5.4a1.4 1.4 0 0 1 2.8 0V12"/><path d="M14.2 12V7.7a1.4 1.4 0 0 1 2.8 0v7c0 3-2.2 5.3-5.2 5.3-2.4 0-3.7-1-4.8-2.6l-2.1-3.2a1.4 1.4 0 0 1 2.1-1.8l1.6 1.6"/></svg>
+            Masajes deportivos
+          </span>
+          <span class="fila-desc">Descarga muscular y recuperación. El descanso también construye resultados.</span>
+          <span class="fila-mas" aria-hidden="true">→</span>
+        </a>
+      </li>
+
+      <li class="fila" data-ent="sube" style="--retardo:.4s">
+        <a href="#contacto">
+          <span class="fila-num">11</span>
+          <span class="fila-nombre">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M15.6 8.4 13.4 13.4 8.4 15.6l2.2-5z"/></svg>
+            Wellness coaching
+          </span>
+          <span class="fila-desc">Hábitos, sueño, estrés y mentalidad. Acompañamiento para sostener el cambio.</span>
+          <span class="fila-mas" aria-hidden="true">→</span>
+        </a>
+      </li>
+
+      <li class="fila" data-ent="sube" style="--retardo:.44s">
+        <a href="#contacto">
+          <span class="fila-num">12</span>
+          <span class="fila-nombre">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2 19 6v5.2c0 4.2-2.9 7.5-7 9.2-4.1-1.7-7-5-7-9.2V6z"/><path d="M12 9.2v5M9.5 11.7h5"/></svg>
+            Rehabilitación física
+          </span>
+          <span class="fila-desc">Vuelve a moverte sin dolor. Trabajo progresivo y seguro para volver mejor que antes.</span>
+          <span class="fila-mas" aria-hidden="true">→</span>
+        </a>
+      </li>
+
+    </ol>
+
+    <div class="indice-pie" data-ent="sube">
+      <p>¿No sabes por dónde partir? Te hacemos una evaluación inicial y armamos tu ruta.</p>
+      <a href="#contacto" class="boton boton-linea">Quiero mi evaluación <span class="flecha">→</span></a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     FILOSOFÍA
+     ============================================================ -->
+<section class="bloque filosofia" id="nosotros">
+  <div class="escenario" aria-hidden="true">
+    <div class="aurora" style="opacity:.32"><i></i><i></i><i></i></div>
+    <div class="vineta"></div>
+  </div>
+
+  <div class="envoltura" style="position:relative;z-index:1">
+
+    <span class="sello" data-ent="sube">Filosofía</span>
+
+    <blockquote class="filo-cita" style="margin-top:24px">
+      <span data-ent="linea"><span>Cuida el lugar</span></span>
+      <span data-ent="linea" style="--retardo:.08s"><span>donde vives</span></span>
+      <span data-ent="linea" style="--retardo:.16s"><span><span>todos los días</span>.</span></span>
+    </blockquote>
+
+    <div class="filo-cuerpo">
+
+      <!-- Encuadre con zoom lento, marco con luz y corchetes.
+           👉 FOTO REAL: pon background-image en .encuadre-foto de aquí abajo. -->
+      <figure class="encuadre marco esquinas filo-encuadre" data-ent="cortina">
+        <div class="encuadre-foto foto" style="background-image:url('imagenes/sala.webp')"></div>
+        <i class="corte corte-1" aria-hidden="true"></i>
+        <i class="corte corte-2" aria-hidden="true"></i>
+        <figcaption class="pie">
+          <span>Sala principal</span>
+          <span>Loncoche</span>
+        </figcaption>
+      </figure>
+
+      <div class="filo-texto" data-ent="sube" style="--retardo:.12s">
+        <p>
+          <strong>The Temple Fitness Club</strong> nació en Loncoche con una idea simple y potente:
+          el cuerpo no es una máquina que se explota, es un templo que se cuida, se fortalece y se respeta.
+        </p>
+        <p>
+          Por eso acá no vas a encontrar solo fierros. Vas a encontrar un espacio ordenado, gente que
+          te saluda por tu nombre y profesionales que se toman en serio tu progreso. Entrenamos el
+          cuerpo, pero también la cabeza y la constancia: eso es lo que sostiene los resultados.
+        </p>
+        <p>
+          Vengas por salud, por estética, por rendimiento o por rehabilitación, tu proceso empieza
+          igual: <strong>escuchándote</strong> y armando un plan que puedas cumplir.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Valores: columnas separadas por hilos -->
+    <div class="valores">
+      <div class="valor" data-ent="sube">
+        <span class="n">01</span><h4>Disciplina</h4>
+        <p>El progreso se construye en los días en que no dan ganas.</p>
+      </div>
+      <div class="valor" data-ent="sube" style="--retardo:.06s">
+        <span class="n">02</span><h4>Comunidad</h4>
+        <p>Acá nadie entrena solo. Nos empujamos entre todos.</p>
+      </div>
+      <div class="valor" data-ent="sube" style="--retardo:.12s">
+        <span class="n">03</span><h4>Resultados reales</h4>
+        <p>Medimos, ajustamos y avanzamos. Sin humo ni atajos.</p>
+      </div>
+      <div class="valor" data-ent="sube" style="--retardo:.18s">
+        <span class="n">04</span><h4>Bienestar integral</h4>
+        <p>Cuerpo, mente y espíritu. El templo completo.</p>
+      </div>
+      <div class="valor" data-ent="sube" style="--retardo:.24s">
+        <span class="n">05</span><h4>Excelencia</h4>
+        <p>Técnica correcta, atención profesional y estándares altos.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     ARGUMENTOS + CIFRAS
+     ============================================================ -->
+<section class="bloque" id="porque">
+  <div class="escenario" aria-hidden="true"><div class="reticula puntos"></div></div>
+
+  <div class="envoltura" style="position:relative;z-index:1">
+
+    <div class="doble">
+      <div>
+        <span class="sello" data-ent="sube">Por qué elegirnos</span>
+        <h2 class="titular" style="margin-top:20px">
+          <span data-ent="linea"><span>Lo que nos hace</span></span>
+          <span data-ent="linea" style="--retardo:.08s"><span><em class="sagrada">distintos</em></span></span>
+        </h2>
+      </div>
+      <p class="entrada-texto" data-ent="sube" style="--retardo:.14s">
+        Cuatro razones concretas por las que la gente de Loncoche entrena con nosotros.
+      </p>
+    </div>
+
+    <div class="argumentos">
+
+      <article class="argumento" data-ent="sube">
+        <span class="fantasma" aria-hidden="true">01</span>
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="5.2"/><path d="M9 13.6 7.6 21l4.4-2.4L16.4 21 15 13.6"/></svg>
+        <h3>Entrenadores certificados</h3>
+        <p>Profesionales del deporte que corrigen tu técnica y te enseñan a entrenar bien, no solo a sudar.</p>
+      </article>
+
+      <article class="argumento" data-ent="sube" style="--retardo:.07s">
+        <span class="fantasma" aria-hidden="true">02</span>
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 20V9.5M9.5 20V4.5M15.5 20v-8M21 20V7.5"/><path d="M2 20h20"/></svg>
+        <h3>Plan a tu medida</h3>
+        <p>Evaluamos tu punto de partida y armamos una ruta clara, con metas alcanzables y seguimiento.</p>
+      </article>
+
+      <article class="argumento" data-ent="sube" style="--retardo:.14s">
+        <span class="fantasma" aria-hidden="true">03</span>
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5S4.5 16.3 4.5 10.8A4.3 4.3 0 0 1 12 8a4.3 4.3 0 0 1 7.5 2.8c0 5.5-7.5 9.7-7.5 9.7z"/><path d="M7.5 4.2 8.4 6l1.8.9-1.8.9-.9 1.8-.9-1.8L4.8 6.9 6.6 6z"/></svg>
+        <h3>Ambiente que motiva</h3>
+        <p>Espacio limpio, ordenado y con la energía justa para que quieras volver al día siguiente.</p>
+      </article>
+
+      <article class="argumento" data-ent="sube" style="--retardo:.21s">
+        <span class="fantasma" aria-hidden="true">04</span>
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/></svg>
+        <h3>Horario amplio</h3>
+        <p>Abierto hasta las 23:00 de lunes a viernes. Entrenas cuando puedes, no cuando toca.</p>
+      </article>
+
+    </div>
+
+    <div class="cifras" data-ent="sube">
+      <div class="cifra"><b data-cuenta="12">0</b><span>Disciplinas</span></div>
+      <div class="cifra"><b data-cuenta="14" data-sufijo="h">0</b><span>Abierto al día</span></div>
+      <div class="cifra"><b data-cuenta="6">0</b><span>Días por semana</span></div>
+      <div class="cifra"><b data-cuenta="0">0</b><span>Excusas</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     HOJA DE HORARIOS
+     👉 EDITAR: los <li> de abajo y el objeto HORARIOS en el JS.
+     ============================================================ -->
+<section class="bloque" id="horarios">
+  <div class="envoltura">
+
+    <div class="doble">
+      <div>
+        <span class="sello" data-ent="sube">Horarios y ubicación</span>
+        <h2 class="titular" style="margin-top:20px">
+          <span data-ent="linea"><span>Cuando tú</span></span>
+          <span data-ent="linea" style="--retardo:.08s"><span><em class="sagrada">puedas</em></span></span>
+        </h2>
+      </div>
+      <p class="entrada-texto" data-ent="sube" style="--retardo:.14s">
+        Catorce horas diarias de lunes a viernes. La excusa del tiempo se nos acabó.
+      </p>
+    </div>
+
+    <div class="hoja">
+
+      <div data-ent="sube">
+        <div class="lectura" id="lectura">
+          <span class="late" id="late-hoja"></span>
+          <span id="lectura-texto">Consultando horario…</span>
+        </div>
+
+        <ul class="dias" id="dias">
+          <li data-dia="1"><span class="cod">Lun</span><span class="guia"></span><span class="rango">09:00 — 23:00</span></li>
+          <li data-dia="2"><span class="cod">Mar</span><span class="guia"></span><span class="rango">09:00 — 23:00</span></li>
+          <li data-dia="3"><span class="cod">Mié</span><span class="guia"></span><span class="rango">09:00 — 23:00</span></li>
+          <li data-dia="4"><span class="cod">Jue</span><span class="guia"></span><span class="rango">09:00 — 23:00</span></li>
+          <li data-dia="5"><span class="cod">Vie</span><span class="guia"></span><span class="rango">09:00 — 23:00</span></li>
+          <li data-dia="6"><span class="cod">Sáb</span><span class="guia"></span><span class="rango">09:00 — 16:00</span></li>
+          <li data-dia="0" class="libre"><span class="cod">Dom</span><span class="guia"></span><span class="rango">Cerrado</span></li>
+        </ul>
+
+        <p class="nota">
+          Las clases grupales se publican cada semana.<br>
+          Reserva tu cupo por WhatsApp. Feriados con horario especial.
+        </p>
+      </div>
+
+      <div data-ent="sube" style="--retardo:.12s">
+        <dl class="ficha">
+          <div>
+            <dt>Dirección</dt>
+            <dd>Pedro Montt 541<small>Aníbal Pinto 381 · Loncoche, La Araucanía</small></dd>
+          </div>
+          <div>
+            <dt>Teléfono</dt>
+            <dd><a href="tel:+56965706172">+56 9 6570 6172</a><small>WhatsApp en horario de atención</small></dd>
+          </div>
+          <div>
+            <dt>Coordenadas</dt>
+            <dd>39°22′S · 72°38′O<small>Región de La Araucanía, Chile</small></dd>
+          </div>
+        </dl>
+
+        <!-- ============================================================
+             MAPA · listo para Google Maps con estilo Dark/Gold
+             Para activarlo:
+               1. Consigue una clave en console.cloud.google.com
+                  (habilita "Maps JavaScript API").
+               2. Descomenta el <script> del final del documento y pega
+                  tu clave donde dice TU_CLAVE_AQUI.
+               3. Ajusta las coordenadas en MAPA_CENTRO (en el JS).
+             Sin clave se ve el estado de espera de aquí abajo, que ya
+             lleva el pin y el enlace real a Google Maps.
+             ============================================================ -->
+        <div class="mapa" id="mapa-caja">
+          <div class="mapa-lienzo" id="mapa"></div>
+
+          <div class="mapa-espera">
+            <div>
+              <div class="mapa-pin" aria-hidden="true">
+                <b></b><i></i><i></i><i></i>
+              </div>
+              <p>Pedro Montt 541 · Loncoche</p>
+              <a class="enlace-luz" target="_blank" rel="noopener"
+                 href="https://www.google.com/maps/search/?api=1&amp;query=Pedro+Montt+541%2C+Loncoche%2C+La+Araucan%C3%ADa%2C+Chile">
+                Abrir en Google Maps <span class="flecha">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     LLAMADO FINAL
+     ============================================================ -->
+<section class="llamado">
+  <div class="escenario" aria-hidden="true">
+    <div class="foto" style="background-image:url('imagenes/fuerza.webp')"></div>
+    <div class="foto-velo"></div>
+    <div class="aurora"><i></i><i></i><i></i></div>
+    <div class="reticula"></div>
+    <div class="humo"></div>
+    <div class="vineta"></div>
+  </div>
+
+  <div class="envoltura">
+    <h2>
+      <span data-ent="linea"><span>Empieza tu</span></span>
+      <span data-ent="linea" style="--retardo:.09s"><span><em class="sagrada brillo">transformación</em></span></span>
+      <span data-ent="linea" style="--retardo:.18s"><span>hoy</span></span>
+    </h2>
+
+    <p data-ent="sube" style="--retardo:.3s">
+      El mejor momento para partir fue hace un año. El segundo mejor es hoy.
+      Ven, conoce el lugar y prueba tu primera clase.
+    </p>
+
+    <div class="llamado-acciones" data-ent="sube" style="--retardo:.4s">
+      <a class="boton boton-oro" target="_blank" rel="noopener"
+         href="https://wa.me/56965706172?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20los%20planes%20de%20The%20Temple%20Fitness%20Club">
+        Únete ahora <span class="flecha">→</span>
+      </a>
+      <a href="#contacto" class="enlace-luz">Agenda tu clase <span class="flecha">→</span></a>
+    </div>
+
+    <div class="llamado-datos" data-ent="sube" style="--retardo:.5s">
+      <a href="tel:+56965706172">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 5.5c0-1 .8-1.8 1.8-1.8h1.6c.8 0 1.5.5 1.7 1.3l.8 2.7c.2.7 0 1.4-.6 1.8l-1.2.9a12 12 0 0 0 5 5l.9-1.2c.4-.6 1.1-.8 1.8-.6l2.7.8c.8.2 1.3.9 1.3 1.7v1.6c0 1-.8 1.8-1.8 1.8A15.5 15.5 0 0 1 4.5 5.5z"/></svg>
+        +56 9 6570 6172
+      </a>
+      <a href="#horarios">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
+        Pedro Montt 541, Loncoche
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CONTACTO
+     El formulario no necesita servidor: arma el mensaje y abre
+     WhatsApp. El visitante decide cuándo enviarlo.
+     ============================================================ -->
+<section class="bloque" id="contacto">
+  <div class="envoltura">
+
+    <div class="doble">
+      <div>
+        <span class="sello" data-ent="sube">Contacto</span>
+        <h2 class="titular" style="margin-top:20px">
+          <span data-ent="linea"><span>Da el</span></span>
+          <span data-ent="linea" style="--retardo:.08s"><span><em class="sagrada">primer paso</em></span></span>
+        </h2>
+      </div>
+      <p class="entrada-texto" data-ent="sube" style="--retardo:.14s">
+        Cuéntanos tu objetivo y te respondemos con la mejor opción para ti.
+      </p>
+    </div>
+
+    <div class="contacto-cuerpo">
+
+      <form id="formulario" novalidate data-ent="sube">
+        <div class="campo-par">
+          <div class="campo">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Camila Riquelme" required>
+            <span class="subrayado"></span>
+          </div>
+          <div class="campo">
+            <label for="telefono">Teléfono</label>
+            <input type="tel" id="telefono" name="telefono" placeholder="+56 9 ..." required>
+            <span class="subrayado"></span>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="objetivo">Tu objetivo</label>
+          <select id="objetivo" name="objetivo">
+            <option>Bajar de peso</option>
+            <option>Ganar masa muscular</option>
+            <option>Mejorar mi condición física</option>
+            <option>Clases grupales / Zumba</option>
+            <option>Yoga y Pilates</option>
+            <option>Nutrición y dietética</option>
+            <option>Rehabilitación física</option>
+            <option>Solo quiero información</option>
+          </select>
+          <span class="subrayado"></span>
+        </div>
+
+        <div class="campo">
+          <label for="mensaje">Mensaje <span style="text-transform:none;letter-spacing:0">(opcional)</span></label>
+          <textarea id="mensaje" name="mensaje" placeholder="Desde dónde partes, horarios que te acomodan…"></textarea>
+          <span class="subrayado"></span>
+        </div>
+
+        <button type="submit" class="boton boton-oro" style="width:100%;justify-content:center">
+          Enviar por WhatsApp <span class="flecha">→</span>
+        </button>
+        <p class="form-nota">Se abre WhatsApp con tu mensaje listo. Tú decides cuándo enviarlo.</p>
+      </form>
+
+      <div data-ent="sube" style="--retardo:.12s">
+        <dl class="ficha">
+          <div>
+            <dt>WhatsApp</dt>
+            <dd><a href="https://wa.me/56965706172" target="_blank" rel="noopener">+56 9 6570 6172</a><small>La vía más rápida para reservar</small></dd>
+          </div>
+          <div>
+            <dt>Dirección</dt>
+            <dd>Pedro Montt 541<small>Aníbal Pinto 381 · Loncoche</small></dd>
+          </div>
+          <div>
+            <dt>Horario</dt>
+            <dd>Lun a Vie · 09:00 — 23:00<small>Sábado 09:00 — 16:00 · Domingo cerrado</small></dd>
+          </div>
+          <div>
+            <dt>Correo</dt>
+            <!-- 👉 Reemplaza por el correo real -->
+            <dd><a href="mailto:contacto@thetemplefitness.cl">contacto@thetemplefitness.cl</a><small>Respondemos dentro del día hábil</small></dd>
+          </div>
+        </dl>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================
+     PIE
+     ============================================================ -->
+<footer class="pie">
+  <div class="escenario" aria-hidden="true"><div class="reticula"></div></div>
+
+  <div class="envoltura">
+    <div class="pie-red">
+
+      <div class="pie-marca">
+        <a href="#inicio" class="marca">
+          <svg class="marca-glifo" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <path d="M16 3 29 13v16H3V13z"/><path d="M16 29V17"/><path d="M8 29V18M24 29V18"/>
+          </svg>
+          <span class="marca-texto">
+            <span class="marca-nombre">The <em>Temple</em></span>
+            <span class="marca-lugar">Fitness Club — Loncoche</span>
+          </span>
+        </a>
+        <p>Un espacio de disciplina, fuerza y bienestar integral en el corazón de Loncoche.</p>
+        <!-- Instagram confirmado desde el material de la marca. -->
+        <div class="redes">
+          <a href="https://www.instagram.com/fitnessthetemple/" target="_blank" rel="noopener">Instagram</a>
+          <a href="#" title="Facebook (pendiente)">Facebook</a>
+          <a href="#" title="TikTok (pendiente)">TikTok</a>
+        </div>
+      </div>
+
+      <div>
+        <h4>Navegación</h4>
+        <ul class="pie-lista">
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="#nosotros">Nosotros</a></li>
+          <li><a href="#porque">Por qué elegirnos</a></li>
+          <li><a href="#horarios">Horarios</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Disciplinas</h4>
+        <ul class="pie-lista">
+          <li><a href="#servicios">Personalizado</a></li>
+          <li><a href="#servicios">Clases grupales</a></li>
+          <li><a href="#servicios">Funcional y fuerza</a></li>
+          <li><a href="#servicios">Yoga, Pilates y Zumba</a></li>
+          <li><a href="#servicios">Nutrición y masajes</a></li>
+          <li><a href="#servicios">Rehabilitación</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Contacto</h4>
+        <ul class="pie-lista">
+          <li>Pedro Montt 541, Loncoche</li>
+          <li>Aníbal Pinto 381, Loncoche</li>
+          <li><a href="tel:+56965706172">+56 9 6570 6172</a></li>
+          <li>Lun a Vie · 09:00 — 23:00</li>
+          <li>Sábado · 09:00 — 16:00</li>
+          <li>Domingo · Cerrado</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="pie-firma">
+      <span class="letras">The <em>Temple</em></span>
+    </div>
+
+    <div class="pie-abajo">
+      <span>© <span id="anio">2026</span> The Temple Fitness Club · Loncoche</span>
+      <span>Versión plantilla — imágenes reales próximamente</span>
+    </div>
+  </div>
+</footer>
+
+<a class="flotante" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp"
+   href="https://wa.me/56965706172?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20The%20Temple%20Fitness%20Club">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.6 14.1c-.2.7-1.4 1.3-1.9 1.3-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-2.9-1.3-4.8-4.3-5-4.5-.1-.2-1.2-1.5-1.2-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.1.3.7 1.2 1.5 1.9 1 .9 1.8 1.2 2.1 1.3.3.1.4.1.6-.1l.8-1c.2-.2.4-.2.6-.1l2 .9c.2.1.4.2.4.3.1.1.1.7-.1 1.4z"/>
+  </svg>
+  <span class="txt">WhatsApp</span>
+</a>
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"HealthAndBeautyBusiness",
+  "additionalType":"https://schema.org/ExerciseGym",
+  "name":"The Temple Fitness Club",
+  "slogan":"Tu cuerpo es un templo",
+  "telephone":"+56965706172",
+  "address":{
+    "@type":"PostalAddress",
+    "streetAddress":"Pedro Montt 541",
+    "addressLocality":"Loncoche",
+    "addressRegion":"La Araucanía",
+    "addressCountry":"CL"
+  },
+  "openingHoursSpecification":[
+    {"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"09:00","closes":"23:00"},
+    {"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"09:00","closes":"16:00"}
+  ]
+}
+</script>
+
+<!-- ============================================================
+     LIBRERÍAS
+     Lenis  → scroll suave con inercia
+     GSAP   → animaciones de revelado
+     Las tres son opcionales: si un CDN falla, el sitio sigue
+     funcionando con el sistema propio de IntersectionObserver.
+     ============================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+<script>
+/* ============================================================================
+   JS · The Temple Fitness Club
+     A · Configuración editable
+     B · Lenis (scroll suave)
+     C · Cabecera, menú y progreso
+     D · Navegación activa (menú + raíl)
+     E · Revelado: GSAP + ScrollTrigger, con respaldo propio
+     F · Cursor dorado magnético
+     G · Constelación (canvas)
+     H · Horario en vivo (hora de Chile)
+     I · Google Maps (estilo Dark/Gold)
+     J · Formulario → WhatsApp
+   ========================================================================== */
+(function(){
+  'use strict';
+
+  /* ---------- A · CONFIGURACIÓN EDITABLE ----------------------------------
+     Los minutos se cuentan desde medianoche: 09:00 = 540, 16:00 = 960,
+     23:00 = 1380. Día: 0 = domingo … 6 = sábado. null = cerrado.          */
+  const WHATSAPP = '56965706172';
+  const HORARIOS = {
+    0: null,          // Domingo
+    1: [540, 1380],   // Lunes    09:00 — 23:00
+    2: [540, 1380],   // Martes
+    3: [540, 1380],   // Miércoles
+    4: [540, 1380],   // Jueves
+    5: [540, 1380],   // Viernes
+    6: [540,  960]    // Sábado   09:00 — 16:00
+  };
+  const DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+
+  const $  = (s,c) => (c||document).querySelector(s);
+  const $$ = (s,c) => Array.from((c||document).querySelectorAll(s));
+  const quieto  = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finoMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const chico   = window.matchMedia('(max-width: 899px)').matches;
+
+  const hayGSAP  = !!(window.gsap && window.ScrollTrigger);
+  const hayLenis = !!window.Lenis;
+
+  /* ---------- B · LENIS · SCROLL SUAVE -----------------------------------
+     syncTouch queda apagado a propósito: en móvil dejamos el scroll nativo,
+     que es el que corre a 60 FPS de verdad. Lenis solo toma el control de
+     la rueda y el teclado en escritorio.                                   */
+  let lenis = null;
+  if(hayLenis && !quieto){
+    lenis = new Lenis({
+      duration: 1.15,
+      easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),  // expo.out
+      smoothWheel: true,
+      syncTouch: false,
+      touchMultiplier: 1.6,
+      wheelMultiplier: 1
+    });
+
+    if(hayGSAP){
+      // Un solo reloj para todo: el ticker de GSAP mueve a Lenis y Lenis
+      // avisa a ScrollTrigger. Así no hay dos rAF compitiendo.
+      gsap.registerPlugin(ScrollTrigger);
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add(t => lenis.raf(t * 1000));
+      gsap.ticker.lagSmoothing(0);
+    }else{
+      const paso = t => { lenis.raf(t); requestAnimationFrame(paso); };
+      requestAnimationFrame(paso);
+    }
+  }else if(hayGSAP){
+    gsap.registerPlugin(ScrollTrigger);
+  }
+
+  // Anclas: con Lenis vivo hay que pedirle a él el desplazamiento
+  const desplazarA = destino => {
+    const el = typeof destino === 'string' ? document.querySelector(destino) : destino;
+    if(!el) return;
+    const margen = -(parseFloat(getComputedStyle(document.documentElement)
+                    .getPropertyValue('--header-h')) || 74) - 16;
+    if(lenis) lenis.scrollTo(el, {offset: margen, duration: 1.4});
+    else      el.scrollIntoView({behavior: quieto ? 'auto' : 'smooth'});
+  };
+
+  if(lenis){
+    document.addEventListener('click', e => {
+      const a = e.target.closest('a[href^="#"]');
+      if(!a) return;
+      const id = a.getAttribute('href');
+      if(id.length < 2 || !document.querySelector(id)) return;
+      e.preventDefault();
+      desplazarA(id);
+    });
+  }
+
+  /* ---------- C · CABECERA, MENÚ Y PROGRESO ------------------------------- */
+  const cabecera = $('#cabecera');
+  const abrir    = $('#abrir');
+  const panel    = $('#panel');
+  const progreso = $('#progreso');
+
+  let pendiente = false;
+  function alScroll(){
+    if(pendiente) return;
+    pendiente = true;
+    requestAnimationFrame(() => {
+      const y = window.scrollY;
+      cabecera.classList.toggle('pegada', y > 30);
+      const alto = document.documentElement.scrollHeight - window.innerHeight;
+      progreso.style.width = (alto > 0 ? (y/alto)*100 : 0) + '%';
+      pendiente = false;
+    });
+  }
+  window.addEventListener('scroll', alScroll, {passive:true});
+  alScroll();
+
+  // Con el panel abierto hay que frenar a Lenis, o el fondo sigue corriendo
+  function cerrarPanel(){
+    panel.classList.remove('abierto');
+    abrir.setAttribute('aria-expanded','false');
+    abrir.setAttribute('aria-label','Abrir menú');
+    document.body.classList.remove('trabado');
+    if(lenis) lenis.start();
+  }
+  abrir.addEventListener('click', () => {
+    const on = panel.classList.toggle('abierto');
+    abrir.setAttribute('aria-expanded', String(on));
+    abrir.setAttribute('aria-label', on ? 'Cerrar menú' : 'Abrir menú');
+    document.body.classList.toggle('trabado', on);
+    if(lenis) on ? lenis.stop() : lenis.start();
+  });
+  // El clic de las anclas ya lo intercepta Lenis más arriba; acá solo cerramos
+  $$('#panel a').forEach(a => a.addEventListener('click', cerrarPanel));
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') cerrarPanel(); });
+
+  /* ---------- D · NAVEGACIÓN ACTIVA --------------------------------------- */
+  const marcables = $$('#menu a, #rail a');
+  const vistas = [...new Set(marcables.map(a => a.getAttribute('href')))]
+    .map(h => document.querySelector(h)).filter(Boolean);
+
+  if('IntersectionObserver' in window && vistas.length){
+    const obsNav = new IntersectionObserver(entradas => {
+      entradas.forEach(e => {
+        if(!e.isIntersecting) return;
+        marcables.forEach(a => a.classList.toggle('viva', a.getAttribute('href') === '#' + e.target.id));
+      });
+    }, {rootMargin:'-45% 0px -50% 0px'});
+    vistas.forEach(v => obsNav.observe(v));
+  }
+
+  /* ---------- E · REVELADO ------------------------------------------------
+     Con GSAP: los titulares se parten en palabras (o letras) y cada trozo
+     sube detrás de su propia máscara clip-path.
+     Sin GSAP: cae al sistema de IntersectionObserver de siempre.          */
+
+  function contar(raiz){
+    $$('[data-cuenta]', raiz).forEach(el => {
+      if(el.dataset.hecho) return;
+      el.dataset.hecho = '1';
+      const meta = parseInt(el.dataset.cuenta,10) || 0;
+      const suf  = el.dataset.sufijo || '';
+      if(quieto || meta === 0){ el.textContent = meta + suf; return; }
+      const t0 = performance.now(), dur = 1500;
+      (function paso(t){
+        const p = Math.min((t - t0)/dur, 1);
+        el.textContent = Math.round(meta * (1 - Math.pow(1-p, 3))) + suf;
+        if(p < 1) requestAnimationFrame(paso);
+      })(t0);
+    });
+  }
+
+  /* Divide el texto de un elemento en trozos enmascarables.
+     Devuelve los envoltorios .pal (máscara); dentro va .pal-i (el que sube).
+     Ojo: los elementos con .brillo o .sacra NO se parten, porque su
+     degradado usa background-clip:text y se rompería en pedazos.          */
+  function dividir(el, modo){
+    if(!el || el.dataset.partido) return [];
+    el.dataset.partido = '1';
+    const piezas = [];
+
+    function envolver(texto, extra){
+      const ext = document.createElement('span');
+      ext.className = 'pal' + (extra ? ' ' + extra : '');
+      const int = document.createElement('span');
+      int.className = 'pal-i';
+      int.textContent = texto;
+      ext.appendChild(int);
+      piezas.push(ext);
+      return ext;
+    }
+
+    function recorrer(nodo){
+      Array.from(nodo.childNodes).forEach(h => {
+
+        if(h.nodeType === 3){                                  // nodo de texto
+          const bruto = h.textContent;
+          if(!bruto.trim()) return;
+          const frag = document.createDocumentFragment();
+          const palabras = bruto.trim().split(/\s+/);
+
+          // Los espacios se reponen como nodos de texto REALES, no con
+          // margin: así el lector de pantalla y el copiar-pegar siguen
+          // leyendo "Tu cuerpo" y no "Tucuerpo".
+          if(/^\s/.test(bruto)) frag.appendChild(document.createTextNode(' '));
+
+          palabras.forEach((palabra, i) => {
+            if(modo === 'letras'){
+              // Agrupamos por palabra para que no se corte a mitad de línea
+              const grupo = document.createElement('span');
+              grupo.className = 'grupo';
+              Array.from(palabra).forEach(c => grupo.appendChild(envolver(c, 'letra')));
+              frag.appendChild(grupo);
+            }else{
+              frag.appendChild(envolver(palabra));
+            }
+            if(i < palabras.length - 1) frag.appendChild(document.createTextNode(' '));
+          });
+
+          if(/\s$/.test(bruto)) frag.appendChild(document.createTextNode(' '));
+
+          nodo.replaceChild(frag, h);
+          return;
+        }
+
+        if(h.nodeType !== 1) return;
+
+        if(h.classList.contains('brillo') || h.classList.contains('sacra') ||
+           h.classList.contains('sagrada')){
+          // Se revela entero. Si era de bloque, el envoltorio también
+          // debe serlo o se pierde el salto de línea del titular.
+          const bloque = getComputedStyle(h).display === 'block';
+          const ext = document.createElement('span');
+          ext.className = 'pal' + (bloque ? ' pal-bloque' : '');
+          const int = document.createElement('span');
+          int.className = 'pal-i';
+          h.parentNode.insertBefore(ext, h);
+          int.appendChild(h);
+          ext.appendChild(int);
+          piezas.push(ext);
+          return;
+        }
+
+        recorrer(h);
+      });
+    }
+
+    recorrer(el);
+    return piezas;
+  }
+
+  const retardo = el =>
+    parseFloat(getComputedStyle(el).getPropertyValue('--retardo')) || 0;
+
+  const OCULTO  = 'inset(0% -14% 108% -14%)';
+  const VISIBLE = 'inset(-32% -14% -32% -14%)';
+
+  function revelarConGSAP(){
+    document.documentElement.classList.add('gsap');
+
+    // 1 · Titulares partidos
+    $$('[data-ent="linea"]').forEach(caja => {
+      const interior = caja.firstElementChild;
+      if(!interior) return;
+      const modo   = interior.classList.contains('fuerte') ? 'letras' : 'palabras';
+      const piezas = dividir(interior, modo);
+      if(!piezas.length) return;
+
+      const moviles = piezas.map(p => p.firstElementChild);
+      const paso    = modo === 'letras' ? .034 : .058;
+
+      const tl = gsap.timeline({
+        delay: retardo(caja),
+        scrollTrigger:{ trigger: caja, start:'top 90%', once:true }
+      });
+      tl.fromTo(piezas,  {clipPath:OCULTO}, {
+          clipPath:VISIBLE, duration:1.05, ease:'expo.out', stagger:paso
+        }, 0)
+        .fromTo(moviles, {yPercent:108}, {
+          yPercent:0, duration:1.05, ease:'expo.out', stagger:paso,
+          // Soltamos will-change al terminar: dejarlo puesto gasta memoria
+          onComplete(){ this.targets().forEach(t => t.style.willChange = 'auto'); }
+        }, 0);
+
+      gsap.set(moviles, {willChange:'transform'});
+    });
+
+    // 2 · Bloques que suben
+    $$('[data-ent="sube"]').forEach(el => {
+      gsap.fromTo(el, {y:34, autoAlpha:0}, {
+        y:0, autoAlpha:1, duration:1, ease:'expo.out', delay:retardo(el),
+        scrollTrigger:{ trigger:el, start:'top 92%', once:true, onEnter:() => contar(el) }
+      });
+    });
+
+    // 3 · Encuadres que se descubren como cortina
+    $$('[data-ent="cortina"]').forEach(el => {
+      gsap.fromTo(el, {clipPath:'inset(0% 0% 100% 0%)'}, {
+        clipPath:'inset(0% 0% 0% 0%)', duration:1.35, ease:'expo.out', delay:retardo(el),
+        scrollTrigger:{ trigger:el, start:'top 88%', once:true }
+      });
+    });
+
+    // 4 · Parallax del fondo de portada (solo escritorio: es un scrub,
+    //     corre en cada fotograma de scroll; en móvil no lo pagamos)
+    if(!chico){
+      const fondo = document.querySelector('.portada .escenario');
+      if(fondo){
+        gsap.to(fondo, {
+          yPercent:14, ease:'none',
+          scrollTrigger:{ trigger:'.portada', start:'top top', end:'bottom top', scrub:.6 }
+        });
+      }
+    }
+
+    ScrollTrigger.refresh();
+  }
+
+  function revelarConObservador(){
+    const entrantes = $$('[data-ent]');
+    if('IntersectionObserver' in window && !quieto){
+      const obs = new IntersectionObserver((es, o) => {
+        es.forEach(e => {
+          if(!e.isIntersecting) return;
+          e.target.classList.add('dentro');
+          contar(e.target);
+          o.unobserve(e.target);
+        });
+      }, {rootMargin:'0px 0px -10% 0px', threshold:.1});
+      entrantes.forEach(el => obs.observe(el));
+    }else{
+      entrantes.forEach(el => el.classList.add('dentro'));
+      contar(document);
+    }
+  }
+
+  if(hayGSAP && !quieto) revelarConGSAP();
+  else                   revelarConObservador();
+
+  /* ---------- F · CURSOR DORADO MAGNÉTICO ---------------------------------
+     Punto que sigue al instante + anillo que llega tarde. Sobre los
+     elementos marcados el anillo crece y el botón se deja arrastrar un
+     poco hacia el cursor. Todo con transform, nada de top/left.           */
+  if(finoMouse && !quieto && window.gsap){
+    const cursor = $('#cursor');
+    const anillo = $('.cursor-anillo', cursor);
+    const punto  = $('.cursor-punto',  cursor);
+
+    document.documentElement.classList.add('cursor-vivo');
+    gsap.set([anillo, punto], {xPercent:-50, yPercent:-50});
+
+    const anilloX = gsap.quickTo(anillo, 'x', {duration:.55, ease:'power3'});
+    const anilloY = gsap.quickTo(anillo, 'y', {duration:.55, ease:'power3'});
+    const puntoX  = gsap.quickTo(punto,  'x', {duration:.12, ease:'power3'});
+    const puntoY  = gsap.quickTo(punto,  'y', {duration:.12, ease:'power3'});
+
+    window.addEventListener('mousemove', e => {
+      anilloX(e.clientX); anilloY(e.clientY);
+      puntoX(e.clientX);  puntoY(e.clientY);
+    }, {passive:true});
+
+    // El cursor desaparece al salir de la ventana
+    document.addEventListener('mouseleave', () => gsap.to(cursor, {opacity:0, duration:.25}));
+    document.addEventListener('mouseenter', () => gsap.to(cursor, {opacity:1, duration:.25}));
+
+    const crecer = (escala, opacidad) => {
+      gsap.to(anillo, {scale:escala, opacity:opacidad, duration:.4, ease:'power3'});
+      gsap.to(punto,  {scale:escala > 1 ? 0 : 1, duration:.4, ease:'power3'});
+    };
+
+    // Imán: el elemento se acerca al cursor. Solo en piezas chicas —
+    // arrastrar una fila de ancho completo se ve mal.
+    $$('.boton, .enlace-luz, .flotante, .redes a, .marca').forEach(el => {
+      const moverX = gsap.quickTo(el, 'x', {duration:.5, ease:'power3'});
+      const moverY = gsap.quickTo(el, 'y', {duration:.5, ease:'power3'});
+      el.addEventListener('mouseenter', () => crecer(1.9, .9));
+      el.addEventListener('mousemove', e => {
+        const r = el.getBoundingClientRect();
+        moverX((e.clientX - (r.left + r.width  / 2)) * .28);
+        moverY((e.clientY - (r.top  + r.height / 2)) * .38);
+      });
+      el.addEventListener('mouseleave', () => { moverX(0); moverY(0); crecer(1, .55); });
+    });
+
+    // Solo agranda el anillo, sin imán
+    $$('.menu a, .rail a, .fila, .pie-lista a, .panel a, .valor, .ficha dd a').forEach(el => {
+      el.addEventListener('mouseenter', () => crecer(1.6, .8));
+      el.addEventListener('mouseleave', () => crecer(1, .55));
+    });
+
+    // Sobre campos de texto el anillo se achica para no estorbar
+    $$('input, textarea, select').forEach(el => {
+      el.addEventListener('mouseenter', () => crecer(.45, .95));
+      el.addEventListener('mouseleave', () => crecer(1, .55));
+    });
+  }
+
+  /* ---------- G · CONSTELACIÓN --------------------------------------------
+     Optimización para móvil: menos puntos, resolución tope 1.25× y sin las
+     líneas de unión (que son O(n²) y es lo que más cuesta).                */
+  (function constelacion(){
+    const cv = $('#constelacion');
+    if(!cv || quieto) return;
+
+    const ctx = cv.getContext('2d', {alpha:true});
+    const unir  = !chico;                       // líneas solo en escritorio
+    const dprMax = chico ? 1.25 : 2;
+    let an = 0, w = 0, h = 0, pts = [], corriendo = false;
+
+    function medir(){
+      const dpr = Math.min(window.devicePixelRatio || 1, dprMax);
+      w = cv.clientWidth; h = cv.clientHeight;
+      if(!w || !h) return;
+      cv.width = w * dpr; cv.height = h * dpr;
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      const tope = chico ? 26 : 58;
+      const n = Math.max(14, Math.min(tope, Math.round(w*h/17000)));
+      pts = Array.from({length:n}, () => ({
+        x: Math.random()*w, y: Math.random()*h,
+        vx:(Math.random()-.5)*.16, vy:(Math.random()-.5)*.16,
+        r: Math.random()*1.3 + .4
+      }));
+    }
+
+    const LIM = 132*132;
+    function pintar(){
+      ctx.clearRect(0,0,w,h);
+      for(const p of pts){
+        p.x += p.vx; p.y += p.vy;
+        if(p.x < 0 || p.x > w) p.vx *= -1;
+        if(p.y < 0 || p.y > h) p.vy *= -1;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.2832);
+        ctx.fillStyle = 'rgba(201,162,39,.5)'; ctx.fill();
+      }
+      if(unir){
+        ctx.lineWidth = .6;
+        for(let i=0;i<pts.length;i++){
+          for(let j=i+1;j<pts.length;j++){
+            const dx = pts[i].x-pts[j].x, dy = pts[i].y-pts[j].y, d = dx*dx+dy*dy;
+            if(d < LIM){
+              ctx.strokeStyle = 'rgba(201,162,39,' + (.15*(1-d/LIM)).toFixed(3) + ')';
+              ctx.beginPath(); ctx.moveTo(pts[i].x,pts[i].y); ctx.lineTo(pts[j].x,pts[j].y); ctx.stroke();
+            }
+          }
+        }
+      }
+      an = requestAnimationFrame(pintar);
+    }
+
+    function arrancar(){ if(!corriendo){ corriendo = true; pintar(); } }
+    function frenar(){ corriendo = false; cancelAnimationFrame(an); }
+
+    medir();
+    arrancar();
+
+    let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(medir, 220); });
+    document.addEventListener('visibilitychange', () => document.hidden ? frenar() : arrancar());
+
+    // Se apaga cuando la portada sale de pantalla: no gastar batería de más.
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(([e]) => e.isIntersecting ? arrancar() : frenar(), {threshold:0})
+        .observe(cv);
+    }
+  })();
+
+  /* ---------- H · HORARIO EN VIVO ----------------------------------------- */
+  function ahoraChile(){
+    try{
+      const p = new Intl.DateTimeFormat('en-US', {
+        timeZone:'America/Santiago', weekday:'short',
+        hour:'2-digit', minute:'2-digit', hourCycle:'h23'
+      }).formatToParts(new Date());
+      const v = t => p.find(x => x.type === t).value;
+      const m = {Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
+      return { dia:m[v('weekday')], min:(+v('hour'))*60 + (+v('minute')) };
+    }catch(e){
+      const d = new Date();
+      return { dia:d.getDay(), min:d.getHours()*60 + d.getMinutes() };
+    }
+  }
+  const hhmm = m => String(Math.floor(m/60)).padStart(2,'0') + ':' + String(m%60).padStart(2,'0');
+
+  function refrescarHorario(){
+    const {dia, min} = ahoraChile();
+    const hoy = HORARIOS[dia];
+
+    $$('#dias li').forEach(li => li.classList.toggle('hoy', +li.dataset.dia === dia));
+
+    let clase, texto;
+    if(hoy && min >= hoy[0] && min < hoy[1]){
+      clase = 'abierto'; texto = 'Abierto ahora — cierra ' + hhmm(hoy[1]);
+    } else if(hoy && min < hoy[0]){
+      clase = 'cerrado'; texto = 'Cerrado — abre hoy ' + hhmm(hoy[0]);
+    } else {
+      clase = 'cerrado'; texto = 'Cerrado';
+      for(let i=1;i<=7;i++){
+        const d = (dia+i)%7, h = HORARIOS[d];
+        if(h){ texto = 'Cerrado — abre ' + (i===1 ? 'mañana' : 'el ' + DIAS[d]) + ' ' + hhmm(h[0]); break; }
+      }
+    }
+
+    const lectura = $('#lectura');
+    if(lectura){
+      lectura.classList.remove('abierto','cerrado');
+      lectura.classList.add(clase);
+      $('#lectura-texto').textContent = texto;
+    }
+    const mini = $('#estado-portada');
+    if(mini) mini.textContent = texto;
+    const late = $('#late-portada');
+    if(late) late.style.background = (clase === 'abierto') ? '' : '#C08A78';
+  }
+  refrescarHorario();
+  setInterval(refrescarHorario, 60000);
+
+  /* ---------- I · GOOGLE MAPS · ESTILO DARK/GOLD --------------------------
+     CÓMO ACTIVARLO
+       1. Saca una clave en console.cloud.google.com y habilita
+          "Maps JavaScript API".
+       2. Al final del <body> hay un <script> comentado: descoméntalo y
+          reemplaza TU_CLAVE_AQUI por tu clave.
+       3. Ajusta MAPA_CENTRO con las coordenadas exactas del local
+          (clic derecho en Google Maps → "¿Qué hay aquí?").
+     Mientras tanto se ve el estado de espera, que ya lleva pin y enlace.
+
+     El estilo sigue el formato de Snazzy Maps: geometría casi negra,
+     etiquetas grises y las vías principales trazadas en dorado.           */
+  const MAPA_CENTRO = { lat: -39.3720, lng: -72.6330 };   // Loncoche (referencial)
+
+  const ESTILO_MAPA = [
+    {elementType:'geometry',            stylers:[{color:'#0E0E0E'}]},
+    {elementType:'labels.icon',         stylers:[{visibility:'off'}]},
+    {elementType:'labels.text.fill',    stylers:[{color:'#8A8177'}]},
+    {elementType:'labels.text.stroke',  stylers:[{color:'#080808'}]},
+    {featureType:'administrative',           elementType:'geometry',         stylers:[{visibility:'off'}]},
+    {featureType:'administrative.locality',  elementType:'labels.text.fill', stylers:[{color:'#C9A227'}]},
+    {featureType:'poi',                      elementType:'labels.text.fill', stylers:[{color:'#6B675F'}]},
+    {featureType:'poi.business',                                             stylers:[{visibility:'off'}]},
+    {featureType:'poi.park',                 elementType:'geometry',         stylers:[{color:'#121212'}]},
+    {featureType:'poi.park',                 elementType:'labels.text.fill', stylers:[{color:'#4E4A44'}]},
+    {featureType:'road',                     elementType:'geometry',         stylers:[{color:'#191919'}]},
+    {featureType:'road',                     elementType:'geometry.stroke',  stylers:[{color:'#131313'}]},
+    {featureType:'road',                     elementType:'labels.text.fill', stylers:[{color:'#8A8177'}]},
+    {featureType:'road.arterial',            elementType:'geometry',         stylers:[{color:'#211D14'}]},
+    {featureType:'road.highway',             elementType:'geometry',         stylers:[{color:'#2A2419'}]},
+    {featureType:'road.highway',             elementType:'geometry.stroke',  stylers:[{color:'#C9A227'},{weight:.5}]},
+    {featureType:'road.highway',             elementType:'labels.text.fill', stylers:[{color:'#EBD48A'}]},
+    {featureType:'transit',                  elementType:'geometry',         stylers:[{color:'#191919'}]},
+    {featureType:'transit.station',          elementType:'labels.text.fill', stylers:[{color:'#6B675F'}]},
+    {featureType:'water',                    elementType:'geometry',         stylers:[{color:'#050505'}]},
+    {featureType:'water',                    elementType:'labels.text.fill', stylers:[{color:'#3A3730'}]}
+  ];
+
+  // Google llama a esta función cuando termina de cargar su API
+  window.iniciarMapa = function(){
+    const lienzo = document.getElementById('mapa');
+    if(!lienzo || !window.google || !google.maps) return;
+
+    const mapa = new google.maps.Map(lienzo, {
+      center: MAPA_CENTRO,
+      zoom: 16,
+      styles: ESTILO_MAPA,
+      disableDefaultUI: true,
+      zoomControl: true,
+      gestureHandling: 'cooperative',   // no secuestra el scroll de la página
+      backgroundColor: '#0E0E0E'
+    });
+
+    // Pin dorado dibujado en SVG, a juego con el resto del sitio
+    new google.maps.Marker({
+      position: MAPA_CENTRO,
+      map: mapa,
+      title: 'The Temple Fitness Club',
+      icon: {
+        path: 'M12 2C7.6 2 4 5.6 4 10c0 6 8 12 8 12s8-6 8-12c0-4.4-3.6-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z',
+        fillColor: '#C9A227', fillOpacity: 1,
+        strokeColor: '#EBD48A', strokeWeight: 1,
+        scale: 1.7, anchor: new google.maps.Point(12, 22)
+      }
+    });
+
+    document.getElementById('mapa-caja').classList.add('cargado');
+  };
+
+  // Si la API ya estaba lista antes de llegar acá, montamos de inmediato
+  if(window.google && window.google.maps) window.iniciarMapa();
+
+  /* ---------- J · FORMULARIO → WHATSAPP ----------------------------------- */
+  const form = $('#formulario');
+  if(form){
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const nombre   = $('#nombre').value.trim();
+      const telefono = $('#telefono').value.trim();
+      const objetivo = $('#objetivo').value;
+      const mensaje  = $('#mensaje').value.trim();
+
+      if(!nombre){ $('#nombre').focus(); return; }
+      if(!telefono){ $('#telefono').focus(); return; }
+
+      const texto =
+        '¡Hola The Temple Fitness Club! 👋\n\n' +
+        'Nombre: ' + nombre + '\n' +
+        'Teléfono: ' + telefono + '\n' +
+        'Objetivo: ' + objetivo +
+        (mensaje ? '\nMensaje: ' + mensaje : '') +
+        '\n\nMe gustaría agendar una clase.';
+
+      window.open('https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(texto), '_blank', 'noopener');
+    });
+  }
+
+  /* ---------- Año en el pie ----------------------------------------------- */
+  const anio = $('#anio');
+  if(anio) anio.textContent = new Date().getFullYear();
+
+})();
+</script>
+
+<!-- ============================================================
+     GOOGLE MAPS — descomenta y pega tu clave para activarlo.
+     Va después del script principal porque necesita que
+     window.iniciarMapa ya exista.
+     ============================================================ -->
+<!--
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=TU_CLAVE_AQUI&callback=iniciarMapa&loading=async">
+</script>
+-->
+
+</body>
+</html>

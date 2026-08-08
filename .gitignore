@@ -1,0 +1,19 @@
+# Material de trabajo que NO va al repo publicado
+# ------------------------------------------------
+# Carpeta de resultados guardados de Google: son miniaturas de baja
+# resolución y material de terceros. Solo sirvió para elegir fotos.
+imagenes/the temple fitness club - Buscar con Google_files/
+
+# Originales sin renombrar (ya están copiados con nombre limpio)
+imagenes/unnamed*.webp
+
+# Videos originales: 15 MB entre los dos. Pesan demasiado para el repo
+# y para GitHub Pages. Si se van a usar, primero comprimir a WebM/MP4
+# de menos de 2 MB y quitarlos de aquí.
+imagenes/*.mp4
+imagenes/*.mov
+
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store

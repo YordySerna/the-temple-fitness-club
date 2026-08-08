@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Temple Fitness Club · Loncoche | Tu cuerpo es un templo</title>
+
+<!-- ============================================================
+     SEO / METADATOS  ·  Edita textos y URL cuando tengas dominio
+     ============================================================ -->
+<meta name="description" content="The Temple Fitness Club en Loncoche, La Araucanía. Entrenamiento personalizado, funcional, fuerza, HIIT, yoga, zumba, nutrición y rehabilitación. Tu cuerpo es un templo.">
+<meta name="theme-color" content="#0A0A0A">
+<meta name="author" content="The Temple Fitness Club">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CL">
+<meta property="og:title" content="The Temple Fitness Club · Loncoche">
+<meta property="og:description" content="Tu cuerpo es un templo. Entrena con propósito en Loncoche.">
+<!-- <meta property="og:image" content="imagenes/og-portada.jpg"> -->
+
+<!-- Favicon temporal en SVG (monograma dorado). Reemplázalo por el logo real. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%230A0A0A'/%3E%3Cpath d='M16 20h32M32 20v26' stroke='%23C9A227' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
+
+<!-- Tipografías: display fuerte (Bebas Neue) + cuerpo limpio (Inter) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Marca que el JS está activo. Si esto no corre, las animaciones de
+     aparición quedan desactivadas y todo el contenido se ve igual. -->
+<script>document.documentElement.classList.add('js');</script>
+
+<style>
+/* ============================================================================
+   THE TEMPLE FITNESS CLUB · LONCOCHE
+   Plantilla temporal — sin imágenes reales.
+   Estructura de la hoja de estilos:
+     01. Variables / Tokens
+     02. Reset y base
+     03. Utilidades y componentes (botones, títulos, tarjetas)
+     04. Header + navegación
+     05. Hero
+     06. Marquesina
+     07. Servicios
+     08. Sobre nosotros / Filosofía
+     09. Por qué elegirnos + cifras
+     10. Horarios
+     11. CTA final
+     12. Contacto
+     13. Footer + flotantes
+     14. Animaciones y responsive
+   ========================================================================== */
+
+/* ---------- 01. VARIABLES / TOKENS -------------------------------------- */
+:root{
+  /* Paleta base (identidad dark) */
+  --negro:        #0A0A0A;
+  --carbon:       #111111;
+  --gris-900:     #151515;
+  --gris-800:     #1C1C1C;
+  --gris-700:     #222222;
+  --gris-600:     #2E2E2E;
+
+  /* Acento dorado */
+  --oro:          #C9A227;
+  --oro-brillo:   #D4AF37;
+  --oro-claro:    #E8CB6E;
+  --oro-suave:    rgba(201,162,39,.14);
+  --oro-borde:    rgba(201,162,39,.32);
+
+  /* Energía sutil (usar con moderación) */
+  --terracota:    #8A3020;
+
+  /* Texto */
+  --blanco:       #F6F4F0;
+  --texto:        #B9B4AC;
+  --texto-tenue:  #7C776F;
+
+  /* Bordes y sombras */
+  --borde:        rgba(255,255,255,.07);
+  --sombra:       0 24px 60px rgba(0,0,0,.55);
+  --sombra-oro:   0 18px 50px rgba(201,162,39,.16);
+
+  /* Tipografías */
+  --display: 'Bebas Neue', 'Oswald', 'Arial Narrow', Impact, sans-serif;
+  --cuerpo:  'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Medidas */
+  --ancho:      1240px;
+  --radio:      4px;
+  --radio-lg:   8px;
+  --header-h:   78px;
+  --transicion: .35s cubic-bezier(.2,.7,.3,1);
+}
+
+/* ---------- 02. RESET Y BASE -------------------------------------------- */
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+
+html{
+  scroll-behavior:smooth;                /* Smooth scroll nativo */
+  scroll-padding-top:var(--header-h);    /* Compensa el header fijo */
+  -webkit-text-size-adjust:100%;
+}
+
+body{
+  font-family:var(--cuerpo);
+  background:var(--negro);
+  color:var(--texto);
+  font-size:16px;
+  line-height:1.7;
+  font-weight:400;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+img,svg{ display:block; max-width:100%; }
+a{ color:inherit; text-decoration:none; }
+ul,ol{ list-style:none; }
+button,input,textarea,select{ font:inherit; color:inherit; }
+
+::selection{ background:var(--oro); color:var(--negro); }
+
+/* Foco accesible y visible sobre fondo oscuro */
+:focus-visible{
+  outline:2px solid var(--oro-brillo);
+  outline-offset:3px;
+  border-radius:2px;
+}
+
+/* Grano de película: da textura premium al fondo plano */
+body::after{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none; z-index:9999;
+  opacity:.035;
+  mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- 03. UTILIDADES Y COMPONENTES -------------------------------- */
+.contenedor{
+  width:100%;
+  max-width:var(--ancho);
+  margin-inline:auto;
+  padding-inline:22px;
+}
+
+.seccion{ padding:88px 0; position:relative; }
+.seccion--alt{ background:linear-gradient(180deg,var(--carbon) 0%, var(--negro) 100%); }
+
+/* Línea decorativa superior de sección */
+.seccion--linea::before{
+  content:""; position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:min(92%,var(--ancho)); height:1px;
+  background:linear-gradient(90deg,transparent,var(--oro-borde),transparent);
+}
+
+/* Cabecera de sección: kicker + título + bajada */
+.cabecera{ max-width:720px; margin-bottom:52px; }
+.cabecera--centro{ margin-inline:auto; text-align:center; }
+
+.kicker{
+  display:inline-flex; align-items:center; gap:12px;
+  font-size:.72rem; font-weight:600; letter-spacing:.24em; text-transform:uppercase;
+  color:var(--oro); margin-bottom:18px;
+}
+.kicker::before{
+  content:""; width:34px; height:1px; background:var(--oro); opacity:.7;
+}
+.cabecera--centro .kicker::after{
+  content:""; width:34px; height:1px; background:var(--oro); opacity:.7;
+}
+
+.titulo{
+  font-family:var(--display);
+  font-weight:400;
+  font-size:clamp(2.35rem,6.5vw,4.1rem);
+  line-height:.98;
+  letter-spacing:.012em;
+  text-transform:uppercase;
+  color:var(--blanco);
+}
+.titulo .oro{
+  background:linear-gradient(180deg,var(--oro-claro),var(--oro));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+
+.bajada{ margin-top:20px; font-size:1.02rem; color:var(--texto); max-width:62ch; }
+.cabecera--centro .bajada{ margin-inline:auto; }
+
+/* Botones */
+.btn{
+  --btn-pad: 16px 34px;
+  position:relative; overflow:hidden;
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  padding:var(--btn-pad);
+  font-size:.82rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  border:1px solid transparent; border-radius:var(--radio);
+  cursor:pointer; white-space:nowrap;
+  transition:transform var(--transicion), box-shadow var(--transicion),
+             background var(--transicion), color var(--transicion), border-color var(--transicion);
+}
+.btn:hover{ transform:translateY(-2px); }
+.btn:active{ transform:translateY(0); }
+
+.btn-oro{
+  background:linear-gradient(135deg,var(--oro-claro) 0%, var(--oro) 55%, #A8851C 100%);
+  color:#120E02;
+  box-shadow:0 10px 30px rgba(201,162,39,.22);
+}
+.btn-oro:hover{ box-shadow:0 16px 42px rgba(201,162,39,.38); }
+/* Destello que cruza el botón al pasar el mouse */
+.btn-oro::after{
+  content:""; position:absolute; inset:0; transform:translateX(-120%) skewX(-18deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
+  transition:transform .7s ease;
+}
+.btn-oro:hover::after{ transform:translateX(120%) skewX(-18deg); }
+
+.btn-linea{
+  background:transparent; color:var(--blanco);
+  border-color:rgba(255,255,255,.22);
+}
+.btn-linea:hover{ border-color:var(--oro); color:var(--oro-claro); background:var(--oro-suave); }
+
+.btn-lg{ --btn-pad:20px 46px; font-size:.9rem; }
+.btn-sm{ --btn-pad:12px 22px; font-size:.72rem; }
+.btn-bloque{ width:100%; }
+
+/* Tarjeta base reutilizable */
+.tarjeta{
+  position:relative;
+  background:linear-gradient(160deg,var(--gris-900) 0%, var(--carbon) 100%);
+  border:1px solid var(--borde);
+  border-radius:var(--radio);
+  transition:border-color var(--transicion), transform var(--transicion), box-shadow var(--transicion);
+}
+.tarjeta:hover{
+  border-color:var(--oro-borde);
+  transform:translateY(-5px);
+  box-shadow:var(--sombra-oro);
+}
+
+/* Ícono estándar (52px). La clase .service-icon queda lista para
+   reemplazar el SVG por un ícono/imagen propia más adelante. */
+.service-icon,
+.icono{
+  width:54px; height:54px; flex:none;
+  display:grid; place-items:center;
+  border:1px solid var(--oro-borde);
+  border-radius:var(--radio);
+  background:var(--oro-suave);
+  color:var(--oro-claro);
+  transition:background var(--transicion), color var(--transicion), border-color var(--transicion);
+}
+.service-icon svg,.icono svg{ width:26px; height:26px; }
+
+/* Separador ornamental tipo friso */
+.friso{
+  display:flex; align-items:center; justify-content:center; gap:14px;
+  padding:8px 0; color:var(--oro); opacity:.55;
+}
+.friso span{ height:1px; width:min(180px,22vw); background:currentColor; }
+.friso i{ width:7px; height:7px; background:currentColor; transform:rotate(45deg); }
+
+/* ---------- 04. HEADER + NAVEGACIÓN ------------------------------------- */
+/* Barra de progreso de lectura */
+.progreso{
+  position:fixed; top:0; left:0; height:2px; width:0;
+  background:linear-gradient(90deg,var(--oro),var(--oro-claro));
+  z-index:1002; transition:width .1s linear;
+}
+
+.header{
+  position:fixed; top:0; left:0; right:0; z-index:1000;
+  height:var(--header-h);
+  display:flex; align-items:center;
+  background:rgba(10,10,10,.55);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid transparent;
+  transition:background var(--transicion), border-color var(--transicion), height var(--transicion);
+}
+.header.fijo{
+  background:rgba(10,10,10,.92);
+  border-bottom-color:var(--borde);
+  height:68px;
+}
+.header .contenedor{ display:flex; align-items:center; justify-content:space-between; gap:20px; }
+
+/* Logo tipográfico */
+.logo{ display:flex; flex-direction:column; line-height:1; }
+.logo-nombre{
+  font-family:var(--display); font-size:1.7rem; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--blanco);
+}
+.logo-nombre em{
+  font-style:normal;
+  background:linear-gradient(180deg,var(--oro-claro),var(--oro));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.logo-sub{
+  font-size:.55rem; font-weight:600; letter-spacing:.32em; text-transform:uppercase;
+  color:var(--texto-tenue); margin-top:5px;
+}
+
+/* Menú escritorio */
+.nav{ display:none; }
+.nav ul{ display:flex; align-items:center; gap:34px; }
+.nav a{
+  position:relative; display:block; padding:6px 0;
+  font-size:.76rem; font-weight:600; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--texto); transition:color var(--transicion);
+}
+.nav a::after{
+  content:""; position:absolute; left:0; bottom:0; height:1px; width:0;
+  background:var(--oro); transition:width var(--transicion);
+}
+.nav a:hover,.nav a.activo{ color:var(--blanco); }
+.nav a:hover::after,.nav a.activo::after{ width:100%; }
+
+.header-acciones{ display:flex; align-items:center; gap:14px; }
+.header .btn-oro{ display:none; }
+
+/* Botón hamburguesa */
+.hamburguesa{
+  width:46px; height:46px; display:grid; place-items:center; gap:5px;
+  background:transparent; border:1px solid var(--borde); border-radius:var(--radio);
+  cursor:pointer; transition:border-color var(--transicion);
+}
+.hamburguesa:hover{ border-color:var(--oro-borde); }
+.hamburguesa span{
+  display:block; width:20px; height:1.5px; background:var(--blanco);
+  transition:transform var(--transicion), opacity var(--transicion);
+}
+.hamburguesa[aria-expanded="true"] span:nth-child(1){ transform:translateY(6.5px) rotate(45deg); }
+.hamburguesa[aria-expanded="true"] span:nth-child(2){ opacity:0; }
+.hamburguesa[aria-expanded="true"] span:nth-child(3){ transform:translateY(-6.5px) rotate(-45deg); }
+
+/* Panel móvil a pantalla completa */
+.menu-movil{
+  position:fixed; inset:0; z-index:999;
+  background:linear-gradient(170deg,var(--carbon),var(--negro));
+  display:flex; flex-direction:column; justify-content:center;
+  padding:var(--header-h) 26px 40px;
+  opacity:0; visibility:hidden; transform:translateY(-12px);
+  transition:opacity .35s ease, transform .35s ease, visibility .35s;
+}
+.menu-movil.abierto{ opacity:1; visibility:visible; transform:translateY(0); }
+.menu-movil ul{ display:flex; flex-direction:column; gap:6px; }
+.menu-movil a{
+  font-family:var(--display); font-size:2.4rem; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--blanco); padding:8px 0; border-bottom:1px solid var(--borde);
+  display:flex; align-items:baseline; gap:16px;
+  transition:color var(--transicion), padding-left var(--transicion);
+}
+.menu-movil a span{ font-family:var(--cuerpo); font-size:.6rem; letter-spacing:.2em; color:var(--oro); }
+.menu-movil a:hover{ color:var(--oro-claro); padding-left:10px; }
+.menu-movil .btn{ margin-top:30px; }
+.menu-movil-pie{
+  margin-top:26px; font-size:.82rem; color:var(--texto-tenue);
+  display:flex; flex-direction:column; gap:4px;
+}
+body.sin-scroll{ overflow:hidden; }
+
+/* ---------- 05. HERO ----------------------------------------------------- */
+.hero{
+  position:relative; isolation:isolate;
+  min-height:100svh;
+  display:flex; align-items:center;
+  padding:calc(var(--header-h) + 48px) 0 64px;
+  overflow:hidden;
+}
+
+/* Capas del fondo del hero.
+   👉 PARA AGREGAR LA FOTO REAL: define background-image en .hero-placeholder.
+      Ejemplo: background-image:url('imagenes/hero.jpg'); background-size:cover;
+      El overlay y el degradado inferior ya están encima, así que el texto
+      seguirá siendo legible sin tocar nada más. */
+.hero-fondo{ position:absolute; inset:0; z-index:-1; }
+.hero-placeholder{
+  position:absolute; inset:0;
+  background-color:var(--negro);
+  background-position:center; background-size:cover; background-repeat:no-repeat;
+}
+/* Retícula sutil que evoca planos de arquitectura */
+.hero-reticula{
+  position:absolute; inset:0; opacity:.5;
+  background-image:
+    linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px);
+  background-size:78px 78px;
+  mask-image:radial-gradient(ellipse 75% 65% at 50% 45%, #000 20%, transparent 78%);
+  -webkit-mask-image:radial-gradient(ellipse 75% 65% at 50% 45%, #000 20%, transparent 78%);
+}
+/* Resplandor dorado central */
+.hero-halo{
+  position:absolute; left:50%; top:52%; transform:translate(-50%,-50%);
+  width:min(1100px,120vw); aspect-ratio:1/.75;
+  background:radial-gradient(ellipse at center, rgba(201,162,39,.20) 0%, rgba(201,162,39,.05) 38%, transparent 68%);
+  filter:blur(6px);
+  animation:latido 9s ease-in-out infinite;
+}
+/* Silueta del templo dibujada en SVG */
+.hero-templo{
+  position:absolute; left:50%; bottom:-2%; transform:translateX(-50%);
+  width:min(1000px,140vw); color:var(--oro); opacity:.20;
+}
+.hero-templo path{
+  stroke-dasharray:1400; stroke-dashoffset:1400;
+  animation:trazar 3.4s cubic-bezier(.4,0,.2,1) forwards;
+}
+/* Viñeta + degradado hacia la siguiente sección */
+.hero-overlay{
+  position:absolute; inset:0;
+  background:
+    linear-gradient(180deg, rgba(10,10,10,.78) 0%, rgba(10,10,10,.35) 42%, rgba(10,10,10,.92) 100%),
+    radial-gradient(ellipse 80% 70% at 50% 50%, transparent 30%, rgba(0,0,0,.72) 100%);
+}
+
+.hero-contenido{ position:relative; text-align:center; }
+
+.hero-kicker{
+  display:inline-flex; align-items:center; gap:10px;
+  padding:9px 18px; margin-bottom:26px;
+  border:1px solid var(--oro-borde); border-radius:100px;
+  background:rgba(201,162,39,.07);
+  font-size:.68rem; font-weight:600; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--oro-claro);
+}
+.hero-kicker .punto{
+  width:6px; height:6px; border-radius:50%; background:var(--oro);
+  box-shadow:0 0 0 0 rgba(201,162,39,.6); animation:pulso 2.4s infinite;
+}
+
+.hero h1{
+  font-family:var(--display); font-weight:400;
+  font-size:clamp(3rem,11.5vw,7.6rem);
+  line-height:.9; letter-spacing:.01em; text-transform:uppercase;
+  color:var(--blanco);
+  text-shadow:0 6px 40px rgba(0,0,0,.6);
+}
+.hero h1 .oro{
+  display:inline-block;
+  background:linear-gradient(180deg,#F4DF9B 0%, var(--oro-brillo) 45%, #9C7B15 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  filter:drop-shadow(0 0 26px rgba(201,162,39,.32));
+}
+.hero-sub{
+  margin:26px auto 0; max-width:60ch;
+  font-size:clamp(1rem,2.4vw,1.15rem); color:var(--texto); font-weight:300;
+}
+.hero-acciones{
+  margin-top:38px; display:flex; flex-wrap:wrap; gap:14px; justify-content:center;
+}
+
+/* Mini datos bajo el hero */
+.hero-datos{
+  margin-top:52px; display:grid; grid-template-columns:repeat(2,1fr);
+  gap:1px; background:var(--borde);
+  border:1px solid var(--borde); border-radius:var(--radio); overflow:hidden;
+}
+.hero-datos li{
+  background:rgba(10,10,10,.6); padding:18px 12px;
+  display:flex; flex-direction:column; gap:4px; align-items:center;
+}
+.hero-datos b{
+  font-family:var(--display); font-size:1.9rem; color:var(--oro-claro); letter-spacing:.03em; font-weight:400;
+}
+.hero-datos small{ font-size:.64rem; letter-spacing:.16em; text-transform:uppercase; color:var(--texto-tenue); }
+
+/* Indicador de scroll */
+.hero-scroll{
+  position:absolute; left:50%; bottom:22px; transform:translateX(-50%);
+  display:none; flex-direction:column; align-items:center; gap:8px;
+  font-size:.6rem; letter-spacing:.24em; text-transform:uppercase; color:var(--texto-tenue);
+}
+.hero-scroll i{
+  width:1px; height:44px; background:linear-gradient(180deg,var(--oro),transparent);
+  animation:bajar 2.2s ease-in-out infinite;
+}
+
+/* ---------- 06. MARQUESINA ---------------------------------------------- */
+.marquesina{
+  border-block:1px solid var(--borde);
+  background:var(--carbon);
+  overflow:hidden; padding:16px 0;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+}
+.marquesina-pista{ display:flex; width:max-content; animation:desplazar 32s linear infinite; }
+.marquesina ul{ display:flex; align-items:center; gap:44px; padding-right:44px; }
+.marquesina li{
+  display:flex; align-items:center; gap:44px;
+  font-family:var(--display); font-size:1.55rem; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--texto-tenue); white-space:nowrap;
+}
+.marquesina li::after{ content:""; width:7px; height:7px; background:var(--oro); transform:rotate(45deg); }
+.marquesina li:nth-child(odd){ color:var(--blanco); }
+.marquesina:hover .marquesina-pista{ animation-play-state:paused; }
+
+/* ---------- 07. SERVICIOS ------------------------------------------------ */
+.grid-servicios{
+  display:grid; grid-template-columns:1fr; gap:16px;
+}
+.servicio{ padding:30px 26px 32px; overflow:hidden; }
+/* Número de orden decorativo */
+.servicio-num{
+  position:absolute; top:14px; right:20px;
+  font-family:var(--display); font-size:2.6rem; line-height:1;
+  color:rgba(255,255,255,.045); letter-spacing:.02em;
+  transition:color var(--transicion);
+}
+.servicio:hover .servicio-num{ color:rgba(201,162,39,.16); }
+.servicio:hover .service-icon{ background:var(--oro); color:#120E02; border-color:var(--oro); }
+.servicio h3{
+  margin:22px 0 10px;
+  font-family:var(--display); font-weight:400; font-size:1.45rem;
+  letter-spacing:.045em; text-transform:uppercase; color:var(--blanco);
+}
+.servicio p{ font-size:.92rem; color:var(--texto); }
+/* Filo dorado que aparece en hover */
+.servicio::before{
+  content:""; position:absolute; left:0; top:0; width:2px; height:0;
+  background:linear-gradient(180deg,var(--oro-claro),transparent);
+  transition:height .5s ease;
+}
+.servicio:hover::before{ height:100%; }
+
+.servicios-pie{
+  margin-top:34px; text-align:center;
+  display:flex; flex-direction:column; align-items:center; gap:16px;
+}
+.servicios-pie p{ font-size:.94rem; }
+
+/* ---------- 08. SOBRE NOSOTROS / FILOSOFÍA ------------------------------ */
+.sobre{ display:grid; gap:44px; align-items:center; }
+
+/* Marco visual temporal. 👉 Reemplaza por <img> o define background-image. */
+.sobre-visual{ position:relative; }
+.sobre-placeholder{
+  position:relative; aspect-ratio:4/5;
+  border:1px solid var(--oro-borde); border-radius:var(--radio);
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(201,162,39,.12), transparent 60%),
+    linear-gradient(160deg,var(--gris-800),var(--negro));
+  display:grid; place-items:center; overflow:hidden;
+  background-size:cover; background-position:center;
+}
+.sobre-placeholder::before{
+  content:""; position:absolute; inset:14px; border:1px solid rgba(201,162,39,.16); border-radius:2px;
+}
+.sobre-monograma{
+  font-family:var(--display); font-size:clamp(5rem,18vw,9rem); line-height:.8;
+  letter-spacing:.06em; color:transparent;
+  background:linear-gradient(180deg,var(--oro-claro),rgba(201,162,39,.15));
+  -webkit-background-clip:text; background-clip:text;
+  text-align:center;
+}
+.sobre-nota{
+  position:absolute; left:0; right:0; bottom:26px; text-align:center;
+  font-size:.64rem; letter-spacing:.2em; text-transform:uppercase; color:var(--texto-tenue);
+}
+/* Sello dorado flotante */
+.sobre-sello{
+  position:absolute; right:-10px; bottom:34px;
+  background:linear-gradient(135deg,var(--oro-claro),var(--oro));
+  color:#120E02; padding:16px 20px; border-radius:var(--radio);
+  box-shadow:var(--sombra);
+  font-family:var(--display); font-size:1.05rem; letter-spacing:.06em; text-transform:uppercase;
+  line-height:1.1; text-align:center; max-width:180px;
+}
+.sobre-sello small{ display:block; font-family:var(--cuerpo); font-size:.58rem; letter-spacing:.16em; opacity:.72; margin-top:4px; }
+
+.sobre-texto p + p{ margin-top:16px; }
+.sobre-cita{
+  margin:28px 0; padding:20px 24px;
+  border-left:2px solid var(--oro);
+  background:linear-gradient(90deg,var(--oro-suave),transparent);
+  font-family:var(--display); font-size:1.5rem; line-height:1.2;
+  letter-spacing:.03em; text-transform:uppercase; color:var(--blanco);
+}
+
+/* Valores */
+.valores{ display:grid; gap:12px; margin-top:30px; }
+.valor{
+  display:flex; gap:16px; align-items:flex-start;
+  padding:16px 18px; border:1px solid var(--borde); border-radius:var(--radio);
+  background:rgba(255,255,255,.012);
+  transition:border-color var(--transicion), background var(--transicion);
+}
+.valor:hover{ border-color:var(--oro-borde); background:var(--oro-suave); }
+.valor-marca{
+  font-family:var(--display); font-size:1rem; color:var(--oro); letter-spacing:.1em; padding-top:2px;
+}
+.valor h4{
+  font-size:.82rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--blanco);
+  margin-bottom:3px;
+}
+.valor p{ font-size:.88rem; }
+
+/* ---------- 09. POR QUÉ ELEGIRNOS + CIFRAS ------------------------------ */
+.grid-razones{ display:grid; grid-template-columns:1fr; gap:16px; }
+.razon{ padding:32px 26px; text-align:left; }
+.razon h3{
+  margin:22px 0 10px;
+  font-family:var(--display); font-weight:400; font-size:1.4rem;
+  letter-spacing:.045em; text-transform:uppercase; color:var(--blanco);
+}
+.razon p{ font-size:.92rem; }
+.razon:hover .icono{ background:var(--oro); color:#120E02; }
+
+/* Banda de cifras */
+.cifras{
+  margin-top:52px;
+  display:grid; grid-template-columns:repeat(2,1fr);
+  gap:1px; background:var(--borde);
+  border:1px solid var(--borde); border-radius:var(--radio); overflow:hidden;
+}
+.cifra{
+  background:var(--carbon); padding:30px 16px; text-align:center;
+  transition:background var(--transicion);
+}
+.cifra:hover{ background:var(--gris-900); }
+.cifra b{
+  display:block; font-family:var(--display); font-weight:400;
+  font-size:clamp(2.4rem,7vw,3.4rem); line-height:1; letter-spacing:.02em;
+  background:linear-gradient(180deg,var(--oro-claro),var(--oro));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.cifra span{
+  display:block; margin-top:10px;
+  font-size:.66rem; letter-spacing:.18em; text-transform:uppercase; color:var(--texto-tenue);
+}
+
+/* ---------- 10. HORARIOS ------------------------------------------------- */
+.grid-horarios{ display:grid; gap:24px; align-items:start; }
+
+.horario-panel{ padding:30px 26px; }
+.horario-panel h3{
+  font-family:var(--display); font-weight:400; font-size:1.6rem;
+  letter-spacing:.05em; text-transform:uppercase; color:var(--blanco); margin-bottom:6px;
+}
+
+/* Estado abierto/cerrado calculado en JS (hora de Chile) */
+.estado{
+  display:inline-flex; align-items:center; gap:9px;
+  padding:7px 15px; margin-bottom:24px;
+  border:1px solid var(--borde); border-radius:100px;
+  font-size:.68rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--texto-tenue);
+}
+.estado .punto{ width:7px; height:7px; border-radius:50%; background:var(--texto-tenue); }
+.estado.abierto{ color:var(--oro-claro); border-color:var(--oro-borde); background:var(--oro-suave); }
+.estado.abierto .punto{ background:var(--oro); box-shadow:0 0 0 0 rgba(201,162,39,.6); animation:pulso 2.4s infinite; }
+.estado.cerrado{ color:#C98A7A; border-color:rgba(138,48,32,.4); background:rgba(138,48,32,.12); }
+.estado.cerrado .punto{ background:#C98A7A; }
+
+/* 👉 EDITAR HORARIOS: cambia los <li> aquí y el objeto HORARIOS en el JS. */
+.tabla-horarios li{
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  padding:15px 0; border-bottom:1px solid var(--borde);
+  transition:padding-left var(--transicion);
+}
+.tabla-horarios li:last-child{ border-bottom:0; }
+.tabla-horarios li:hover{ padding-left:8px; }
+.tabla-horarios .dia{
+  font-size:.78rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--blanco);
+}
+.tabla-horarios .hora{
+  font-family:var(--display); font-size:1.3rem; letter-spacing:.06em; color:var(--oro-claro);
+}
+.tabla-horarios li.libre .hora{ color:var(--texto-tenue); font-size:1.1rem; }
+.tabla-horarios li.hoy{ background:linear-gradient(90deg,var(--oro-suave),transparent); padding-left:12px; }
+.tabla-horarios li.hoy .dia::after{
+  content:"HOY"; margin-left:10px; font-size:.58rem; letter-spacing:.14em;
+  color:var(--negro); background:var(--oro); padding:2px 7px; border-radius:2px;
+}
+.horario-nota{ margin-top:22px; font-size:.8rem; color:var(--texto-tenue); }
+
+/* Panel de ubicación */
+.ubicacion-panel{ padding:30px 26px; display:flex; flex-direction:column; gap:22px; }
+.dato{ display:flex; gap:16px; align-items:flex-start; }
+.dato h4{
+  font-size:.68rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--texto-tenue); margin-bottom:5px;
+}
+.dato p,.dato a{ color:var(--blanco); font-size:.98rem; }
+.dato a:hover{ color:var(--oro-claro); }
+.dato small{ display:block; color:var(--texto-tenue); font-size:.82rem; margin-top:2px; }
+
+/* Mapa placeholder — reemplazar por iframe de Google Maps cuando quieras */
+.mapa-placeholder{
+  position:relative; aspect-ratio:16/10; border-radius:var(--radio); overflow:hidden;
+  border:1px solid var(--borde);
+  background:
+    linear-gradient(rgba(201,162,39,.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,162,39,.07) 1px, transparent 1px),
+    linear-gradient(160deg,var(--gris-800),var(--negro));
+  background-size:38px 38px, 38px 38px, 100% 100%;
+  display:grid; place-items:center; text-align:center;
+}
+.mapa-placeholder .pin{ color:var(--oro); }
+.mapa-placeholder p{
+  font-size:.66rem; letter-spacing:.2em; text-transform:uppercase; color:var(--texto-tenue); margin-top:10px;
+}
+
+/* ---------- 11. CTA FINAL ------------------------------------------------ */
+.cta{
+  position:relative; overflow:hidden; text-align:center;
+  padding:96px 0;
+  background:linear-gradient(180deg,var(--negro),var(--carbon) 50%,var(--negro));
+  border-block:1px solid var(--borde);
+}
+.cta::before{
+  content:""; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:min(900px,120vw); aspect-ratio:1/.6;
+  background:radial-gradient(ellipse at center, rgba(201,162,39,.18), transparent 68%);
+  filter:blur(4px);
+}
+.cta-contenido{ position:relative; }
+.cta h2{
+  font-family:var(--display); font-weight:400;
+  font-size:clamp(2.6rem,9vw,5.6rem); line-height:.94; text-transform:uppercase;
+  color:var(--blanco);
+}
+.cta p{ margin:22px auto 0; max-width:56ch; font-size:1.05rem; }
+.cta-acciones{ margin-top:38px; display:flex; flex-wrap:wrap; gap:14px; justify-content:center; }
+.cta-contacto{
+  margin-top:34px; display:flex; flex-wrap:wrap; gap:12px 34px; justify-content:center;
+  font-size:.82rem; letter-spacing:.06em; color:var(--texto-tenue);
+}
+.cta-contacto a{ display:inline-flex; align-items:center; gap:9px; color:var(--blanco); }
+.cta-contacto a:hover{ color:var(--oro-claro); }
+.cta-contacto svg{ width:16px; height:16px; color:var(--oro); }
+
+/* ---------- 12. CONTACTO ------------------------------------------------- */
+.grid-contacto{ display:grid; gap:28px; align-items:start; }
+
+.form{
+  padding:30px 24px;
+  background:linear-gradient(160deg,var(--gris-900),var(--carbon));
+  border:1px solid var(--borde); border-radius:var(--radio);
+}
+.campo{ margin-bottom:16px; }
+.campo label{
+  display:block; margin-bottom:8px;
+  font-size:.66rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--texto-tenue);
+}
+.campo input,.campo select,.campo textarea{
+  width:100%; padding:14px 16px;
+  background:var(--negro); color:var(--blanco);
+  border:1px solid var(--borde); border-radius:var(--radio);
+  font-size:.95rem;
+  transition:border-color var(--transicion), background var(--transicion);
+}
+.campo input::placeholder,.campo textarea::placeholder{ color:var(--texto-tenue); }
+.campo input:focus,.campo select:focus,.campo textarea:focus{
+  outline:none; border-color:var(--oro); background:#0D0D0D;
+}
+.campo textarea{ resize:vertical; min-height:110px; }
+.campo select{ appearance:none; cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C9A227' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 14px center; background-size:16px;
+  padding-right:42px;
+}
+.form-nota{ margin-top:14px; font-size:.76rem; color:var(--texto-tenue); text-align:center; }
+
+.contacto-info{ display:grid; gap:14px; }
+.contacto-card{
+  display:flex; gap:16px; align-items:flex-start;
+  padding:22px 22px;
+}
+.contacto-card:hover .icono{ background:var(--oro); color:#120E02; }
+.contacto-card h4{
+  font-size:.68rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--texto-tenue); margin-bottom:6px;
+}
+.contacto-card p,.contacto-card a{ color:var(--blanco); font-size:.98rem; }
+.contacto-card a:hover{ color:var(--oro-claro); }
+.contacto-card small{ display:block; color:var(--texto-tenue); font-size:.82rem; margin-top:4px; }
+
+/* ---------- 13. FOOTER + FLOTANTES -------------------------------------- */
+.footer{
+  background:var(--carbon);
+  border-top:1px solid var(--borde);
+  padding:62px 0 0;
+}
+.footer-grid{ display:grid; gap:36px; }
+.footer-marca .logo{ margin-bottom:18px; }
+.footer-marca p{ font-size:.92rem; max-width:38ch; }
+
+.redes{ display:flex; gap:10px; margin-top:22px; }
+.redes a{
+  width:42px; height:42px; display:grid; place-items:center;
+  border:1px solid var(--borde); border-radius:var(--radio); color:var(--texto);
+  transition:all var(--transicion);
+}
+.redes a:hover{ border-color:var(--oro); color:var(--oro-claro); background:var(--oro-suave); transform:translateY(-3px); }
+.redes svg{ width:18px; height:18px; }
+
+.footer h4{
+  font-family:var(--display); font-weight:400; font-size:1.15rem;
+  letter-spacing:.09em; text-transform:uppercase; color:var(--blanco); margin-bottom:18px;
+}
+.footer-links li{ margin-bottom:11px; }
+.footer-links a{ font-size:.92rem; color:var(--texto); transition:color var(--transicion), padding-left var(--transicion); }
+.footer-links a:hover{ color:var(--oro-claro); padding-left:6px; }
+
+.footer-abajo{
+  margin-top:52px; padding:24px 0; border-top:1px solid var(--borde);
+  display:flex; flex-direction:column; gap:10px; align-items:center; text-align:center;
+  font-size:.78rem; color:var(--texto-tenue);
+}
+.footer-abajo a:hover{ color:var(--oro-claro); }
+
+/* WhatsApp flotante */
+.flotante{
+  position:fixed; right:18px; bottom:18px; z-index:900;
+  display:flex; align-items:center; gap:10px;
+  padding:14px 20px 14px 16px;
+  background:linear-gradient(135deg,var(--oro-claro),var(--oro));
+  color:#120E02; border-radius:100px;
+  font-size:.76rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  box-shadow:0 14px 34px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.12) inset;
+  transition:transform var(--transicion), box-shadow var(--transicion);
+}
+.flotante:hover{ transform:translateY(-3px) scale(1.02); box-shadow:0 18px 44px rgba(201,162,39,.34); }
+.flotante svg{ width:20px; height:20px; }
+.flotante .texto{ display:none; }
+
+/* ---------- 14. ANIMACIONES --------------------------------------------- */
+@keyframes pulso{
+  0%{ box-shadow:0 0 0 0 rgba(201,162,39,.55); }
+  70%{ box-shadow:0 0 0 9px rgba(201,162,39,0); }
+  100%{ box-shadow:0 0 0 0 rgba(201,162,39,0); }
+}
+@keyframes latido{
+  0%,100%{ opacity:.85; transform:translate(-50%,-50%) scale(1); }
+  50%{ opacity:1; transform:translate(-50%,-50%) scale(1.06); }
+}
+@keyframes bajar{
+  0%{ transform:scaleY(.3); transform-origin:top; opacity:.3; }
+  50%{ transform:scaleY(1); transform-origin:top; opacity:1; }
+  100%{ transform:scaleY(.3); transform-origin:bottom; opacity:.3; }
+}
+@keyframes desplazar{
+  from{ transform:translateX(0); }
+  to{ transform:translateX(-50%); }
+}
+@keyframes trazar{ to{ stroke-dashoffset:0; } }
+
+/* Aparición al hacer scroll (se activa con IntersectionObserver).
+   IMPORTANTE: el estado oculto solo se aplica si el JS está vivo (html.js).
+   Así, si el script falla o está bloqueado, el contenido igual se ve. */
+html.js .reveal{
+  opacity:0; transform:translateY(26px);
+  transition:opacity .8s cubic-bezier(.2,.7,.3,1), transform .8s cubic-bezier(.2,.7,.3,1);
+}
+html.js .reveal.visible{ opacity:1; transform:none; }
+
+/* Respeta la preferencia de menos movimiento */
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  *,*::before,*::after{
+    animation-duration:.001ms !important; animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+  }
+  html.js .reveal{ opacity:1; transform:none; }
+  .hero-templo path{ stroke-dashoffset:0; }
+}
+
+/* ---------- RESPONSIVE (mobile-first) ----------------------------------- */
+@media (min-width:560px){
+  .grid-servicios{ grid-template-columns:repeat(2,1fr); }
+  .grid-razones{ grid-template-columns:repeat(2,1fr); }
+  .cifras{ grid-template-columns:repeat(4,1fr); }
+  .hero-datos{ grid-template-columns:repeat(4,1fr); }
+  .flotante .texto{ display:inline; }
+  .footer-abajo{ flex-direction:row; justify-content:space-between; text-align:left; }
+}
+
+@media (min-width:860px){
+  .seccion{ padding:112px 0; }
+  .contenedor{ padding-inline:32px; }
+  .nav{ display:block; }
+  .hamburguesa{ display:none; }
+  .header .btn-oro{ display:inline-flex; }
+  .hero-scroll{ display:flex; }
+  .sobre{ grid-template-columns:.85fr 1fr; gap:60px; }
+  .valores{ grid-template-columns:repeat(2,1fr); }
+  .grid-horarios{ grid-template-columns:1.05fr .95fr; gap:28px; }
+  .grid-contacto{ grid-template-columns:1.1fr .9fr; gap:32px; }
+  .form{ padding:38px 34px; }
+  .footer-grid{ grid-template-columns:1.6fr 1fr 1fr 1.2fr; }
+  .campo-doble{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+}
+
+@media (min-width:1080px){
+  .grid-servicios{ grid-template-columns:repeat(3,1fr); }
+  .grid-razones{ grid-template-columns:repeat(4,1fr); }
+  .seccion{ padding:128px 0; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Barra de progreso de scroll -->
+<div class="progreso" id="progreso" aria-hidden="true"></div>
+
+<!-- ============================================================
+     HEADER FIJO + NAVEGACIÓN
+     ============================================================ -->
+<header class="header" id="header">
+  <div class="contenedor">
+
+    <a href="#inicio" class="logo" aria-label="The Temple Fitness Club, ir al inicio">
+      <span class="logo-nombre">THE <em>TEMPLE</em></span>
+      <span class="logo-sub">Fitness Club · Loncoche</span>
+    </a>
+
+    <nav class="nav" id="nav-escritorio" aria-label="Navegación principal">
+      <ul>
+        <li><a href="#inicio" class="activo">Inicio</a></li>
+        <li><a href="#servicios">Servicios</a></li>
+        <li><a href="#nosotros">Sobre Nosotros</a></li>
+        <li><a href="#horarios">Horarios</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-acciones">
+      <a href="#contacto" class="btn btn-oro btn-sm">Únete ahora</a>
+      <button class="hamburguesa" id="btn-menu" aria-expanded="false" aria-controls="menu-movil" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+<!-- Menú móvil a pantalla completa -->
+<div class="menu-movil" id="menu-movil">
+  <nav aria-label="Navegación móvil">
+    <ul>
+      <li><a href="#inicio"><span>01</span> Inicio</a></li>
+      <li><a href="#servicios"><span>02</span> Servicios</a></li>
+      <li><a href="#nosotros"><span>03</span> Sobre Nosotros</a></li>
+      <li><a href="#horarios"><span>04</span> Horarios</a></li>
+      <li><a href="#contacto"><span>05</span> Contacto</a></li>
+    </ul>
+  </nav>
+  <a href="#contacto" class="btn btn-oro btn-bloque">Agenda tu clase</a>
+  <div class="menu-movil-pie">
+    <span>Pedro Montt 541 · Aníbal Pinto 381, Loncoche</span>
+    <a href="tel:+56965706172">+56 9 6570 6172</a>
+  </div>
+</div>
+
+<main>
+
+<!-- ============================================================
+     1. HERO
+     👉 Para la foto real: define background-image en .hero-placeholder
+     ============================================================ -->
+<section class="hero" id="inicio">
+
+  <div class="hero-fondo" aria-hidden="true">
+    <!-- ▼ AQUÍ VA LA IMAGEN/VIDEO DE FONDO ▼ -->
+    <div class="hero-placeholder"></div>
+    <div class="hero-reticula"></div>
+    <div class="hero-halo"></div>
+
+    <!-- Silueta del templo dibujada a mano en SVG -->
+    <svg class="hero-templo" viewBox="0 0 600 400" preserveAspectRatio="xMidYMax meet" fill="none"
+         stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+      <path d="M50 150 L300 42 L550 150"/>            <!-- frontón -->
+      <path d="M40 152 H560 M48 168 H552 M56 182 H544"/> <!-- entablamento -->
+      <path d="M96 182 V392 M126 182 V392 M474 182 V392 M504 182 V392"/> <!-- columnas -->
+      <path d="M210 392 V262 A90 90 0 0 1 390 262 V392"/>  <!-- arco exterior -->
+      <path d="M236 392 V268 A64 64 0 0 1 364 268 V392"/>  <!-- arco interior -->
+      <path d="M20 392 H580 M6 400 H594"/>            <!-- escalinata -->
+    </svg>
+
+    <div class="hero-overlay"></div>
+  </div>
+
+  <div class="contenedor hero-contenido">
+    <p class="hero-kicker"><span class="punto"></span> Loncoche · Región de La Araucanía</p>
+
+    <h1>Tu cuerpo es un <span class="oro">Templo</span>.<br>Entrena con propósito.</h1>
+
+    <p class="hero-sub">
+      No venimos a hacer bulto. Venimos a construir fuerza, disciplina y bienestar real.
+      Cuerpo, mente y espíritu — bajo el mismo techo, en Loncoche.
+    </p>
+
+    <div class="hero-acciones">
+      <a href="#contacto" class="btn btn-oro btn-lg">Agenda tu clase</a>
+      <a href="#servicios" class="btn btn-linea btn-lg">Conoce nuestros planes</a>
+    </div>
+
+    <!-- Mini datos (cifras reales derivadas de servicios y horario) -->
+    <ul class="hero-datos">
+      <li><b>12</b><small>Disciplinas</small></li>
+      <li><b>14h</b><small>Abierto al día</small></li>
+      <li><b>6</b><small>Días a la semana</small></li>
+      <li><b>1</b><small>Objetivo: tu mejor versión</small></li>
+    </ul>
+  </div>
+
+  <a href="#servicios" class="hero-scroll" aria-label="Bajar a servicios">
+    <span>Desliza</span>
+    <i></i>
+  </a>
+</section>
+
+<!-- ============================================================
+     MARQUESINA DE VALORES
+     ============================================================ -->
+<div class="marquesina" aria-hidden="true">
+  <div class="marquesina-pista">
+    <ul>
+      <li>Disciplina</li><li>Fuerza</li><li>Comunidad</li><li>Propósito</li>
+      <li>Constancia</li><li>Bienestar</li><li>Resultados</li>
+    </ul>
+    <ul>
+      <li>Disciplina</li><li>Fuerza</li><li>Comunidad</li><li>Propósito</li>
+      <li>Constancia</li><li>Bienestar</li><li>Resultados</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============================================================
+     2. SERVICIOS
+     ============================================================ -->
+<section class="seccion" id="servicios">
+  <div class="contenedor">
+
+    <header class="cabecera cabecera--centro reveal">
+      <p class="kicker">Servicios</p>
+      <h2 class="titulo">Todo lo que necesitas <span class="oro">bajo un mismo techo</span></h2>
+      <p class="bajada">
+        Da igual si partes de cero o si llevas años entrenando. Aquí encuentras la disciplina
+        que te mueve y el profesional que te guía.
+      </p>
+    </header>
+
+    <div class="grid-servicios">
+
+      <!-- 01 -->
+      <article class="tarjeta servicio reveal">
+        <span class="servicio-num">01</span>
+        <div class="service-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="6.5" r="3"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/>
+            <path d="M18.6 3.6l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z"/>
+          </svg>
+        </div>
+        <h3>Entrenamiento Personalizado</h3>
+        <p>Un plan hecho para ti. Evaluación inicial, objetivos claros y un entrenador que te acompaña sesión a sesión.</p>
+      </article>
+
+      <!-- 02 -->
+      <article class="tarjeta servicio reveal">
+        <span class="servicio-num">02</span>
+        <div class="service-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="8" cy="8" r="2.6"/><path d="M3 19a5 5 0 0 1 10 0"/>
+            <path d="M16 5.6a2.6 2.6 0 0 1 0 5.2"/><path d="M15.4 14.6A5 5 0 0 1 21 19"/>
+          </svg>
+        </div>
+        <h3>Clases Grupales</h3>
+        <p>La energía del grupo empuja. Entrena rodeado de gente que va por lo mismo que tú y no te deja aflojar.</p>
+      </article>
+
+      <!-- 03 -->
+      <article class="tarjeta servicio reveal">
+        <span class="servicio-num">03</span>
+        <div class="service-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 8.6a3 3 0 1 1 6 0"/>
+            <path d="M9.3 8.4C6.7 9.8 5 12.4 5 15.4c0 1.5.4 2.6.9 3.3.3.4.8.6 1.3.6h9.6c.5 0 1-.2 1.3-.6.5-.7.9-1.8.9-3.3 0-3-1.7-5.6-4.3-7"/>
+          </svg>
+        </div>
+        <h3>Entrenamiento Funcional</h3>
+        <p>Movimientos reales para la vida real. Ganas fuerza, movilidad y coordinación desde el primer día.</p>
+      </article>
+
+      <!-- 04 -->
+      <article class="tarjeta servicio reveal">
+        <span class="servicio-num">04</span>
+        <div class="service-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 9v6M7 6.5v11M17 6.5v11M20 9v6M7 12h10"/>
+          </svg>
+        </div>
+        <h3>Fuerza y Resistencia</h3>
+        <p>Barras, discos y técnica bien enseñada. Construye músculo, potencia y una base que no se cae.</p>
+      </article>
+
+      <!-- 05 -->
+      <article class="tarjeta servicio reveal">
+        <span class="servicio-num">05</span>
+        <div class="service-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20.5S4 16 4 10.5A4.5 4.5 0 0 1 12 7.8 4.5 4.5 0 0 1 20 10.5c0 5.5-8 10-8 10z"/>
+            <path d="M12.9 9.6 10.3 13h3l-1.8 3"/>
+          </svg>
+        </div>
+        <h3>Cardio HIIT</h3>
+        <p>Alta intensidad en poco tiempo. Quemas grasa, subes tu condición y sales con el corazón fuerte.</p>
+      </article>
+
+      <!-- 06 -->
+      <article class="tarjeta servicio reveal">
+        <span class="servicio-num">06</span>
+        <div class="service-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="4.8" r="2"/><path d="M12 8.8v3.6"/>
+            <path d="M12 12.4c-2.5 0-4.5 1.6-5.2 3.9-.2.6.3 1.2.9 1.2h8.6c.6 0 1.1-.6.9-1.2-.7-2.3-2.7-3.9-5.2-3.9z"/>
+            <path d="M8.4 11.2 5.2 13.4M15.6 11.2l3.2 2.2"/>
+          </svg>
+        </div>
+        <h3>Yoga y Pilates</h3>
+        <p>Respira, estira y fortalece tu centro. El equilibrio y la movilidad también son entrenamiento.</p>
+      </article>
+
+      <!-- 07 -->
+      <article class="tarjeta servicio reveal">
+        <span class="servicio-num">07</span>
+        <div class="service-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 17.4V6.4l9-2v11"/><circle cx="7" cy="17.4" r="2"/><circle cx="16" cy="15.4" r="2"/>
+          </svg>
+        </div>
+        <h3>Zumba</h3>
+        <p>Baila, suda y ríete un rato. La forma más entretenida de quemar calorías sin que se sienta trabajo.</p>
+      </article>
+
+      <!-- 08 -->
+      <article class="tarjeta servicio reveal">
+        <span class="servicio-num">08</span>
+        <div class="service-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 3.6V8h-4.4"/><circle cx="12" cy="12" r="2.2"/>
+          </svg>
+        </div>
+        <h3>Circuitos de Entrenamiento</h3>
+        <p>Estaciones, ritmo y cero aburrimiento. Trabajo de cuerpo completo en cada vuelta.</p>
+      </article>
+
+      <!-- 09 -->
+      <article class="tarjeta servicio reveal">
+        <span class="servicio-num">09</span>
+        <div class="service-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 8.2c-3 0-5.2 2.3-5.2 5.6S9.4 20.4 12 20.4s5.2-3.3 5.2-6.6S15 8.2 12 8.2z"/>
+            <path d="M12 8.2c0-2.1 1.5-3.7 3.6-4-.1 2.3-1.6 4-3.6 4z"/>
+          </svg>
+        </div>
+        <h3>Nutrición y Dietética</h3>
+        <p>Un plan de alimentación real, adaptado a tu rutina, tu presupuesto y tu meta. Sin dietas imposibles.</p>
+      </article>
+
+      <!-- 10 -->
+      <article class="tarjeta servicio reveal">
+        <span class="servicio-num">10</span>
+        <div class="service-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8.6 13V6.3a1.4 1.4 0 0 1 2.8 0V12"/>
+            <path d="M11.4 11.5V5.4a1.4 1.4 0 0 1 2.8 0V12"/>
+            <path d="M14.2 12V7.7a1.4 1.4 0 0 1 2.8 0v7c0 3-2.2 5.3-5.2 5.3-2.4 0-3.7-1-4.8-2.6l-2.1-3.2a1.4 1.4 0 0 1 2.1-1.8l1.6 1.6"/>
+          </svg>
+        </div>
+        <h3>Masajes Deportivos</h3>
+        <p>Descarga muscular y recuperación. Porque el descanso también construye resultados.</p>
+      </article>
+
+      <!-- 11 -->
+      <article class="tarjeta servicio reveal">
+        <span class="servicio-num">11</span>
+        <div class="service-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="8.5"/><path d="M15.6 8.4 13.4 13.4 8.4 15.6l2.2-5z"/>
+          </svg>
+        </div>
+        <h3>Wellness Coaching</h3>
+        <p>Hábitos, sueño, estrés y mentalidad. Acompañamiento para sostener el cambio en el tiempo.</p>
+      </article>
+
+      <!-- 12 -->
+      <article class="tarjeta servicio reveal">
+        <span class="servicio-num">12</span>
+        <div class="service-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3.2 19 6v5.2c0 4.2-2.9 7.5-7 9.2-4.1-1.7-7-5-7-9.2V6z"/>
+            <path d="M12 9.2v5M9.5 11.7h5"/>
+          </svg>
+        </div>
+        <h3>Rehabilitación Física</h3>
+        <p>Vuelve a moverte sin dolor. Trabajo progresivo y seguro para volver mejor que antes.</p>
+      </article>
+
+    </div>
+
+    <div class="servicios-pie reveal">
+      <div class="friso" aria-hidden="true"><span></span><i></i><span></span></div>
+      <p>¿No sabes por dónde partir? Te hacemos una evaluación inicial y armamos tu ruta.</p>
+      <a href="#contacto" class="btn btn-linea">Quiero mi evaluación</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     3. SOBRE NOSOTROS / FILOSOFÍA
+     ============================================================ -->
+<section class="seccion seccion--alt seccion--linea" id="nosotros">
+  <div class="contenedor">
+    <div class="sobre">
+
+      <!-- Visual temporal: reemplazar por foto real del gimnasio -->
+      <div class="sobre-visual reveal">
+        <div class="sobre-placeholder">
+          <span class="sobre-monograma">T</span>
+          <span class="sobre-nota">Espacio reservado para foto</span>
+        </div>
+        <div class="sobre-sello">
+          Tu cuerpo es un templo
+          <small>Desde Loncoche</small>
+        </div>
+      </div>
+
+      <div class="sobre-texto reveal">
+        <header class="cabecera" style="margin-bottom:0">
+          <p class="kicker">Sobre nosotros</p>
+          <h2 class="titulo">Más que un gimnasio.<br><span class="oro">Un templo</span></h2>
+        </header>
+
+        <blockquote class="sobre-cita">“Cuida el lugar donde vives todos los días: tu cuerpo.”</blockquote>
+
+        <p>
+          The Temple Fitness Club nació en Loncoche con una idea simple y potente: el cuerpo no es
+          una máquina que se explota, es un templo que se cuida, se fortalece y se respeta.
+        </p>
+        <p>
+          Por eso acá no vas a encontrar solo fierros. Vas a encontrar un espacio ordenado, gente que
+          te saluda por tu nombre y profesionales que se toman en serio tu progreso. Entrenamos el
+          cuerpo, pero también la cabeza y la constancia: eso es lo que sostiene los resultados.
+        </p>
+        <p>
+          Vengas por salud, por estética, por rendimiento o por rehabilitación, tu proceso empieza
+          igual: escuchándote y armando un plan que puedas cumplir.
+        </p>
+
+        <!-- Valores -->
+        <div class="valores">
+          <div class="valor">
+            <span class="valor-marca">01</span>
+            <div><h4>Disciplina</h4><p>El progreso se construye en los días en que no dan ganas.</p></div>
+          </div>
+          <div class="valor">
+            <span class="valor-marca">02</span>
+            <div><h4>Comunidad</h4><p>Acá nadie entrena solo. Nos empujamos entre todos.</p></div>
+          </div>
+          <div class="valor">
+            <span class="valor-marca">03</span>
+            <div><h4>Resultados reales</h4><p>Medimos, ajustamos y avanzamos. Sin humo ni atajos.</p></div>
+          </div>
+          <div class="valor">
+            <span class="valor-marca">04</span>
+            <div><h4>Bienestar integral</h4><p>Cuerpo, mente y espíritu. El templo completo.</p></div>
+          </div>
+          <div class="valor">
+            <span class="valor-marca">05</span>
+            <div><h4>Excelencia</h4><p>Técnica correcta, atención profesional y estándares altos.</p></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     4. POR QUÉ ELEGIRNOS + CIFRAS
+     ============================================================ -->
+<section class="seccion" id="porque">
+  <div class="contenedor">
+
+    <header class="cabecera cabecera--centro reveal">
+      <p class="kicker">Por qué elegirnos</p>
+      <h2 class="titulo">Lo que nos hace <span class="oro">distintos</span></h2>
+      <p class="bajada">Cuatro razones concretas por las que la gente de Loncoche entrena con nosotros.</p>
+    </header>
+
+    <div class="grid-razones">
+
+      <article class="tarjeta razon reveal">
+        <div class="icono" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="9" r="5.2"/><path d="M9 13.6 7.6 21l4.4-2.4L16.4 21 15 13.6"/>
+          </svg>
+        </div>
+        <h3>Entrenadores certificados</h3>
+        <p>Profesionales del deporte que corrigen tu técnica y te enseñan a entrenar bien, no solo a sudar.</p>
+      </article>
+
+      <article class="tarjeta razon reveal">
+        <div class="icono" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3.5 20V9.5M9.5 20V4.5M15.5 20v-8M21 20V7.5"/><path d="M2 20h20"/>
+          </svg>
+        </div>
+        <h3>Plan a tu medida</h3>
+        <p>Evaluamos tu punto de partida y armamos una ruta clara, con metas alcanzables y seguimiento.</p>
+      </article>
+
+      <article class="tarjeta razon reveal">
+        <div class="icono" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20.5S4.5 16.3 4.5 10.8A4.3 4.3 0 0 1 12 8a4.3 4.3 0 0 1 7.5 2.8c0 5.5-7.5 9.7-7.5 9.7z"/>
+            <path d="M7.5 4.2 8.4 6l1.8.9-1.8.9-.9 1.8-.9-1.8L4.8 6.9 6.6 6z"/>
+          </svg>
+        </div>
+        <h3>Ambiente que motiva</h3>
+        <p>Espacio limpio, ordenado y con la energía justa para que quieras volver al día siguiente.</p>
+      </article>
+
+      <article class="tarjeta razon reveal">
+        <div class="icono" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/>
+          </svg>
+        </div>
+        <h3>Horario amplio</h3>
+        <p>Abierto hasta las 23:00 de lunes a viernes. Entrenas cuando puedes, no cuando toca.</p>
+      </article>
+
+    </div>
+
+    <!-- Banda de cifras (los números se animan con JS) -->
+    <div class="cifras reveal">
+      <div class="cifra"><b data-contador="12">0</b><span>Disciplinas</span></div>
+      <div class="cifra"><b data-contador="14" data-sufijo="h">0</b><span>Abierto al día</span></div>
+      <div class="cifra"><b data-contador="6">0</b><span>Días a la semana</span></div>
+      <div class="cifra"><b data-contador="0">0</b><span>Excusas</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     5. HORARIOS  ·  👉 EDITAR AQUÍ Y EN EL OBJETO "HORARIOS" DEL JS
+     ============================================================ -->
+<section class="seccion seccion--alt seccion--linea" id="horarios">
+  <div class="contenedor">
+
+    <header class="cabecera cabecera--centro reveal">
+      <p class="kicker">Horarios</p>
+      <h2 class="titulo">Cuando tú <span class="oro">puedas</span></h2>
+      <p class="bajada">Catorce horas diarias de lunes a viernes. La excusa del tiempo se nos acabó.</p>
+    </header>
+
+    <div class="grid-horarios">
+
+      <div class="tarjeta horario-panel reveal">
+        <h3>Atención semanal</h3>
+        <div class="estado" id="estado-gimnasio">
+          <span class="punto"></span><span id="estado-texto">Consultando horario…</span>
+        </div>
+
+        <ul class="tabla-horarios" id="tabla-horarios">
+          <li data-dia="1"><span class="dia">Lunes</span><span class="hora">09:00 – 23:00</span></li>
+          <li data-dia="2"><span class="dia">Martes</span><span class="hora">09:00 – 23:00</span></li>
+          <li data-dia="3"><span class="dia">Miércoles</span><span class="hora">09:00 – 23:00</span></li>
+          <li data-dia="4"><span class="dia">Jueves</span><span class="hora">09:00 – 23:00</span></li>
+          <li data-dia="5"><span class="dia">Viernes</span><span class="hora">09:00 – 23:00</span></li>
+          <li data-dia="6"><span class="dia">Sábado</span><span class="hora">09:00 – 16:00</span></li>
+          <li data-dia="0" class="libre"><span class="dia">Domingo</span><span class="hora">Cerrado</span></li>
+        </ul>
+
+        <p class="horario-nota">
+          * Los horarios de clases grupales se publican cada semana. Consúltanos por WhatsApp
+          para reservar tu cupo. Feriados con horario especial.
+        </p>
+      </div>
+
+      <div class="tarjeta ubicacion-panel reveal">
+
+        <div class="dato">
+          <div class="icono" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Dónde estamos</h4>
+            <p>Pedro Montt 541 · Aníbal Pinto 381</p>
+            <small>Loncoche, Región de La Araucanía, Chile</small>
+          </div>
+        </div>
+
+        <div class="dato">
+          <div class="icono" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4.5 5.5c0-1 .8-1.8 1.8-1.8h1.6c.8 0 1.5.5 1.7 1.3l.8 2.7c.2.7 0 1.4-.6 1.8l-1.2.9a12 12 0 0 0 5 5l.9-1.2c.4-.6 1.1-.8 1.8-.6l2.7.8c.8.2 1.3.9 1.3 1.7v1.6c0 1-.8 1.8-1.8 1.8A15.5 15.5 0 0 1 4.5 5.5z"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Llámanos o escríbenos</h4>
+            <p><a href="tel:+56965706172">+56 9 6570 6172</a></p>
+            <small>WhatsApp disponible en horario de atención</small>
+          </div>
+        </div>
+
+        <!-- Mapa temporal: reemplazar por iframe de Google Maps -->
+        <div class="mapa-placeholder">
+          <div>
+            <svg class="pin" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>
+            </svg>
+            <p>Mapa próximamente</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     6. CTA FINAL
+     ============================================================ -->
+<section class="cta">
+  <div class="contenedor cta-contenido reveal">
+    <h2>Empieza tu <span class="oro" style="background:linear-gradient(180deg,#F4DF9B,#9C7B15);-webkit-background-clip:text;background-clip:text;color:transparent;">transformación</span> hoy</h2>
+    <p>
+      El mejor momento para partir fue hace un año. El segundo mejor es hoy.
+      Ven, conoce el lugar y prueba tu primera clase.
+    </p>
+
+    <div class="cta-acciones">
+      <a href="https://wa.me/56965706172?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20los%20planes%20de%20The%20Temple%20Fitness%20Club"
+         class="btn btn-oro btn-lg" target="_blank" rel="noopener">Únete ahora</a>
+      <a href="#contacto" class="btn btn-linea btn-lg">Agenda tu clase</a>
+    </div>
+
+    <div class="cta-contacto">
+      <a href="tel:+56965706172">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4.5 5.5c0-1 .8-1.8 1.8-1.8h1.6c.8 0 1.5.5 1.7 1.3l.8 2.7c.2.7 0 1.4-.6 1.8l-1.2.9a12 12 0 0 0 5 5l.9-1.2c.4-.6 1.1-.8 1.8-.6l2.7.8c.8.2 1.3.9 1.3 1.7v1.6c0 1-.8 1.8-1.8 1.8A15.5 15.5 0 0 1 4.5 5.5z"/>
+        </svg>
+        +56 9 6570 6172
+      </a>
+      <a href="#horarios">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>
+        </svg>
+        Pedro Montt 541, Loncoche
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     7. CONTACTO
+     El formulario NO necesita servidor: arma un mensaje y lo abre
+     en WhatsApp. Si más adelante quieres correo, cambia el <form>
+     por un action de Formspree / Netlify Forms.
+     ============================================================ -->
+<section class="seccion" id="contacto">
+  <div class="contenedor">
+
+    <header class="cabecera cabecera--centro reveal">
+      <p class="kicker">Contacto</p>
+      <h2 class="titulo">Da el <span class="oro">primer paso</span></h2>
+      <p class="bajada">Cuéntanos tu objetivo y te respondemos con la mejor opción para ti.</p>
+    </header>
+
+    <div class="grid-contacto">
+
+      <form class="form reveal" id="form-contacto" novalidate>
+        <div class="campo-doble">
+          <div class="campo">
+            <label for="nombre">Tu nombre</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Ej: Camila Riquelme" required>
+          </div>
+          <div class="campo">
+            <label for="telefono">Teléfono</label>
+            <input type="tel" id="telefono" name="telefono" placeholder="+56 9 ...." required>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="objetivo">¿Cuál es tu objetivo?</label>
+          <select id="objetivo" name="objetivo">
+            <option>Bajar de peso</option>
+            <option>Ganar masa muscular</option>
+            <option>Mejorar mi condición física</option>
+            <option>Clases grupales / Zumba</option>
+            <option>Yoga y Pilates</option>
+            <option>Nutrición y dietética</option>
+            <option>Rehabilitación física</option>
+            <option>Solo quiero información</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="mensaje">Mensaje (opcional)</label>
+          <textarea id="mensaje" name="mensaje" placeholder="Cuéntanos desde dónde partes, horarios que te acomodan, etc."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-oro btn-bloque btn-lg">Enviar por WhatsApp</button>
+        <p class="form-nota">Se abrirá WhatsApp con tu mensaje listo. Tú decides cuándo enviarlo.</p>
+      </form>
+
+      <div class="contacto-info">
+
+        <div class="tarjeta contacto-card reveal">
+          <div class="icono" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.6 14.1c-.2.7-1.4 1.3-1.9 1.3-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-2.9-1.3-4.8-4.3-5-4.5-.1-.2-1.2-1.5-1.2-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.1.3.7 1.2 1.5 1.9 1 .9 1.8 1.2 2.1 1.3.3.1.4.1.6-.1l.8-1c.2-.2.4-.2.6-.1l2 .9c.2.1.4.2.4.3.1.1.1.7-.1 1.4z"/>
+            </svg>
+          </div>
+          <div>
+            <h4>WhatsApp</h4>
+            <p><a href="https://wa.me/56965706172" target="_blank" rel="noopener">+56 9 6570 6172</a></p>
+            <small>La vía más rápida para reservar tu clase</small>
+          </div>
+        </div>
+
+        <div class="tarjeta contacto-card reveal">
+          <div class="icono" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Dirección</h4>
+            <p>Pedro Montt 541 · Aníbal Pinto 381</p>
+            <small>Loncoche, La Araucanía</small>
+          </div>
+        </div>
+
+        <div class="tarjeta contacto-card reveal">
+          <div class="icono" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Horario</h4>
+            <p>Lun a Vie 09:00 – 23:00</p>
+            <small>Sábado 09:00 – 16:00 · Domingo cerrado</small>
+          </div>
+        </div>
+
+        <div class="tarjeta contacto-card reveal">
+          <div class="icono" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Correo</h4>
+            <!-- 👉 Reemplaza por el correo real del gimnasio -->
+            <p><a href="mailto:contacto@thetemplefitness.cl">contacto@thetemplefitness.cl</a></p>
+            <small>Respondemos dentro del día hábil</small>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================
+     8. FOOTER
+     ============================================================ -->
+<footer class="footer">
+  <div class="contenedor">
+    <div class="footer-grid">
+
+      <div class="footer-marca">
+        <a href="#inicio" class="logo">
+          <span class="logo-nombre">THE <em>TEMPLE</em></span>
+          <span class="logo-sub">Fitness Club · Loncoche</span>
+        </a>
+        <p>Tu cuerpo es un templo. Un espacio de disciplina, fuerza y bienestar integral en el corazón de Loncoche.</p>
+
+        <!-- Redes: reemplaza los "#" por los enlaces reales -->
+        <div class="redes">
+          <a href="#" aria-label="Instagram" title="Instagram (pendiente)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/>
+            </svg>
+          </a>
+          <a href="#" aria-label="Facebook" title="Facebook (pendiente)">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.3-1.5 1.6-1.5h1.7V3.6c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.1H7.4V13h2.7v8z"/>
+            </svg>
+          </a>
+          <a href="#" aria-label="TikTok" title="TikTok (pendiente)">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16.5 3h-2.7v12.1a2.4 2.4 0 1 1-2-2.4v-2.8a5.2 5.2 0 1 0 4.7 5.2V9.3c.9.7 2 1.1 3.2 1.2V7.8a3.9 3.9 0 0 1-3.2-3z"/>
+            </svg>
+          </a>
+          <a href="https://wa.me/56965706172" target="_blank" rel="noopener" aria-label="WhatsApp" title="WhatsApp">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.6 14.1c-.2.7-1.4 1.3-1.9 1.3-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-2.9-1.3-4.8-4.3-5-4.5-.1-.2-1.2-1.5-1.2-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.1.3.7 1.2 1.5 1.9 1 .9 1.8 1.2 2.1 1.3.3.1.4.1.6-.1l.8-1c.2-.2.4-.2.6-.1l2 .9c.2.1.4.2.4.3.1.1.1.7-.1 1.4z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <h4>Navegación</h4>
+        <ul class="footer-links">
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="#nosotros">Sobre Nosotros</a></li>
+          <li><a href="#porque">Por qué elegirnos</a></li>
+          <li><a href="#horarios">Horarios</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Servicios</h4>
+        <ul class="footer-links">
+          <li><a href="#servicios">Entrenamiento personalizado</a></li>
+          <li><a href="#servicios">Clases grupales</a></li>
+          <li><a href="#servicios">Funcional y fuerza</a></li>
+          <li><a href="#servicios">Yoga, Pilates y Zumba</a></li>
+          <li><a href="#servicios">Nutrición y masajes</a></li>
+          <li><a href="#servicios">Rehabilitación física</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Contacto</h4>
+        <ul class="footer-links">
+          <li>Pedro Montt 541, Loncoche</li>
+          <li>Aníbal Pinto 381, Loncoche</li>
+          <li><a href="tel:+56965706172">+56 9 6570 6172</a></li>
+          <li>Lun a Vie · 09:00 – 23:00</li>
+          <li>Sábado · 09:00 – 16:00</li>
+          <li>Domingo · Cerrado</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-abajo">
+      <span>© <span id="anio">2026</span> The Temple Fitness Club · Loncoche. Todos los derechos reservados.</span>
+      <span>Sitio en versión plantilla · Imágenes reales próximamente</span>
+    </div>
+  </div>
+</footer>
+
+<!-- WhatsApp flotante -->
+<a class="flotante" href="https://wa.me/56965706172?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20The%20Temple%20Fitness%20Club"
+   target="_blank" rel="noopener" aria-label="Escribir por WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.6 14.1c-.2.7-1.4 1.3-1.9 1.3-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-2.9-1.3-4.8-4.3-5-4.5-.1-.2-1.2-1.5-1.2-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.1.3.7 1.2 1.5 1.9 1 .9 1.8 1.2 2.1 1.3.3.1.4.1.6-.1l.8-1c.2-.2.4-.2.6-.1l2 .9c.2.1.4.2.4.3.1.1.1.7-.1 1.4z"/>
+  </svg>
+  <span class="texto">WhatsApp</span>
+</a>
+
+<!-- Datos estructurados para Google (ficha del negocio) -->
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"HealthAndBeautyBusiness",
+  "additionalType":"https://schema.org/ExerciseGym",
+  "name":"The Temple Fitness Club",
+  "slogan":"Tu cuerpo es un templo",
+  "telephone":"+56965706172",
+  "address":{
+    "@type":"PostalAddress",
+    "streetAddress":"Pedro Montt 541",
+    "addressLocality":"Loncoche",
+    "addressRegion":"La Araucanía",
+    "addressCountry":"CL"
+  },
+  "openingHoursSpecification":[
+    {"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"09:00","closes":"23:00"},
+    {"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"09:00","closes":"16:00"}
+  ]
+}
+</script>
+
+<script>
+/* ============================================================================
+   JS · The Temple Fitness Club
+   Todo es vanilla, sin librerías. Bloques:
+     A. Header, menú móvil y progreso de scroll
+     B. Navegación activa según sección
+     C. Animaciones de aparición + contadores
+     D. Horarios: estado abierto/cerrado en hora de Chile
+     E. Formulario → WhatsApp
+   ========================================================================== */
+(function(){
+  'use strict';
+
+  /* ---------- CONFIGURACIÓN RÁPIDA ---------------------------------------
+     Cambia aquí el teléfono y los horarios. Los minutos se cuentan desde
+     medianoche: 09:00 = 540, 16:00 = 960, 23:00 = 1380.
+     Día: 0 = domingo … 6 = sábado. null = cerrado.                        */
+  const WHATSAPP = '56965706172';
+  const HORARIOS = {
+    0: null,            // Domingo: cerrado
+    1: [540, 1380],     // Lunes    09:00 – 23:00
+    2: [540, 1380],     // Martes
+    3: [540, 1380],     // Miércoles
+    4: [540, 1380],     // Jueves
+    5: [540, 1380],     // Viernes
+    6: [540, 960]       // Sábado   09:00 – 16:00
+  };
+  const NOMBRE_DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+
+  const $  = (s, c) => (c || document).querySelector(s);
+  const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
+  const menosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- A. HEADER, MENÚ MÓVIL Y PROGRESO ---------------------------- */
+  const header   = $('#header');
+  const btnMenu  = $('#btn-menu');
+  const menu     = $('#menu-movil');
+  const progreso = $('#progreso');
+
+  function alScroll(){
+    const y = window.scrollY;
+    header.classList.toggle('fijo', y > 40);
+    const alto = document.documentElement.scrollHeight - window.innerHeight;
+    progreso.style.width = (alto > 0 ? (y / alto) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', alScroll, { passive:true });
+  alScroll();
+
+  function cerrarMenu(){
+    menu.classList.remove('abierto');
+    btnMenu.setAttribute('aria-expanded','false');
+    btnMenu.setAttribute('aria-label','Abrir menú');
+    document.body.classList.remove('sin-scroll');
+  }
+
+  btnMenu.addEventListener('click', function(){
+    const abierto = menu.classList.toggle('abierto');
+    btnMenu.setAttribute('aria-expanded', String(abierto));
+    btnMenu.setAttribute('aria-label', abierto ? 'Cerrar menú' : 'Abrir menú');
+    document.body.classList.toggle('sin-scroll', abierto);
+  });
+
+  $$('#menu-movil a').forEach(a => a.addEventListener('click', cerrarMenu));
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') cerrarMenu(); });
+
+  /* ---------- B. NAVEGACIÓN ACTIVA ---------------------------------------- */
+  const enlaces  = $$('#nav-escritorio a');
+  const secciones = enlaces
+    .map(a => document.getElementById(a.getAttribute('href').slice(1)))
+    .filter(Boolean);
+
+  if('IntersectionObserver' in window && secciones.length){
+    const obsNav = new IntersectionObserver(entradas => {
+      entradas.forEach(en => {
+        if(!en.isIntersecting) return;
+        enlaces.forEach(a => a.classList.toggle('activo', a.getAttribute('href') === '#' + en.target.id));
+      });
+    }, { rootMargin:'-45% 0px -50% 0px', threshold:0 });
+    secciones.forEach(s => obsNav.observe(s));
+  }
+
+  /* ---------- C. APARICIÓN AL SCROLL + CONTADORES ------------------------- */
+  const revelables = $$('.reveal');
+
+  function animarContadores(raiz){
+    $$('[data-contador]', raiz).forEach(el => {
+      if(el.dataset.listo) return;
+      el.dataset.listo = '1';
+      const meta   = parseInt(el.dataset.contador, 10) || 0;
+      const sufijo = el.dataset.sufijo || '';
+      if(menosMovimiento || meta === 0){ el.textContent = meta + sufijo; return; }
+      const inicio = performance.now(), duracion = 1300;
+      (function paso(ahora){
+        const t = Math.min((ahora - inicio) / duracion, 1);
+        const suave = 1 - Math.pow(1 - t, 3);     // easing out-cubic
+        el.textContent = Math.round(meta * suave) + sufijo;
+        if(t < 1) requestAnimationFrame(paso);
+      })(performance.now());
+    });
+  }
+
+  if('IntersectionObserver' in window && !menosMovimiento){
+    const obsReveal = new IntersectionObserver((entradas, obs) => {
+      entradas.forEach((en, i) => {
+        if(!en.isIntersecting) return;
+        setTimeout(() => en.target.classList.add('visible'), Math.min(i * 70, 350));
+        animarContadores(en.target);
+        obs.unobserve(en.target);
+      });
+    }, { rootMargin:'0px 0px -8% 0px', threshold:.12 });
+    revelables.forEach(el => obsReveal.observe(el));
+  } else {
+    revelables.forEach(el => el.classList.add('visible'));
+    animarContadores(document);
+  }
+
+  /* ---------- D. ESTADO ABIERTO / CERRADO (hora de Chile) ----------------- */
+  function ahoraEnChile(){
+    try{
+      const partes = new Intl.DateTimeFormat('en-US', {
+        timeZone:'America/Santiago', weekday:'short',
+        hour:'2-digit', minute:'2-digit', hourCycle:'h23'
+      }).formatToParts(new Date());
+      const val = t => partes.find(p => p.type === t).value;
+      const map = { Sun:0, Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6 };
+      return { dia: map[val('weekday')], min: (+val('hour')) * 60 + (+val('minute')) };
+    }catch(e){
+      const d = new Date();                       // respaldo: hora local
+      return { dia:d.getDay(), min:d.getHours()*60 + d.getMinutes() };
+    }
+  }
+
+  const hhmm = m => String(Math.floor(m/60)).padStart(2,'0') + ':' + String(m%60).padStart(2,'0');
+
+  function actualizarEstado(){
+    const caja  = $('#estado-gimnasio');
+    const texto = $('#estado-texto');
+    if(!caja || !texto) return;
+
+    const { dia, min } = ahoraEnChile();
+    const hoy = HORARIOS[dia];
+
+    // Marca el día actual en la tabla
+    $$('#tabla-horarios li').forEach(li => li.classList.toggle('hoy', +li.dataset.dia === dia));
+
+    caja.classList.remove('abierto','cerrado');
+
+    if(hoy && min >= hoy[0] && min < hoy[1]){
+      caja.classList.add('abierto');
+      texto.textContent = 'Abierto ahora · cierra ' + hhmm(hoy[1]);
+      return;
+    }
+
+    // Busca la próxima apertura (hoy más tarde o en los días siguientes)
+    if(hoy && min < hoy[0]){
+      caja.classList.add('cerrado');
+      texto.textContent = 'Cerrado · abre hoy ' + hhmm(hoy[0]);
+      return;
+    }
+    for(let i = 1; i <= 7; i++){
+      const d = (dia + i) % 7, h = HORARIOS[d];
+      if(h){
+        caja.classList.add('cerrado');
+        texto.textContent = 'Cerrado · abre ' + (i === 1 ? 'mañana' : 'el ' + NOMBRE_DIAS[d]) + ' ' + hhmm(h[0]);
+        return;
+      }
+    }
+    caja.classList.add('cerrado');
+    texto.textContent = 'Cerrado';
+  }
+  actualizarEstado();
+  setInterval(actualizarEstado, 60000);           // se refresca cada minuto
+
+  /* ---------- E. FORMULARIO → WHATSAPP ------------------------------------ */
+  const form = $('#form-contacto');
+  if(form){
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+
+      const nombre   = $('#nombre').value.trim();
+      const telefono = $('#telefono').value.trim();
+      const objetivo = $('#objetivo').value;
+      const mensaje  = $('#mensaje').value.trim();
+
+      // Validación mínima con foco en el campo que falta
+      if(!nombre){ $('#nombre').focus(); return; }
+      if(!telefono){ $('#telefono').focus(); return; }
+
+      const texto =
+        '¡Hola The Temple Fitness Club! 👋\n\n' +
+        'Nombre: ' + nombre + '\n' +
+        'Teléfono: ' + telefono + '\n' +
+        'Objetivo: ' + objetivo +
+        (mensaje ? '\nMensaje: ' + mensaje : '') +
+        '\n\nMe gustaría agendar una clase.';
+
+      window.open('https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(texto), '_blank', 'noopener');
+    });
+  }
+
+  /* ---------- Año dinámico en el footer ----------------------------------- */
+  const anio = $('#anio');
+  if(anio) anio.textContent = new Date().getFullYear();
+
+})();
+</script>
+
+</body>
+</html>
