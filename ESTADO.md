@@ -1,46 +1,38 @@
 # Dónde quedó esto — 8 de agosto de 2026
 
 Traspaso para retomar desde otra sesión o desde otro equipo.
+Última actualización: publicación completada.
 
 ## Resumen en una línea
 
-El sitio está **terminado y committeado**, pero **nada está publicado**.
-Falta un solo paso manual: `gh auth login`.
+**Publicado.** El sitio está en vivo y el portafolio ya enlaza a él.
 
-## Lo que falta, en este orden exacto
+## Dónde está
 
-```bash
-# 1. Autenticarse (interactivo — hay que correrlo a mano)
-gh auth login --web --git-protocol https
-```
+- Sitio: https://yordyserna.github.io/the-temple-fitness-club/
+- Repo: https://github.com/YordySerna/the-temple-fitness-club
+- Portafolio con la ficha 07: https://yordyserna.github.io/
 
-```bash
-# 2. Crear el repo y publicar
-cd "C:\Users\yordi\OneDrive\Escritorio\devs\the-temple-fitness-club"
-gh repo create the-temple-fitness-club --public --source=. --remote=origin --push
-```
-
-```bash
-# 3. Activar GitHub Pages desde la rama main
-gh api -X POST repos/YordySerna/the-temple-fitness-club/pages -f "source[branch]=main" -f "source[path]=/"
-```
-
-```bash
-# 4. Recién ahora, subir el portafolio
-cd "C:\Users\yordi\OneDrive\Escritorio\devs\portafolio"
-git push origin master
-```
-
-**El orden importa.** El portafolio ya tiene un commit local con la ficha 07,
-que enlaza a `yordyserna.github.io/the-temple-fitness-club/`. Si se sube antes
-de que el repo exista, el sitio público queda con dos enlaces rotos.
+Ambos verificados con código 200, imágenes incluidas.
 
 ## Estado de los repos
 
-| Repo | Rama | Commits pendientes | Remoto |
-|---|---|---|---|
-| `the-temple-fitness-club` | `main` | 3, sin publicar | **no existe todavía** |
-| `portafolio` | `master` | 1 por delante de origin | `YordySerna/YordySerna.github.io` |
+| Repo | Rama | Estado |
+|---|---|---|
+| `the-temple-fitness-club` | `main` | publicado, Pages activo (`build_type=legacy`) |
+| `portafolio` | `master` | al día con origin |
+
+Nota: el portafolio tenía dos commits hechos desde otro equipo. Se integraron
+con rebase antes de subir la ficha, sin conflictos. Si se retoma desde otra
+máquina, hacer `git fetch` antes de dar por bueno el estado local.
+
+## Lo que sigue
+
+Nada bloqueante. Pendientes reales, en orden de impacto:
+
+1. Pedir las fotos en alta al cliente (ver punto 2 más abajo).
+2. Resolver las dudas de contenido de la lista siguiente.
+3. Poner la clave de Google Maps cuando el cliente la entregue.
 
 ## Qué se hizo
 
