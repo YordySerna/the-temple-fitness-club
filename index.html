@@ -914,6 +914,13 @@ body.trabado{ overflow:hidden; }
 .dias li.hoy .rango{ color:var(--oro-claro); }
 .nota{ margin-top:22px; font-family:var(--mono); font-size:var(--etiqueta); line-height:1.85; letter-spacing:.03em; color:var(--tenue); }
 
+/* Acceso al portal de socios. Sin caja: hilo dorado arriba y ya. */
+.socios-acceso{
+  margin-top:34px; padding-top:26px; border-top:1px solid var(--linea-oro);
+  display:flex; flex-direction:column; align-items:flex-start; gap:14px;
+}
+.socios-acceso p{ font-size:.94rem; color:var(--texto); max-width:42ch; }
+
 /* Datos de contacto en formato ficha */
 .ficha{ display:grid; gap:0; border-top:1px solid var(--linea); }
 .ficha > div{ padding:20px 0; border-bottom:1px solid var(--linea); display:grid; gap:8px; grid-template-columns:1fr; }
@@ -1409,6 +1416,7 @@ body.trabado{ overflow:hidden; }
     </ul>
   </nav>
   <a href="#contacto" class="boton boton-oro">Agenda tu clase <span class="flecha">→</span></a>
+  <a href="socios/" class="boton boton-linea" style="margin-top:12px">Paga tu mensualidad <span class="flecha">→</span></a>
   <div class="panel-pie">
     <span>Av. José Manuel Balmaceda 921, Loncoche</span>
     <a href="tel:+56977512219">+56 9 7751 2219</a>
@@ -2012,6 +2020,16 @@ body.trabado{ overflow:hidden; }
           Las clases grupales se publican cada semana.<br>
           Reserva tu cupo por WhatsApp. Feriados con horario especial.
         </p>
+
+        <!-- Portal de socios. Va acá porque es donde el socio que ya entrena
+             viene a mirar: primero revisa el horario, después su mensualidad. -->
+        <aside class="socios-acceso" data-ent="sube" style="--retardo:.2s">
+          <span class="sello">¿Ya eres socio?</span>
+          <p>Revisa cuándo vence tu plan y renuévalo en línea, sin pasar por recepción.</p>
+          <a href="socios/" class="boton boton-oro">
+            Paga tu mensualidad <span class="flecha">→</span>
+          </a>
+        </aside>
       </div>
 
       <div data-ent="sube" style="--retardo:.12s">
@@ -2244,6 +2262,7 @@ body.trabado{ overflow:hidden; }
       <div>
         <h4>Navegación</h4>
         <ul class="pie-lista">
+          <li><a href="socios/" style="color:var(--oro-claro)">Paga tu mensualidad →</a></li>
           <li><a href="#inicio">Inicio</a></li>
           <li><a href="#servicios">Servicios</a></li>
           <li><a href="#nosotros">Nosotros</a></li>
