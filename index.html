@@ -492,7 +492,11 @@ html.gsap .portada h1 .compas{ overflow:visible; }
 /* ---------- 04 · ENTRADA AL SCROLL --------------------------------------- */
 /* Tres gestos: la línea de texto que sube tras una máscara, el bloque que
    aparece, y la línea fina que se estira. Solo se ocultan si hay JS. */
-html.js [data-ent]{ will-change:transform,opacity; }
+/* Antes acá iba `will-change:transform,opacity` para TODOS los [data-ent].
+   Eso pedía una capa de GPU por cada bloque de la página, de forma permanente
+   y aunque el visitante nunca bajara a verlos. Ahora lo pide GSAP justo antes
+   de animar cada bloque y lo suelta al terminar (ver revelarConGSAP).
+   El respaldo sin GSAP no lo necesita: son transiciones CSS sueltas. */
 
 html.js [data-ent="linea"]{ display:block; overflow:hidden; }
 html.js [data-ent="linea"] > *{
@@ -633,8 +637,10 @@ body.trabado{ overflow:hidden; }
 .video-fondo{
   position:absolute; inset:0; width:100%; height:100%;
   object-fit:cover; object-position:center;
-  filter:grayscale(.55) contrast(1.05) brightness(.42) saturate(1.2) blur(3px);
-  transform:scale(1.06);
+  /* El desenfoque bajó de 3px a 1.2px porque el archivo ya viene desenfocado
+     desde el encode. Menos blur en CSS = menos trabajo de GPU por fotograma. */
+  filter:grayscale(.55) contrast(1.08) brightness(.42) saturate(1.2) blur(1.2px);
+  transform:scale(1.04);
   opacity:0; transition:opacity 1.6s var(--suave);
 }
 .video-fondo.visible{ opacity:1; }
@@ -1450,7 +1456,9 @@ body.trabado{ overflow:hidden; }
          El video (1,6 MB) se monta encima sólo cuando el JS confirma que
          puede reproducirlo. El tour pesado de 13 MB NO va acá: está más
          abajo, y sólo se descarga si alguien lo pide. -->
-    <div class="foto" style="background-image:url('imagenes/pasillo-luces.jpg')"></div>
+    <!-- Versión ancha generada con Lanczos + enfoque. La original es vertical
+         (720x1280) y acá se mostraba estirada 1.76x por el object-fit cover. -->
+    <div class="foto" style="background-image:url('imagenes/pasillo-luces-ancha.jpg')"></div>
     <video class="video-fondo" id="video-portada"
            muted loop playsinline preload="none"
            poster="imagenes/pasillo-luces.jpg"></video>
@@ -1485,6 +1493,9 @@ body.trabado{ overflow:hidden; }
 
     <div class="portada-acciones" data-ent="sube" style="--retardo:.44s">
       <a href="#contacto" class="boton boton-oro">Agenda tu clase <span class="flecha">→</span></a>
+      <!-- El socio que ya entrena viene a esto, no a inscribirse. Va en
+           contorno para no competir con el CTA principal, que es captar. -->
+      <a href="socios/" class="boton boton-linea">Pagar mensualidad <span class="flecha">→</span></a>
       <a href="#servicios" class="enlace-luz">Ver disciplinas <span class="flecha">↓</span></a>
     </div>
 
@@ -2081,7 +2092,8 @@ body.trabado{ overflow:hidden; }
      ============================================================ -->
 <section class="llamado">
   <div class="escenario" aria-hidden="true">
-    <div class="foto" style="background-image:url('imagenes/sala-general.jpg')"></div>
+    <!-- Versión ancha generada con Lanczos + enfoque. Ver nota en la portada. -->
+    <div class="foto" style="background-image:url('imagenes/sala-general-ancha.jpg')"></div>
     <div class="foto-velo"></div>
     <div class="aurora"><i></i><i></i><i></i></div>
     <div class="reticula"></div>
@@ -2621,18 +2633,25 @@ body.trabado{ overflow:hidden; }
 
       const tl = gsap.timeline({
         delay: retardo(caja),
-        scrollTrigger:{ trigger: caja, start:'top 90%', once:true }
+        scrollTrigger:{
+          trigger: caja, start:'top 90%', once:true,
+          // will-change se pide justo antes de animar y se suelta al terminar.
+          // Antes se ponía al cargar la página sobre TODAS las piezas: eso
+          // dejaba ~127 elementos pidiendo capa de GPU para siempre, incluso
+          // los de secciones que el visitante nunca llegaba a ver.
+          onEnter(){ moviles.forEach(t => t.style.willChange = 'transform'); }
+        }
       });
       tl.fromTo(piezas,  {clipPath:OCULTO}, {
           clipPath:VISIBLE, duration:1.05, ease:'expo.out', stagger:paso
         }, 0)
         .fromTo(moviles, {yPercent:108}, {
-          yPercent:0, duration:1.05, ease:'expo.out', stagger:paso,
-          // Soltamos will-change al terminar: dejarlo puesto gasta memoria
-          onComplete(){ this.targets().forEach(t => t.style.willChange = 'auto'); }
+          yPercent:0, duration:1.05, ease:'expo.out', stagger:paso
         }, 0);
 
-      gsap.set(moviles, {willChange:'transform'});
+      tl.eventCallback('onComplete', () => {
+        moviles.forEach(t => { t.style.willChange = 'auto'; });
+      });
     });
 
     // 2 · Bloques que suben
@@ -2900,7 +2919,10 @@ body.trabado{ overflow:hidden; }
     const conexionPobre = red.saveData === true || /^([23]g|slow-2g)$/.test(red.effectiveType || '');
 
     if(!quieto && !conexionPobre){
-      videoPortada.src = 'imagenes/clip-entrenamiento.mp4';
+      // fondo-portada.mp4 sale del tour (720px) en vez del clip viejo (480px):
+      // 1.5x más resolución para el mismo peso. Va pre-desenfocado desde el
+      // encode, que comprime mucho mejor que desenfocarlo solo por CSS.
+      videoPortada.src = 'imagenes/fondo-portada.mp4';
       videoPortada.load();
       // .visible recién cuando hay imagen de verdad: evita el parpadeo negro
       videoPortada.addEventListener('playing', () => videoPortada.classList.add('visible'), {once:true});

@@ -10,12 +10,14 @@ imagenes/unnamed*.webp
 # Videos: se excluyen TODOS y después se readmiten los dos que el sitio
 # usa de verdad. Los originales quedan fuera porque son copias idénticas
 # de estos, con emojis y comillas en el nombre que rompen las URLs.
-#   · clip-entrenamiento.mp4 → 1,6 MB, fondo de la portada
-#   · tour-gimnasio.mp4      → 13 MB, sección "El recinto", bajo demanda
+#   · fondo-portada.mp4 → 2 MB, fondo de la portada. Sale del tour recortado
+#     a 16s y pre-desenfocado en el encode: 720px de ancho en vez de los
+#     480px del clip viejo, para el mismo peso.
+#   · tour-gimnasio.mp4 → 13 MB, sección "El recinto", bajo demanda
 # El de 13 MB pesa, pero no se descarga hasta que alguien pulsa play.
 imagenes/*.mp4
 imagenes/*.mov
-!imagenes/clip-entrenamiento.mp4
+!imagenes/fondo-portada.mp4
 !imagenes/tour-gimnasio.mp4
 
 # Sistema
