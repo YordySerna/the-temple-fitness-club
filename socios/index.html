@@ -535,38 +535,169 @@ h1 em{
       });
   }
 
-  function pagar(s){
+  function pagar(s, correo){
     var btn = $('#btn-pagar');
-    btn.disabled = true;
-    btn.textContent = 'Preparando el pago…';
+    if(btn){
+      btn.disabled = true;
+      btn.textContent = 'Preparando el pago…';
+    }
 
-    llamar({accion:'iniciarPago', socioId:s.id})
+    var peticion = {accion:'iniciarPago', socioId:s.id};
+    if(correo) peticion.email = correo;
+
+    llamar(peticion)
       .then(function(r){
+        // Flow exige un correo para emitir el comprobante. Si el socio no lo
+        // tiene registrado, el backend lo pide en vez de fallar.
+        if(!r.ok && r.pideCorreo){ pedirCorreo(s); return; }
         if(!r.ok) throw new Error(r.error || 'No se pudo crear la orden');
 
         if(r.urlPago){
-          // Camino real: la pasarela se hace cargo desde acá
+          // Se guarda antes de salir: al volver de Flow, el navegador ya no
+          // tiene en memoria a quién correspondía este pago.
+          try{ sessionStorage.setItem('pago-en-curso', r.idPago); }catch(err){}
           window.location.href = r.urlPago;
           return;
         }
 
-        // Modo demo o backend sin pasarela conectada todavía
+        // Modo demo o backend sin credenciales conectadas todavía
         salida.innerHTML =
           '<div class="mensaje">Orden creada: <strong>' + escapar(r.idPago) + '</strong>' +
-          '<span class="chico">Acá el socio saldría a la pasarela para pagar con tarjeta. ' +
+          '<span class="chico">Acá el socio saldría a Flow para pagar con tarjeta. ' +
           'Falta conectar las credenciales.</span></div>';
       })
       .catch(function(err){
-        btn.disabled = false;
-        btn.textContent = 'Renovar por ' + plata(s.monto);
+        if(btn){
+          btn.disabled = false;
+          btn.textContent = 'Renovar por ' + plata(s.monto);
+        }
         mensaje('No pudimos iniciar el pago.', err.message, true);
       });
+  }
+
+  /* Formulario mínimo para el correo del comprobante. */
+  function pedirCorreo(s){
+    salida.innerHTML =
+      '<section class="ficha">' +
+        '<p class="aviso-vence">Necesitamos tu correo para enviarte el comprobante del pago.</p>' +
+        '<div class="campo">' +
+          '<label for="correo">Tu correo</label>' +
+          '<input type="email" id="correo" inputmode="email" autocomplete="email" placeholder="nombre@correo.cl">' +
+          '<span class="subrayado"></span>' +
+        '</div>' +
+        '<div class="acciones">' +
+          '<button class="boton boton-oro" id="btn-seguir">Continuar al pago</button>' +
+          '<button class="boton boton-linea" id="btn-cancelar">Volver</button>' +
+        '</div>' +
+      '</section>';
+
+    var campo = $('#correo');
+    campo.focus();
+
+    function seguir(){
+      var v = campo.value.trim();
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){
+        mensaje('Ese correo no parece válido.', 'Revísalo y vuelve a intentar.', true);
+        setTimeout(function(){ pedirCorreo(s); $('#correo').value = v; }, 1600);
+        return;
+      }
+      pagar(s, v);
+    }
+
+    $('#btn-seguir').addEventListener('click', seguir);
+    campo.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); seguir(); } });
+    $('#btn-cancelar').addEventListener('click', function(){ pintarFicha(s); });
+  }
+
+  /* ------------------------------------------------------------------
+     VUELTA DESDE FLOW
+     El socio vuelve con ?pago=PS-XXXX. Ojo: puede llegar acá ANTES de que
+     Flow le avise al backend —son dos caminos independientes—, así que
+     "pendiente" no significa que no pagó. Por eso se reintenta unas veces
+     antes de darlo por no resuelto.
+     ------------------------------------------------------------------ */
+  var TEXTO_RESULTADO = {
+    aprobado:  {t:'Pago confirmado',        c:'Tu plan quedó renovado. Ya puedes entrenar.'},
+    rechazado: {t:'El pago fue rechazado',  c:'No se hizo ningún cobro. Puedes intentar con otra tarjeta.'},
+    anulado:   {t:'El pago se anuló',       c:'No se hizo ningún cobro.'},
+    error:     {t:'No se pudo procesar',    c:'Escríbenos por WhatsApp y lo revisamos.'}
+  };
+
+  function pantallaResultado(estado, idPago){
+    var info = TEXTO_RESULTADO[estado] || TEXTO_RESULTADO.error;
+    var malo = estado !== 'aprobado';
+    salida.innerHTML =
+      '<section class="ficha">' +
+        '<div class="ficha-nombre">' +
+          '<strong>' + escapar(info.t) + '</strong>' +
+          '<span class="marca-estado e-' + (malo ? 'vencido' : 'al-dia') + '">' +
+            '<span class="punto"></span>' + (malo ? 'Sin pago' : 'Al día') + '</span>' +
+        '</div>' +
+        '<p class="aviso-vence' + (malo ? ' urgente' : '') + '">' + escapar(info.c) + '</p>' +
+        '<dl class="datos"><div><dt>N.º de orden</dt><span class="guia"></span>' +
+          '<dd class="oro">' + escapar(idPago) + '</dd></div></dl>' +
+        '<div class="acciones">' +
+          '<button class="boton boton-oro" id="btn-volver">Ver mi membresía</button>' +
+        '</div>' +
+      '</section>';
+
+    $('#btn-volver').addEventListener('click', function(){
+      salida.innerHTML = ''; $('#tel').focus();
+    });
+  }
+
+  function revisarRetorno(){
+    var params = new URLSearchParams(location.search);
+    var idPago = params.get('pago');
+    if(!idPago){
+      try{ idPago = sessionStorage.getItem('pago-en-curso'); }catch(err){}
+      if(!idPago) return;
+    }
+    try{ sessionStorage.removeItem('pago-en-curso'); }catch(err){}
+
+    // Se limpia la url para que al recargar no vuelva a esta pantalla
+    if(history.replaceState) history.replaceState({}, '', location.pathname);
+
+    if(DEMO){
+      pantallaResultado('aprobado', idPago);
+      return;
+    }
+
+    var intentos = 0;
+    cargando('Confirmando tu pago');
+
+    (function preguntar(){
+      llamar({accion:'estadoPago', idPago:idPago})
+        .then(function(r){
+          if(!r.ok) throw new Error(r.error || 'No encontramos ese pago');
+
+          if(r.estado === 'pendiente' && intentos < 4){
+            intentos++;
+            setTimeout(preguntar, 2000);   // Flow puede tardar unos segundos
+            return;
+          }
+          if(r.estado === 'pendiente'){
+            mensaje('Tu pago sigue procesándose.',
+                    'Guarda el número ' + idPago + ' y vuelve a consultar en unos minutos. ' +
+                    'Si te llegó el comprobante, el pago se hizo.');
+            return;
+          }
+          pantallaResultado(r.estado, idPago);
+        })
+        .catch(function(err){
+          mensaje('No pudimos confirmar el pago.',
+                  'Guarda el número ' + idPago + ' y escríbenos por WhatsApp. (' + err.message + ')', true);
+        });
+    })();
   }
 
   /* ------------------------------------------------------------------
      ARRANQUE
      ------------------------------------------------------------------ */
   $('#buscador').addEventListener('submit', buscar);
+
+  // Si venimos de Flow, lo primero es contarle al socio cómo le fue
+  revisarRetorno();
 
   // Formatea mientras escribe: 9 5678 1234
   $('#tel').addEventListener('input', function(e){
