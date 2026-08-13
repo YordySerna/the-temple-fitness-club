@@ -22,13 +22,19 @@ Queda en `http://localhost:8767`.
 ```
 the-temple-fitness-club/
 ├─ index.html            ← todo el sitio (HTML + CSS + JS en un archivo)
+├─ socios/
+│  └─ index.html         ← portal de socios (modo demo, sin backend)
 ├─ imagenes/
 │  │  ── VIDEOS ──
-│  ├─ clip-entrenamiento.mp4  ← 1,6 MB · fondo de la portada
+│  ├─ fondo-portada.mp4       ← 2 MB · fondo de la portada, sale del tour
 │  ├─ tour-gimnasio.mp4       ← 13 MB · sección El recinto, bajo demanda
 │  │
+│  │  ── FONDOS ANCHOS GENERADOS (1500×1000) ──
+│  ├─ sala-general-ancha.jpg    ← fondo del llamado final
+│  ├─ pasillo-luces-ancha.jpg   ← respaldo de la portada
+│  │
 │  │  ── FOTOGRAMAS DEL TOUR (720×1280) ──
-│  ├─ pasillo-luces.jpg   ← respaldo de la portada y póster del tour
+│  ├─ pasillo-luces.jpg   ← póster del tour
 │  ├─ luces-hexagonales.jpg, peso-libre.jpg, logo-piso.jpg,
 │  ├─ maquinas-fila.jpg, sala-amplia.jpg, equipamiento.jpg,
 │  ├─ zona-funcional.jpg, sala-general.jpg, vista-final.jpg,
@@ -160,6 +166,36 @@ En táctil ni se dibuja. Se apaga con `prefers-reduced-motion`.
 
 ---
 
+## El portal de socios
+
+Página aparte en `socios/index.html`, con la misma paleta y tipografía. El
+socio escribe su teléfono, ve cuándo vence su plan y puede renovar.
+
+**Corre en modo demo.** La constante `API_BASE` (arriba del `<script>`) está
+vacía, así que usa tres socios de prueba definidos en el mismo archivo:
+
+| Teléfono | Estado |
+|---|---|
+| `956781234` | Al día |
+| `944556677` | Por vencer |
+| `933221100` | Vencido |
+
+Cuando exista un backend, se pega su URL en `API_BASE` y el modo demo se apaga
+solo. **En ese archivo nunca va un secreto**: es público y lo puede leer
+cualquiera. Todo lo que decide algo — montos, fechas, si un pago es válido —
+tiene que vivir del lado del servidor.
+
+Se llega desde cuatro lugares del sitio:
+
+| Dónde | Qué es |
+|---|---|
+| Portada | Botón "Pagar mensualidad", en contorno |
+| Horarios | Bloque "¿Ya eres socio?" con botón dorado |
+| Menú móvil | Botón bajo "Agenda tu clase" |
+| Pie | Primer ítem de Navegación, en dorado |
+
+Todos apuntan a `socios/`. Para quitarlos, busca `href="socios/"`.
+
 ## Qué editar y dónde
 
 | Quiero cambiar… | Búscalo en `index.html` |
@@ -203,20 +239,70 @@ respetando el nombre, o cambiar la ruta en el `style="..."`:
 
 | Dónde | Archivo | Formato ideal |
 |---|---|---|
-| Fondo de portada (respaldo) | `pasillo-luces.jpg` | vertical u horizontal |
-| Video de la portada | `clip-entrenamiento.mp4` | **máx. 2 MB** |
+| Fondo de portada (respaldo) | `pasillo-luces-ancha.jpg` | **horizontal, ≥1500px** |
+| Video de la portada | `fondo-portada.mp4` | **máx. 2 MB** |
 | Encuadre de Filosofía | `vista-final.jpg` | vertical 3:4 |
 | Tour de El recinto | `tour-gimnasio.mp4` | vertical 9:16 |
 | Póster del tour | `pasillo-luces.jpg` | igual que el video |
-| Fondo del llamado final | `sala-general.jpg` | horizontal |
+| Fondo del llamado final | `sala-general-ancha.jpg` | **horizontal, ≥1500px** |
 | Galería | 12 archivos, ver más abajo | cualquiera |
+
+### ⚠️ El problema de resolución, y cómo se atacó
+
+Todo el material original es **vertical de celular**: 720×1280 las mejores,
+480×854 varias. Usado como fondo horizontal a ancho completo, el navegador lo
+estiraba al doble y recortaba el 78% del encuadre.
+
+Se midieron los 17 elementos multimedia en pantalla. **Solo 3 estaban mal**, y
+los tres eran fondos a ancho completo:
+
+| Elemento | Antes | Ahora |
+|---|---|---|
+| Video de portada | 2.79× estirado | 1.83× |
+| `pasillo-luces` | 1.76× estirado | **0.84×** (reducido) |
+| `sala-general` | 1.76× estirado | **0.84×** (reducido) |
+
+Los otros 14 ya se mostraban entre 0.39× y 0.81×, o sea reducidos, que es
+donde una imagen se ve nítida.
+
+**Cómo se generaron los archivos nuevos** (necesitas ffmpeg):
+
+```bash
+# Fondo de portada: sale del tour, que tiene 720px en vez de los 480px
+# del clip viejo. El pre-desenfoque hace que comprima mucho mejor.
+ffmpeg -y -ss 4 -t 16 -i tour-gimnasio.mp4 -an \
+  -vf "gblur=sigma=1.6,scale=720:1280:flags=lanczos" \
+  -c:v libx264 -crf 34 -preset slow -pix_fmt yuv420p \
+  -movflags +faststart fondo-portada.mp4
+```
+
+```bash
+# Fotos anchas: recorta al encuadre que se usa y reescala con Lanczos,
+# que es bastante mejor que el escalado por defecto del navegador.
+ffmpeg -y -i sala-general.jpg \
+  -vf "crop=720:480:0:(ih-480)/2,scale=1500:1000:flags=lanczos,unsharp=5:5:0.9:5:5:0.0" \
+  -q:v 4 sala-general-ancha.jpg
+```
+
+**Lo que no se puede arreglar con código:** la foto más grande tiene 720px de
+ancho y una pantalla de escritorio pide 1300+. Reescalar no inventa detalle.
+El video se queda en 1.83× hasta conseguir originales.
+
+> El archivo original del tour **acredita a @johnfilms.cl**. Esa persona tiene
+> los másteres en resolución completa. Pedírselos es la mejora más grande
+> disponible y no cuesta nada de desarrollo.
 
 ### Los dos videos, y por qué se cargan distinto
 
-**El de la portada (1,6 MB)** se descarga siempre, salvo en tres casos donde
+**El de la portada (2 MB)** se descarga siempre, salvo en tres casos donde
 el JS ni lo pide: si el visitante activó *reducir movimiento*, si el navegador
 declara ahorro de datos, o si la conexión es 2G/3G. Debajo hay una foto
 completa, así que no cargarlo no rompe nada.
+
+Va **pre-desenfocado desde el encode**, no solo por CSS. Dos ventajas: el
+archivo comprime mucho mejor (2 MB con 1.5× más resolución que el clip viejo
+de 1,6 MB), y el navegador hace menos trabajo por fotograma. Por eso el
+`blur()` del CSS bajó de 3px a 1.2px.
 
 **El tour (13 MB)** nace **sin `src`**. Hasta que alguien no pulsa play, lo que
 se ve es un fotograma de 200 KB y el mp4 no se toca. Esto importa: la mayoría
