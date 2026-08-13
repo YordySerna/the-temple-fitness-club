@@ -175,6 +175,22 @@ no cambia lo que responde el `/exec`. Cada vez que se toque el código hay que
 hacer `Implementar → Administrar implementaciones → ✏️ → Nueva versión`. Es de
 los que hacen perder una hora preguntándose por qué un arreglo no surte efecto.
 
+**4. Flow exige HTTP 200 en el webhook y Apps Script siempre responde 302.**
+No es configurable. O sea que el aviso de Flow nunca se da por bueno y llega
+un correo *"Alerta: Problema de integración"* en cada pago, aunque el pago se
+haya procesado bien. **Ese correo se puede ignorar.**
+
+Por eso hay dos caminos para confirmar un pago, y ninguno depende del otro:
+
+| Camino | Cuándo actúa |
+|---|---|
+| El socio vuelve al portal | de inmediato, si no cierra el navegador |
+| `conciliarPagosPendientes` | cada 10 minutos, pase lo que pase |
+
+El segundo es la red de seguridad: sin él, quien pague y cierre el navegador
+al toque queda con el pago colgado y apareciendo vencido. Se activa sola junto
+con el cobro real; `verEstado` muestra si está corriendo.
+
 ### Para cobrar plata de verdad
 
 ⚠️ **Producción es otra cuenta de Flow**, con claves distintas, registrada
