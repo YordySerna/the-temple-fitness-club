@@ -1,11 +1,11 @@
-# Dónde quedó esto — 12 de agosto de 2026
+# Dónde quedó esto — 13 de agosto de 2026
 
 Traspaso para retomar desde otra sesión o desde otro equipo.
 
 ## Resumen en una línea
 
-**Publicado y en vivo.** El sitio tiene ahora un portal de socios, y el
-material multimedia quedó corregido. Falta conectar Flow.
+**Publicado y en vivo.** El código para cobrar con Flow ya está escrito de los
+dos lados; falta desplegarlo y pegarle las credenciales.
 
 ## Dónde está
 
@@ -97,33 +97,61 @@ animando en ese momento).
 
 ---
 
-## Lo que se probó con Flow y después se borró
+## Lo que se hizo el 13 de agosto · Flow conectado en el código
 
-El 12 de agosto se construyó y luego se descartó un experimento de pagos.
-**Sigue existiendo en GitHub, privado**, aunque ya no está en el disco:
+El backend vive en el repo privado **`github.com/YordySerna/portal-socios`**
+(Google Apps Script + planilla). Se clona con `git clone`; no está en el disco.
 
-| Repo privado | Qué tiene |
-|---|---|
-| `github.com/YordySerna/laboratorio-pagos` | Simulador de cobro (HTML) + servidor FastAPI con SQLite y Flow Sandbox |
-| `github.com/YordySerna/portal-socios` | Backend en Google Apps Script + planilla |
+> También existe `github.com/YordySerna/laboratorio-pagos`, con un servidor
+> FastAPI. **No sirve para este proyecto:** esta máquina no tiene Python, y
+> GitHub Pages solo sirve archivos estáticos, así que el backend tiene que
+> vivir en la nube igual. Apps Script cubre eso sin instalar nada.
 
-Se bajan con `git clone` si alguna vez sirven. Lo que vale la pena rescatar de
-ahí es **la lógica de los cuatro pasos** al recibir un aviso de pago:
+Se reemplazó el adaptador genérico de pasarela —que era un esqueleto
+inventado— por **`Flow.gs`**, escrito contra la API real. Había cuatro cosas
+que habrían impedido cobrar:
 
-1. ¿La pasarela reconoce este identificador?
-2. ¿Ya lo procesé antes? (idempotencia)
-3. **¿La pasarela confirma que está pagado?** ← el que más se omite
-4. Recién ahí, mover la fecha
+| # | Qué pasaba | Consecuencia |
+|---|---|---|
+| 1 | Ninguna petición iba firmada | Flow responde `invalid signature` |
+| 2 | Se confundía nuestro `commerceOrder` con el `token` de Flow | no se podía consultar el estado |
+| 3 | Se validaba una firma HMAC del aviso | **todos** los pagos legítimos rechazados |
+| 4 | `urlReturn` devolvía JSON crudo | el socio veía un error justo tras pagar |
 
-Regla corta: **no le creas al aviso, pregúntale a la pasarela.**
+El punto 3 es el más importante y es contraintuitivo: **Flow no firma sus
+avisos.** Manda un POST con un token y nada más. La protección real es el paso
+3 de los cuatro —preguntarle a Flow si ese pago existe—.
 
-### Sobre Flow
+Regla corta, que no cambia con ninguna pasarela:
+**no le creas al aviso, pregúntale a la pasarela.**
 
-- Las credenciales de Sandbox **no se llegaron a usar**. Están en la cuenta de
-  Flow, no en ningún archivo de estos repos.
+El frontend también quedó completo: antes el socio salía a pagar y al volver
+caía en el buscador vacío. Ahora hay pantalla de resultado, y el portal
+reintenta unas veces porque el aviso de Flow y la vuelta del socio son caminos
+independientes, sin orden garantizado.
+
+### Lo que falta para cobrar de verdad
+
+Todo esto se hace desde el navegador, no desde acá:
+
+1. Crear la planilla con las hojas `Socios`, `Pagos` y `Bitacora`.
+   ⚠️ La hoja `Pagos` necesita la columna **`Token`**, que es nueva.
+2. Pegar los cuatro `.gs` en Apps Script y desplegar como aplicación web.
+3. Pegar las credenciales de Flow Sandbox en Propiedades del script.
+4. Correr **`pruebaFirma`** y **`pruebaCredenciales`** desde el editor. Están
+   hechas para verificar el ambiente sin gastar una transacción.
+5. Poner la URL `/exec` en `API_BASE` dentro de `socios/index.html`.
+
+El paso a paso completo está en `backend/LEEME.md` de ese repo.
+
+### Sobre las credenciales de Flow
+
+- Están en la cuenta de Flow, no en ningún archivo de estos repos. **No hacen
+  falta acá**: van en Propiedades del script de Apps Script.
 - ⚠️ **Verificar si son de `sandbox.flow.cl` o de `www.flow.cl`.** Son cuentas
   separadas con claves distintas. Usar las de producción contra la URL de
-  sandbox da `Invalid ApiKey`.
+  sandbox da `Invalid ApiKey`, y cuesta encontrarlo porque parece un problema
+  de firma.
 - Al copiarlas, usar el botón de copiar de Flow. Una API Key es hexadecimal
   (solo `0-9` y `A-F`): leerla de una pantalla confunde `O` con `0` y `l` con
   `1`, y el error aparece después disfrazado de "firma inválida".
