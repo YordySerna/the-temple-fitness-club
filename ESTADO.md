@@ -4,8 +4,26 @@ Traspaso para retomar desde otra sesión o desde otro equipo.
 
 ## Resumen en una línea
 
-**Publicado y en vivo.** El código para cobrar con Flow ya está escrito de los
-dos lados; falta desplegarlo y pegarle las credenciales.
+**Cobrando en sandbox, de punta a punta.** Un socio paga con tarjeta y su fecha
+de vencimiento se mueve sola. Falta pasar a producción, que es otra cuenta.
+
+## Prueba que ya se hizo, completa
+
+El 13 de agosto se pagó la orden `PS-BE650649` ($45.000, Matías Curihual) con
+tarjeta de prueba. Resultado: vencía el 16 de agosto y quedó al 16 de
+septiembre, sin que nadie tocara la planilla.
+
+Recorrido verificado:
+
+```
+portal → backend → Flow → cobro con tarjeta
+                            ↓
+              aviso a urlConfirmation
+                            ↓
+        4 pasos de validación → fecha movida
+                            ↓
+            el socio ve "Pago confirmado"
+```
 
 ## Dónde está
 
@@ -130,19 +148,47 @@ caía en el buscador vacío. Ahora hay pantalla de resultado, y el portal
 reintenta unas veces porque el aviso de Flow y la vuelta del socio son caminos
 independientes, sin orden garantizado.
 
-### Lo que falta para cobrar de verdad
+### Lo que ya está montado
 
-Todo esto se hace desde el navegador, no desde acá:
+- Planilla creada por el instalador, con `Socios`, `Pagos` y `Bitacora`
+- Backend desplegado como aplicación web, con acceso para cualquier usuario
+- Credenciales de Flow **sandbox** en Propiedades del script
+- `API_BASE` del portal apuntando al `/exec`
+- Modo real activado (contra sandbox)
 
-1. Crear la planilla con las hojas `Socios`, `Pagos` y `Bitacora`.
-   ⚠️ La hoja `Pagos` necesita la columna **`Token`**, que es nueva.
-2. Pegar los cuatro `.gs` en Apps Script y desplegar como aplicación web.
-3. Pegar las credenciales de Flow Sandbox en Propiedades del script.
-4. Correr **`pruebaFirma`** y **`pruebaCredenciales`** desde el editor. Están
-   hechas para verificar el ambiente sin gastar una transacción.
-5. Poner la URL `/exec` en `API_BASE` dentro de `socios/index.html`.
+### Tres cosas que costaron encontrar
 
-El paso a paso completo está en `backend/LEEME.md` de ese repo.
+**1. El cuerpo del POST hay que armarlo a mano.** Pasarle el objeto a
+`UrlFetchApp` y dejar que lo codifique da `Invalid Signature`: los bytes que
+viajan no son los que se firmaron. Engaña porque `getStatus` manda solo ASCII
+y funciona igual; falla únicamente al crear la orden, que es donde va el
+nombre del plan con tildes.
+
+**2. `ScriptApp.getService().getUrl()` devuelve `/dev` desde el editor** y
+`/exec` solo cuando atiende una petición web. La de `/dev` exige sesión de
+Google, así que Flow nunca habría podido avisar de un pago — y sin dar error:
+la orden se crea, el socio paga, la fecha no se mueve. Ahora la URL buena se
+anota sola en la primera visita real.
+
+**3. Una implementación queda congelada en su versión.** Guardar en el editor
+no cambia lo que responde el `/exec`. Cada vez que se toque el código hay que
+hacer `Implementar → Administrar implementaciones → ✏️ → Nueva versión`. Es de
+los que hacen perder una hora preguntándose por qué un arreglo no surte efecto.
+
+### Para cobrar plata de verdad
+
+⚠️ **Producción es otra cuenta de Flow**, con claves distintas, registrada
+aparte en `www.flow.cl`. Las de sandbox no sirven allá.
+
+1. Registrarse en www.flow.cl y conseguir las credenciales de producción
+2. Cambiar `FLOW_API_KEY`, `FLOW_SECRET_KEY` y poner
+   `FLOW_BASE = https://www.flow.cl/api` en Propiedades del script
+3. Ejecutar `probarFlow` para confirmar el ambiente
+4. Ejecutar `activarCobroReal`
+5. **Limpiar los datos de prueba** antes de cargar socios reales: los tres
+   socios de ejemplo (S001–S003) y las órdenes `PS-`/`TEST-` de la hoja Pagos
+
+Si algo sale mal con un cobro real, `volverAModoDemo` lo apaga al instante.
 
 ### Sobre las credenciales de Flow
 
