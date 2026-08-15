@@ -163,6 +163,71 @@ button,input,textarea,select{ font:inherit; color:inherit; background:none; bord
 .bloque{ position:relative; padding:96px 0; }
 .bloque + .bloque{ border-top:1px solid var(--linea); }
 
+/* ------------------------------------------------------------------
+   TELÓN — la foto del recinto detrás del texto, muy desenfocada
+
+   Es decorativo puro (aria-hidden) y va SIEMPRE visible: sin JS se ve
+   igual, solo deja de moverse. El desenfoque es alto a propósito —
+   además de dar profundidad, disimula que las fotos vienen de video y
+   no dan para verse nítidas a pantalla completa.
+
+   El degradado de arriba y abajo es lo que evita el corte seco entre
+   secciones: la foto nace y muere en negro.
+   ------------------------------------------------------------------ */
+.telon{
+  position:absolute; inset:0; overflow:hidden; z-index:0;
+  pointer-events:none;
+  /* Se desvanece por los cuatro costados para que nunca haya un borde recto */
+  -webkit-mask-image:linear-gradient(180deg, transparent, #000 22%, #000 78%, transparent);
+          mask-image:linear-gradient(180deg, transparent, #000 22%, #000 78%, transparent);
+}
+.telon img{
+  position:absolute; left:50%; top:50%;
+  /* Más grande que el contenedor: el blur come los bordes y el parallax
+     necesita margen para moverse sin descubrir el fondo */
+  width:118%; height:150%;
+  transform:translate3d(-50%, -50%, 0);
+  object-fit:cover;
+  filter:blur(30px) saturate(.7) brightness(.72);
+  opacity:.85;
+  will-change:transform;
+}
+/* Velo dorado: amarra la foto a la paleta del sitio en vez de dejarla gris.
+   El degradado vertical mantiene legible el texto sin apagar la foto. */
+.telon::after{
+  content:''; position:absolute; inset:0;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(201,162,39,.13), transparent 62%),
+    linear-gradient(180deg, var(--negro), rgba(8,8,8,.28) 45%, var(--negro));
+}
+/* El contenido tiene que quedar por encima del telón */
+.bloque > .envoltura{ position:relative; z-index:1; }
+
+/* ------------------------------------------------------------------
+   El desplazamiento va en CSS y no en JavaScript, por tres razones:
+   corre en el compositor (más suave), no depende de escuchar el scroll
+   —que con Lenis no llega—, y si el navegador no conoce
+   animation-timeline simplemente ignora el bloque y la foto queda
+   quieta, que es exactamente el respaldo que queremos.
+   ------------------------------------------------------------------ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes telon-desliza{
+      from{ transform:translate3d(-50%, calc(-50% - 46px), 0); }
+      to  { transform:translate3d(-50%, calc(-50% + 46px), 0); }
+    }
+    .telon img{
+      animation:telon-desliza linear both;
+      animation-timeline:view();
+    }
+  }
+}
+
+@media (max-width:760px){
+  /* En móvil el blur grande cuesta caro y se nota poco */
+  .telon img{ filter:blur(22px) saturate(.7) brightness(.68); opacity:.78; }
+}
+
 /* Etiqueta monoespaciada: el sello de "ficha técnica" */
 .sello{
   display:inline-flex; align-items:center; gap:11px;
@@ -540,7 +605,19 @@ html.js [data-ent="cortina"].dentro{ clip-path:inset(0 0 0 0); }
 
 /* Marca */
 .marca{ display:flex; align-items:center; gap:13px; }
-.marca-glifo{ width:26px; height:26px; color:var(--oro); flex:none; }
+/* El logo real del gimnasio. Viene con transparencia, así que se apoya
+   directo sobre el negro sin necesitar recorte ni caja. El drop-shadow
+   dorado lo despega del fondo y lo hermana con la paleta del sitio. */
+.marca-glifo{
+  width:38px; height:38px; flex:none;
+  object-fit:contain;
+  filter:drop-shadow(0 2px 10px rgba(201,162,39,.35));
+  transition:transform .4s cubic-bezier(.2,.7,.3,1), filter .4s ease;
+}
+.marca:hover .marca-glifo{
+  transform:scale(1.06) rotate(-2deg);
+  filter:drop-shadow(0 3px 16px rgba(201,162,39,.55));
+}
 .marca-texto{ display:flex; flex-direction:column; line-height:1; }
 .marca-nombre{
   font-weight:800; font-size:1.02rem; letter-spacing:.03em; text-transform:uppercase; color:var(--blanco);
@@ -1201,6 +1278,19 @@ body.trabado{ overflow:hidden; }
 /* Logotipo enorme al pie, recortado por el borde */
 .pie-firma{
   border-top:1px solid var(--linea); padding-top:34px; overflow:hidden;
+  position:relative;
+}
+/* El logo real como sello, apoyado sobre las letras gigantes. Va detrás
+   del trazo tipográfico y bastante tenue: es un remate, no un segundo
+   encabezado que compita con el de arriba. */
+.pie-sello{
+  position:absolute; right:0; top:26px;
+  width:clamp(84px, 13vw, 148px); height:auto;
+  opacity:.5; pointer-events:none;
+  filter:drop-shadow(0 4px 22px rgba(201,162,39,.28));
+}
+@media (max-width:760px){
+  .pie-sello{ width:76px; top:18px; opacity:.42; }
 }
 .pie-firma .letras{
   display:block; font-weight:900; font-size:clamp(3rem,15.5vw,13rem); line-height:.8;
@@ -1378,9 +1468,8 @@ body.trabado{ overflow:hidden; }
   <div class="envoltura">
 
     <a href="#inicio" class="marca" aria-label="The Temple Fitness Club, ir al inicio">
-      <svg class="marca-glifo" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
-        <path d="M16 3 29 13v16H3V13z"/><path d="M16 29V17"/><path d="M8 29V18M24 29V18"/>
-      </svg>
+      <img class="marca-glifo" src="imagenes/logo-temple.webp"
+           width="510" height="510" alt="" aria-hidden="true" decoding="async">
       <span class="marca-texto">
         <span class="marca-nombre">The <em>Temple</em></span>
         <span class="marca-lugar">Fitness Club — Loncoche</span>
@@ -1530,6 +1619,9 @@ body.trabado{ overflow:hidden; }
      Sin tarjetas: filas de índice con luz que las recorre.
      ============================================================ -->
 <section class="bloque" id="servicios">
+  <div class="telon" aria-hidden="true" data-telon>
+    <img src="imagenes/sala-general-ancha.jpg" alt="" loading="lazy" decoding="async">
+  </div>
   <div class="envoltura">
 
     <div class="doble">
@@ -1707,6 +1799,9 @@ body.trabado{ overflow:hidden; }
      FILOSOFÍA
      ============================================================ -->
 <section class="bloque filosofia" id="nosotros">
+  <div class="telon" aria-hidden="true" data-telon>
+    <img src="imagenes/pasillo-luces-ancha.jpg" alt="" loading="lazy" decoding="async">
+  </div>
   <div class="escenario" aria-hidden="true">
     <div class="aurora" style="opacity:.32"><i></i><i></i><i></i></div>
     <div class="vineta"></div>
@@ -1785,6 +1880,9 @@ body.trabado{ overflow:hidden; }
      ARGUMENTOS + CIFRAS
      ============================================================ -->
 <section class="bloque" id="porque">
+  <div class="telon" aria-hidden="true" data-telon>
+    <img src="imagenes/zona-funcional.jpg" alt="" loading="lazy" decoding="async">
+  </div>
   <div class="escenario" aria-hidden="true"><div class="reticula puntos"></div></div>
 
   <div class="envoltura" style="position:relative;z-index:1">
@@ -1994,6 +2092,9 @@ body.trabado{ overflow:hidden; }
      👉 EDITAR: los <li> de abajo y el objeto HORARIOS en el JS.
      ============================================================ -->
 <section class="bloque" id="horarios">
+  <div class="telon" aria-hidden="true" data-telon>
+    <img src="imagenes/luces-hexagonales.jpg" alt="" loading="lazy" decoding="async">
+  </div>
   <div class="envoltura">
 
     <div class="doble">
@@ -2140,6 +2241,9 @@ body.trabado{ overflow:hidden; }
      WhatsApp. El visitante decide cuándo enviarlo.
      ============================================================ -->
 <section class="bloque" id="contacto">
+  <div class="telon" aria-hidden="true" data-telon>
+    <img src="imagenes/peso-libre.jpg" alt="" loading="lazy" decoding="async">
+  </div>
   <div class="envoltura">
 
     <div class="doble">
@@ -2310,12 +2414,14 @@ body.trabado{ overflow:hidden; }
     </div>
 
     <div class="pie-firma">
+      <img class="pie-sello" src="imagenes/logo-temple.webp"
+           width="510" height="510" alt="" aria-hidden="true" loading="lazy" decoding="async">
       <span class="letras">The <em>Temple</em></span>
     </div>
 
     <div class="pie-abajo">
       <span>© <span id="anio">2026</span> The Temple Fitness Club · Loncoche</span>
-      <span>Versión plantilla — imágenes reales próximamente</span>
+      <span>Tu cuerpo es un templo</span>
     </div>
   </div>
 </footer>
@@ -3032,6 +3138,17 @@ body.trabado{ overflow:hidden; }
       });
     }
   }
+
+  /* ---------- TELONES · la foto de fondo se mueve más lento que el texto ---
+     El fondo ya se ve sin esto: acá solo se le agrega el desplazamiento.
+     Si el JS no corre, o si el sistema pide menos movimiento, las fotos
+     quedan quietas y la página se ve igual de bien.
+
+     Se observa la SECCIÓN y no el telón: el telón lleva una máscara que lo
+     desvanece en los bordes, y un elemento enmascarado puede no disparar
+     IntersectionObserver.                                                  */
+  /* El desplazamiento de los telones se resuelve en CSS con
+     animation-timeline, sin JavaScript. Ver la regla .telon img. */
 
   /* ---------- Año en el pie ----------------------------------------------- */
   const anio = $('#anio');
