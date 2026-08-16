@@ -682,25 +682,59 @@ html.js [data-ent="cortina"].dentro{ clip-path:inset(0 0 0 0); }
 .panel nav{ position:relative; margin-top:auto; }
 .panel .panel-pie{ margin-bottom:auto; }
 .panel li{ border-bottom:1px solid var(--linea); }
+/* 1.6rem y no 2rem: a tamaño completo, seis entradas más los botones y el
+   pie suman unos 960px y no entran ni en un teléfono grande. Este panel
+   sólo se ve en móvil, así que la medida compacta es la normal, no la
+   excepción. */
 .panel a{
-  display:flex; align-items:baseline; gap:16px; padding:15px 0;
-  font-size:2rem; font-weight:800; letter-spacing:-.03em; text-transform:uppercase; color:var(--blanco);
+  display:flex; align-items:baseline; gap:16px; padding:12px 0;
+  font-size:1.6rem; font-weight:800; letter-spacing:-.03em; text-transform:uppercase; color:var(--blanco);
   transition:color .4s,padding-left .4s var(--salida);
 }
 .panel a .n{ font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.16em; color:var(--oro); font-weight:400; }
 .panel a:hover{ color:var(--oro-claro); padding-left:10px; }
-.panel .boton{ margin-top:32px; justify-content:center; }
+/* Los dos botones van lado a lado: apilados se comían 180px, que es lo
+   que hacía que el bloque de abajo quedara cortado. */
+.panel-botones{ position:relative; margin-top:24px; display:flex; gap:10px; }
+.panel .boton{ justify-content:center; flex:1 1 0; min-width:0; padding:14px 12px; }
 .panel-pie{
   position:relative; margin-top:26px; display:flex; flex-direction:column; gap:8px;
   font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.08em; color:var(--tenue);
 }
-/* Teléfonos de pantalla baja: se aprieta el menú para que entre completo
-   sin tener que desplazarlo. Va después de las reglas de arriba a
-   propósito — con la misma especificidad, gana la última. */
-@media (max-height:740px){
-  .panel a{ font-size:1.55rem; padding:10px 0; }
-  .panel .boton{ margin-top:18px; }
-  .panel-pie{ margin-top:16px; }
+/* Por defecto se muestra la dirección completa; la abreviada sólo aparece
+   en pantallas bajas, donde la larga se comería dos líneas del menú. */
+.panel-pie .dir-corta{ display:none; }
+/* Teléfonos de pantalla baja: el menú completo son unos 680px y en estas
+   pantallas no entra. Se recorta de donde sobra, no del menú:
+
+     · los dos botones pasan a ir lado a lado en vez de apilados
+     · el pie queda en una línea y el domicilio se abrevia
+     · la tipografía del menú baja un punto
+
+   Va después de las reglas de arriba a propósito: con la misma
+   especificidad gana la última, y puesta antes no hacía nada. */
+/* La flecha se cae dentro de los botones: en dos columnas estrechas sólo
+   le roba ancho al texto. */
+.panel-botones .flecha{ display:none; }
+
+/* Teléfonos de pantalla baja: se recorta un punto más y el pie pasa a una
+   sola línea con la dirección abreviada — la completa sigue estando en la
+   sección de contacto y en el pie del sitio.
+
+   Va después de las reglas de arriba a propósito: con la misma
+   especificidad gana la última, y puesta antes no hacía nada. */
+@media (max-height:730px){
+  .panel{ padding-top:calc(var(--header-h) - 12px); padding-bottom:22px; }
+  .panel a{ font-size:1.4rem; padding:9px 0; }
+  .panel-botones{ margin-top:18px; }
+  .panel-botones .boton{ padding:12px 10px; font-size:.66rem; letter-spacing:.08em; }
+  .panel-pie{
+    margin-top:14px; flex-direction:row; flex-wrap:nowrap;
+    align-items:center; justify-content:space-between; gap:12px;
+  }
+  .panel-pie .dir-larga{ display:none; }
+  .panel-pie .dir-corta{ display:inline; }
+  .panel-pie a{ white-space:nowrap; }
 }
 body.trabado{ overflow:hidden; }
 
@@ -1532,10 +1566,13 @@ body.trabado{ overflow:hidden; }
       <li><a href="#contacto"><span class="n">06</span> Contacto</a></li>
     </ul>
   </nav>
-  <a href="#contacto" class="boton boton-oro">Agenda tu clase <span class="flecha">→</span></a>
-  <a href="socios/" class="boton boton-linea" style="margin-top:12px">Paga tu mensualidad <span class="flecha">→</span></a>
+  <div class="panel-botones">
+    <a href="#contacto" class="boton boton-oro">Agenda tu clase <span class="flecha">→</span></a>
+    <a href="socios/" class="boton boton-linea">Paga tu mensualidad <span class="flecha">→</span></a>
+  </div>
   <div class="panel-pie">
-    <span>Av. José Manuel Balmaceda 921, Loncoche</span>
+    <span class="dir-larga">Av. José Manuel Balmaceda 921, Loncoche</span>
+    <span class="dir-corta">Balmaceda 921</span>
     <a href="tel:+56977512219">+56 9 7751 2219</a>
   </div>
 </div>
