@@ -657,16 +657,30 @@ html.js [data-ent="cortina"].dentro{ clip-path:inset(0 0 0 0); }
 .abrir[aria-expanded="true"] span:nth-child(2){ opacity:0; }
 .abrir[aria-expanded="true"] span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
 
-/* Panel móvil */
+/* Panel móvil
+   El menú completo mide unos 790px. En un teléfono de 667px no cabe, así
+   que tiene que poder desplazarse.
+
+   El centrado NO se hace con justify-content:center: cuando el contenido
+   pasa del alto disponible, ese centrado lo desborda por arriba y esa
+   parte queda inalcanzable incluso pudiendo desplazar. En su lugar van
+   márgenes automáticos arriba y abajo del contenido (más abajo): centran
+   cuando sobra espacio y se anulan solos cuando falta, sin cortar nada. */
 .panel{
   position:fixed; inset:0; z-index:999; background:var(--negro);
-  display:flex; flex-direction:column; justify-content:center;
+  display:flex; flex-direction:column; justify-content:flex-start;
   padding:var(--header-h) var(--margen) 40px;
   clip-path:inset(0 0 100% 0); transition:clip-path .7s var(--salida);
+  overflow-y:auto;
+  /* Que el impulso del dedo no se le escape al fondo de la página */
+  overscroll-behavior:contain;
 }
 .panel.abierto{ clip-path:inset(0 0 0 0); }
 .panel .escenario{ z-index:-1; }
-.panel nav{ position:relative; }
+/* Los dos 'auto' son los que centran el bloque cuando hay espacio de sobra.
+   Si el contenido no cabe valen 0 y todo queda accesible al desplazar. */
+.panel nav{ position:relative; margin-top:auto; }
+.panel .panel-pie{ margin-bottom:auto; }
 .panel li{ border-bottom:1px solid var(--linea); }
 .panel a{
   display:flex; align-items:baseline; gap:16px; padding:15px 0;
@@ -679,6 +693,14 @@ html.js [data-ent="cortina"].dentro{ clip-path:inset(0 0 0 0); }
 .panel-pie{
   position:relative; margin-top:26px; display:flex; flex-direction:column; gap:8px;
   font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.08em; color:var(--tenue);
+}
+/* Teléfonos de pantalla baja: se aprieta el menú para que entre completo
+   sin tener que desplazarlo. Va después de las reglas de arriba a
+   propósito — con la misma especificidad, gana la última. */
+@media (max-height:740px){
+  .panel a{ font-size:1.55rem; padding:10px 0; }
+  .panel .boton{ margin-top:18px; }
+  .panel-pie{ margin-top:16px; }
 }
 body.trabado{ overflow:hidden; }
 
