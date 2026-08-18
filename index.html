@@ -857,79 +857,154 @@ body.trabado{ overflow:hidden; }
 .cinta:hover .cinta-pista{ animation-play-state:paused; }
 @keyframes rodar{ to{ transform:translateX(-50%); } }
 
-/* ---------- 08 · ÍNDICE DE SERVICIOS ------------------------------------- */
-/* Un índice de libro, no una grilla de tarjetas. */
+/* ---------- 08 · PLANES MENSUALES ---------------------------------------- */
+/* Tres columnas separadas por hilos, no tres tarjetas flotantes. El precio
+   es el protagonista: tipografía grande y tabular para que los tres montos
+   se comparen de un vistazo. */
 .doble{ display:grid; gap:34px; align-items:end; margin-bottom:52px; }
 
-.indice{ border-top:1px solid var(--linea); }
+.planes{ display:grid; border-top:1px solid var(--linea); }
+@media(min-width:900px){ .planes{ grid-template-columns:repeat(3,1fr); } }
 
-.fila{ position:relative; border-bottom:1px solid var(--linea); }
-.fila > a{
-  position:relative; z-index:1; display:grid; gap:6px 22px;
-  grid-template-columns:auto 1fr auto; align-items:baseline;
-  padding:22px 16px 22px 0;
-  transition:padding-left .55s var(--salida);
+.plan{
+  position:relative; display:flex; flex-direction:column;
+  padding:40px 30px 34px;
+  border-bottom:1px solid var(--linea);
 }
-.fila:hover > a{ padding-left:16px; }
+@media(min-width:900px){ .plan + .plan{ border-left:1px solid var(--linea); } }
 
-/* Lavado dorado que entra desde la izquierda */
-.fila::before{
-  content:''; position:absolute; inset:0;
-  background:linear-gradient(90deg,var(--lavado-oro),transparent 62%);
-  transform:scaleX(0); transform-origin:left; opacity:0;
-  transition:transform .6s var(--salida),opacity .5s;
+/* Lavado dorado que sube desde el pie */
+.plan::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(0deg,var(--lavado-oro),transparent 55%);
+  opacity:0; transition:opacity .55s var(--suave);
 }
-.fila:hover::before{ transform:scaleX(1); opacity:1; }
+.plan:hover::before{ opacity:1; }
 
-/* Hilo de luz que recorre el borde inferior */
-.fila::after{
-  content:''; position:absolute; left:0; bottom:-1px; height:1px; width:100%;
+/* Hilo de luz sobre el borde superior */
+.plan::after{
+  content:''; position:absolute; left:0; top:-1px; height:1px; width:100%;
   background:linear-gradient(90deg,transparent,var(--oro-claro),var(--oro),transparent);
   transform:scaleX(0); transform-origin:left;
-  transition:transform .75s var(--salida);
+  transition:transform .75s var(--salida),opacity .5s;
 }
-.fila:hover::after{ transform:scaleX(1); }
+.plan:hover::after{ transform:scaleX(1); }
 
-.fila-num{
-  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.12em; color:var(--tenue);
-  transition:color .4s; grid-row:1;
+/* Todo el contenido por encima de los dos pseudoelementos */
+.plan > *{ position:relative; z-index:1; }
+
+.plan-num{
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.12em;
+  color:var(--tenue); transition:color .4s;
 }
-.fila:hover .fila-num{ color:var(--oro); }
+.plan:hover .plan-num{ color:var(--oro); }
 
-.fila-nombre{
-  grid-row:1;
-  /* flex-start para que el ícono se alinee con la PRIMERA línea
-     cuando el nombre parte en dos, no con el centro del bloque */
-  display:flex; align-items:flex-start; gap:13px;
-  font-weight:700; font-size:clamp(1.15rem,3.4vw,1.6rem);
-  letter-spacing:-.025em; text-transform:uppercase; color:var(--blanco);
+.plan-insignia{
+  position:absolute; top:34px; right:30px; z-index:1;
+  font-family:var(--mono); font-size:var(--etiqueta); letter-spacing:.1em;
+  text-transform:uppercase; color:var(--tenue);
+  padding:5px 11px; border:1px solid var(--linea);
+}
+.plan-insignia-oro{ color:var(--oro-claro); border-color:var(--linea-oro); }
+
+.plan-nombre{
+  margin-top:26px;
+  font-weight:800; font-size:clamp(1.5rem,4.4vw,2rem);
+  letter-spacing:-.03em; text-transform:uppercase; color:var(--blanco);
   transition:color .4s;
 }
-.fila-nombre .ic{
-  width:19px; height:19px; flex:none; margin-top:.22em; color:var(--tenue);
-  transition:color .45s,transform .55s var(--salida);
-}
-.fila:hover .fila-nombre{ color:var(--oro-claro); }
-.fila:hover .fila-nombre .ic{ color:var(--oro); transform:translateY(-2px); }
+.plan:hover .plan-nombre{ color:var(--oro-claro); }
 
-.fila-desc{
-  grid-column:1/-1; grid-row:2;
-  font-size:.92rem; color:var(--tenue); max-width:62ch;
-  transition:color .45s;
+.plan-bajada{
+  margin-top:8px; font-size:.92rem; line-height:1.5;
+  color:var(--tenue); max-width:32ch; transition:color .45s;
 }
-.fila:hover .fila-desc{ color:var(--texto); }
+.plan:hover .plan-bajada{ color:var(--texto); }
 
-.fila-mas{
-  grid-row:1; font-family:var(--mono); font-size:.8rem; color:var(--tenue);
-  transition:transform .5s var(--salida),color .4s;
+/* nowrap en los dos: con tres columnas el monto llega justo al borde y el
+   "/ mes" se partía en dos líneas. El clamp está calculado para que en el
+   ancho más apretado (justo sobre los 900px) todavía entre en una línea. */
+.plan-precio{
+  margin-top:28px; padding-top:24px; border-top:1px solid var(--linea);
+  display:flex; align-items:baseline; gap:9px; flex-wrap:nowrap;
 }
-.fila:hover .fila-mas{ color:var(--oro); transform:translateX(6px) rotate(-45deg); }
+.plan-monto{
+  font-weight:800; font-size:clamp(2.1rem,4.4vw,2.6rem); line-height:1;
+  letter-spacing:-.04em; color:var(--blanco);
+  font-variant-numeric:tabular-nums; white-space:nowrap;
+}
+.plan-periodo{
+  font-family:var(--mono); font-size:var(--etiqueta-md);
+  letter-spacing:.08em; color:var(--tenue); white-space:nowrap;
+}
 
-.indice-pie{
+.plan-incluye{ margin-top:26px; display:grid; gap:12px; flex:1; align-content:start; }
+.plan-incluye li{
+  position:relative; padding-left:24px;
+  font-size:.9rem; line-height:1.5; color:var(--texto);
+}
+/* Rombo dorado, el mismo de la cinta */
+.plan-incluye li::before{
+  content:''; position:absolute; left:0; top:.52em;
+  width:5px; height:5px; background:var(--oro);
+  transform:rotate(45deg); opacity:.6;
+}
+
+.plan-cta{ margin-top:32px; width:100%; justify-content:center; }
+
+/* Los dos planes con acento: fondo apenas encendido y el filo ya trazado */
+.plan-destacado,.plan-oro{ background:rgba(201,162,39,.035); }
+.plan-destacado::after,.plan-oro::after{ transform:scaleX(1); opacity:.45; }
+.plan-destacado:hover::after,.plan-oro:hover::after{ opacity:1; }
+
+.planes-pie{
   margin-top:44px; display:flex; flex-wrap:wrap; align-items:center;
   justify-content:space-between; gap:20px;
 }
-.indice-pie p{ font-family:var(--mono); font-size:var(--etiqueta-md); letter-spacing:.06em; color:var(--tenue); max-width:44ch; }
+.planes-pie p{
+  font-family:var(--mono); font-size:var(--etiqueta-md);
+  letter-spacing:.06em; color:var(--tenue); max-width:46ch;
+}
+
+/* · Mini formulario del plan (se abre al tocar "Contratar") ·
+   Es un <dialog> nativo: sin librerías, con Escape y foco ya resueltos
+   por el navegador. Si el JS no corre, nunca se abre y el botón se
+   comporta como el enlace de WhatsApp que ya trae escrito. */
+.modal-plan{
+  width:min(440px,calc(100vw - 32px));
+  /* margin:auto va explícito: el reset de arriba (*{margin:0}) le gana al
+     dialog:modal{margin:auto} del navegador y el cuadro se pega a la
+     esquina superior izquierda. */
+  margin:auto;
+  max-height:calc(100dvh - 32px); overflow-y:auto; overscroll-behavior:contain;
+  padding:0; border:1px solid var(--linea-oro); border-radius:0;
+  background:var(--gris-900); color:var(--texto);
+  box-shadow:0 30px 90px rgba(0,0,0,.7);
+}
+.modal-plan::backdrop{ background:rgba(4,4,4,.82); backdrop-filter:blur(4px); }
+.modal-cuerpo{ padding:34px 30px 30px; position:relative; }
+
+.modal-cerrar{
+  position:absolute; top:14px; right:14px; z-index:2;
+  width:34px; height:34px; display:grid; place-items:center;
+  font-family:var(--mono); font-size:1.1rem; line-height:1;
+  color:var(--tenue); cursor:pointer;
+  background:none; border:1px solid transparent;
+  transition:color .35s,border-color .35s;
+}
+.modal-cerrar:hover{ color:var(--oro-claro); border-color:var(--linea-oro); }
+
+.modal-plan-nombre{
+  margin-top:14px;
+  font-weight:800; font-size:1.7rem; letter-spacing:-.03em;
+  text-transform:uppercase; color:var(--blanco);
+}
+.modal-plan-precio{
+  margin-top:6px; padding-bottom:22px; margin-bottom:22px;
+  border-bottom:1px solid var(--linea);
+  font-family:var(--mono); font-size:var(--etiqueta-md);
+  letter-spacing:.08em; color:var(--oro-claro);
+}
 
 /* ---------- 09 · FILOSOFÍA ----------------------------------------------- */
 .filosofia{ position:relative; }
@@ -1535,7 +1610,7 @@ body.trabado{ overflow:hidden; }
     <nav class="menu" id="menu" aria-label="Navegación principal">
       <ul>
         <li><a href="#inicio" class="viva"><span class="n">01</span> Inicio</a></li>
-        <li><a href="#servicios"><span class="n">02</span> Servicios</a></li>
+        <li><a href="#planes"><span class="n">02</span> Planes</a></li>
         <li><a href="#nosotros"><span class="n">03</span> Nosotros</a></li>
         <li><a href="#recinto"><span class="n">04</span> El recinto</a></li>
         <li><a href="#horarios"><span class="n">05</span> Horarios</a></li>
@@ -1559,7 +1634,7 @@ body.trabado{ overflow:hidden; }
   <nav aria-label="Navegación móvil">
     <ul>
       <li><a href="#inicio"><span class="n">01</span> Inicio</a></li>
-      <li><a href="#servicios"><span class="n">02</span> Servicios</a></li>
+      <li><a href="#planes"><span class="n">02</span> Planes</a></li>
       <li><a href="#nosotros"><span class="n">03</span> Nosotros</a></li>
       <li><a href="#recinto"><span class="n">04</span> El recinto</a></li>
       <li><a href="#horarios"><span class="n">05</span> Horarios</a></li>
@@ -1580,7 +1655,7 @@ body.trabado{ overflow:hidden; }
 <!-- Raíl lateral de secciones -->
 <nav class="rail" id="rail" aria-label="Índice de secciones">
   <a href="#inicio" class="viva"><span>Inicio</span><i></i></a>
-  <a href="#servicios"><span>Servicios</span><i></i></a>
+  <a href="#planes"><span>Planes</span><i></i></a>
   <a href="#nosotros"><span>Nosotros</span><i></i></a>
   <a href="#porque"><span>Por qué</span><i></i></a>
   <a href="#recinto"><span>El recinto</span><i></i></a>
@@ -1644,7 +1719,7 @@ body.trabado{ overflow:hidden; }
       <!-- El socio que ya entrena viene a esto, no a inscribirse. Va en
            contorno para no competir con el CTA principal, que es captar. -->
       <a href="socios/" class="boton boton-linea">Pagar mensualidad <span class="flecha">→</span></a>
-      <a href="#servicios" class="enlace-luz">Ver disciplinas <span class="flecha">↓</span></a>
+      <a href="#planes" class="enlace-luz">Ver planes <span class="flecha">↓</span></a>
     </div>
 
     <div class="franja" data-ent="sube" style="--retardo:.56s">
@@ -1674,10 +1749,19 @@ body.trabado{ overflow:hidden; }
 </div>
 
 <!-- ============================================================
-     ÍNDICE DE SERVICIOS
-     Sin tarjetas: filas de índice con luz que las recorre.
+     PLANES MENSUALES
+     Reemplaza al antiguo índice de disciplinas.
+
+     👉 PRECIOS: los tres montos de abajo son PROVISORIOS. Están en el
+     atributo data-precio y en el <span class="plan-monto">. Cambiar los
+     dos en cada plan y queda listo.
+
+     El botón de cada plan es un enlace de WhatsApp que YA funciona sin
+     JavaScript. Si el script carga, en vez de saltar a WhatsApp abre un
+     mini formulario que pide nombre y teléfono, y recién ahí arma el
+     mensaje. Regla de siempre: si el JS falla, la página igual sirve.
      ============================================================ -->
-<section class="bloque" id="servicios">
+<section class="bloque" id="planes">
   <div class="telon" aria-hidden="true" data-telon>
     <img src="imagenes/sala-general-ancha.jpg" alt="" loading="lazy" decoding="async">
   </div>
@@ -1685,170 +1769,106 @@ body.trabado{ overflow:hidden; }
 
     <div class="doble">
       <div>
-        <span class="sello" data-ent="sube">Índice de disciplinas — 12</span>
+        <span class="sello" data-ent="sube">Planes mensuales — 3</span>
         <h2 class="titular" style="margin-top:20px">
-          <span data-ent="linea"><span>Todo lo que</span></span>
-          <span data-ent="linea" style="--retardo:.08s"><span>necesitas <em class="sagrada">bajo</em></span></span>
-          <span data-ent="linea" style="--retardo:.16s"><span>un mismo techo</span></span>
+          <span data-ent="linea"><span>Elige el ritmo</span></span>
+          <span data-ent="linea" style="--retardo:.08s"><span>que <em class="sagrada">puedas</em></span></span>
+          <span data-ent="linea" style="--retardo:.16s"><span>sostener</span></span>
         </h2>
       </div>
       <p class="entrada-texto" data-ent="sube" style="--retardo:.2s">
-        Da igual si partes de cero o llevas años entrenando. Acá encuentras la disciplina
-        que te mueve y el profesional que te guía. Pasa el cursor por cada línea.
+        Todos incluyen las clases grupales y el acompañamiento de nuestros entrenadores.
+        Eliges tu plan, nos escribes por WhatsApp y te enviamos el link de pago.
       </p>
     </div>
 
-    <ol class="indice">
+    <div class="planes">
 
-      <li class="fila" data-ent="sube">
-        <a href="#contacto">
-          <span class="fila-num">01</span>
-          <span class="fila-nombre">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="6.5" r="3"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M18.6 3.6l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z"/></svg>
-            Entrenamiento personalizado
-          </span>
-          <span class="fila-desc">Evaluación inicial, objetivos claros y un entrenador que te acompaña sesión a sesión.</span>
-          <span class="fila-mas" aria-hidden="true">→</span>
+      <!-- ---------- 01 · Casual ---------- -->
+      <article class="plan" data-ent="sube">
+        <span class="plan-num">01</span>
+        <h3 class="plan-nombre">10 Días</h3>
+        <p class="plan-bajada">Para quien entrena cuando puede</p>
+
+        <div class="plan-precio">
+          <span class="plan-monto">$30.000</span>
+          <span class="plan-periodo">/ mes</span>
+        </div>
+
+        <ul class="plan-incluye">
+          <li>10 sesiones al mes, los días que tú elijas</li>
+          <li>Acceso a la sala de máquinas y peso libre</li>
+          <li>Clases grupales incluidas</li>
+          <li>Sin permanencia mínima</li>
+        </ul>
+
+        <a class="boton boton-linea plan-cta"
+           data-plan="Plan 10 Días" data-precio="$30.000"
+           target="_blank" rel="noopener"
+           href="https://wa.me/56977512219?text=%C2%A1Hola%20The%20Temple!%20%F0%9F%91%8B%0A%0AQuiero%20contratar%20el%20Plan%2010%20D%C3%ADas%20(%2430.000%20al%20mes).%0A%0A%C2%BFC%C3%B3mo%20puedo%20pagar%3F">
+          Contratar <span class="flecha">→</span>
         </a>
-      </li>
+      </article>
 
-      <li class="fila" data-ent="sube" style="--retardo:.04s">
-        <a href="#contacto">
-          <span class="fila-num">02</span>
-          <span class="fila-nombre">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="2.6"/><path d="M3 19a5 5 0 0 1 10 0"/><path d="M16 5.6a2.6 2.6 0 0 1 0 5.2"/><path d="M15.4 14.6A5 5 0 0 1 21 19"/></svg>
-            Clases grupales
-          </span>
-          <span class="fila-desc">La energía del grupo empuja. Entrena rodeado de gente que va por lo mismo que tú.</span>
-          <span class="fila-mas" aria-hidden="true">→</span>
+      <!-- ---------- 02 · El más elegido ---------- -->
+      <article class="plan plan-destacado" data-ent="sube" style="--retardo:.08s">
+        <span class="plan-num">02</span>
+        <span class="plan-insignia">El más elegido</span>
+        <h3 class="plan-nombre">12 Días</h3>
+        <p class="plan-bajada">Tres veces por semana, todo el mes</p>
+
+        <div class="plan-precio">
+          <span class="plan-monto">$35.000</span>
+          <span class="plan-periodo">/ mes</span>
+        </div>
+
+        <ul class="plan-incluye">
+          <li>12 sesiones al mes — 3 por semana</li>
+          <li>Acceso a la sala de máquinas y peso libre</li>
+          <li>Clases grupales incluidas</li>
+          <li>Evaluación inicial con entrenador</li>
+        </ul>
+
+        <a class="boton boton-oro plan-cta"
+           data-plan="Plan 12 Días" data-precio="$35.000"
+           target="_blank" rel="noopener"
+           href="https://wa.me/56977512219?text=%C2%A1Hola%20The%20Temple!%20%F0%9F%91%8B%0A%0AQuiero%20contratar%20el%20Plan%2012%20D%C3%ADas%20(%2435.000%20al%20mes).%0A%0A%C2%BFC%C3%B3mo%20puedo%20pagar%3F">
+          Contratar <span class="flecha">→</span>
         </a>
-      </li>
+      </article>
 
-      <li class="fila" data-ent="sube" style="--retardo:.08s">
-        <a href="#contacto">
-          <span class="fila-num">03</span>
-          <span class="fila-nombre">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 8.6a3 3 0 1 1 6 0"/><path d="M9.3 8.4C6.7 9.8 5 12.4 5 15.4c0 1.5.4 2.6.9 3.3.3.4.8.6 1.3.6h9.6c.5 0 1-.2 1.3-.6.5-.7.9-1.8.9-3.3 0-3-1.7-5.6-4.3-7"/></svg>
-            Entrenamiento funcional
-          </span>
-          <span class="fila-desc">Movimientos reales para la vida real. Fuerza, movilidad y coordinación desde el primer día.</span>
-          <span class="fila-mas" aria-hidden="true">→</span>
+      <!-- ---------- 03 · Sin límites ---------- -->
+      <article class="plan plan-oro" data-ent="sube" style="--retardo:.16s">
+        <span class="plan-num">03</span>
+        <span class="plan-insignia plan-insignia-oro">Sin límites</span>
+        <h3 class="plan-nombre">Plan Oro</h3>
+        <p class="plan-bajada">Todos los días, de lunes a sábado</p>
+
+        <div class="plan-precio">
+          <span class="plan-monto">$45.000</span>
+          <span class="plan-periodo">/ mes</span>
+        </div>
+
+        <ul class="plan-incluye">
+          <li>Sesiones sin límite</li>
+          <li>Acceso de lunes a sábado en todo el horario</li>
+          <li>Todas las clases grupales</li>
+          <li>Evaluación inicial y seguimiento del entrenador</li>
+        </ul>
+
+        <a class="boton boton-oro plan-cta"
+           data-plan="Plan Oro" data-precio="$45.000"
+           target="_blank" rel="noopener"
+           href="https://wa.me/56977512219?text=%C2%A1Hola%20The%20Temple!%20%F0%9F%91%8B%0A%0AQuiero%20contratar%20el%20Plan%20Oro%20(%2445.000%20al%20mes).%0A%0A%C2%BFC%C3%B3mo%20puedo%20pagar%3F">
+          Contratar <span class="flecha">→</span>
         </a>
-      </li>
+      </article>
 
-      <li class="fila" data-ent="sube" style="--retardo:.12s">
-        <a href="#contacto">
-          <span class="fila-num">04</span>
-          <span class="fila-nombre">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6M7 6.5v11M17 6.5v11M20 9v6M7 12h10"/></svg>
-            Fuerza y resistencia
-          </span>
-          <span class="fila-desc">Barras, discos y técnica bien enseñada. Músculo, potencia y una base que no se cae.</span>
-          <span class="fila-mas" aria-hidden="true">→</span>
-        </a>
-      </li>
+    </div>
 
-      <li class="fila" data-ent="sube" style="--retardo:.16s">
-        <a href="#contacto">
-          <span class="fila-num">05</span>
-          <span class="fila-nombre">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5S4 16 4 10.5A4.5 4.5 0 0 1 12 7.8 4.5 4.5 0 0 1 20 10.5c0 5.5-8 10-8 10z"/><path d="M12.9 9.6 10.3 13h3l-1.8 3"/></svg>
-            Cardio HIIT
-          </span>
-          <span class="fila-desc">Alta intensidad en poco tiempo. Quemas grasa, subes condición y sales con el corazón fuerte.</span>
-          <span class="fila-mas" aria-hidden="true">→</span>
-        </a>
-      </li>
-
-      <li class="fila" data-ent="sube" style="--retardo:.2s">
-        <a href="#contacto">
-          <span class="fila-num">06</span>
-          <span class="fila-nombre">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="4.8" r="2"/><path d="M12 8.8v3.6"/><path d="M12 12.4c-2.5 0-4.5 1.6-5.2 3.9-.2.6.3 1.2.9 1.2h8.6c.6 0 1.1-.6.9-1.2-.7-2.3-2.7-3.9-5.2-3.9z"/><path d="M8.4 11.2 5.2 13.4M15.6 11.2l3.2 2.2"/></svg>
-            Yoga y Pilates
-          </span>
-          <span class="fila-desc">Respira, estira y fortalece tu centro. El equilibrio también es entrenamiento.</span>
-          <span class="fila-mas" aria-hidden="true">→</span>
-        </a>
-      </li>
-
-      <li class="fila" data-ent="sube" style="--retardo:.24s">
-        <a href="#contacto">
-          <span class="fila-num">07</span>
-          <span class="fila-nombre">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17.4V6.4l9-2v11"/><circle cx="7" cy="17.4" r="2"/><circle cx="16" cy="15.4" r="2"/></svg>
-            Zumba
-          </span>
-          <span class="fila-desc">Baila, suda y ríete un rato. La forma más entretenida de quemar calorías.</span>
-          <span class="fila-mas" aria-hidden="true">→</span>
-        </a>
-      </li>
-
-      <li class="fila" data-ent="sube" style="--retardo:.28s">
-        <a href="#contacto">
-          <span class="fila-num">08</span>
-          <span class="fila-nombre">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 3.6V8h-4.4"/><circle cx="12" cy="12" r="2.2"/></svg>
-            Circuitos de entrenamiento
-          </span>
-          <span class="fila-desc">Estaciones, ritmo y cero aburrimiento. Cuerpo completo en cada vuelta.</span>
-          <span class="fila-mas" aria-hidden="true">→</span>
-        </a>
-      </li>
-
-      <li class="fila" data-ent="sube" style="--retardo:.32s">
-        <a href="#contacto">
-          <span class="fila-num">09</span>
-          <span class="fila-nombre">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8.2c-3 0-5.2 2.3-5.2 5.6S9.4 20.4 12 20.4s5.2-3.3 5.2-6.6S15 8.2 12 8.2z"/><path d="M12 8.2c0-2.1 1.5-3.7 3.6-4-.1 2.3-1.6 4-3.6 4z"/></svg>
-            Nutrición y dietética
-          </span>
-          <span class="fila-desc">Un plan de alimentación real, adaptado a tu rutina, tu presupuesto y tu meta.</span>
-          <span class="fila-mas" aria-hidden="true">→</span>
-        </a>
-      </li>
-
-      <li class="fila" data-ent="sube" style="--retardo:.36s">
-        <a href="#contacto">
-          <span class="fila-num">10</span>
-          <span class="fila-nombre">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.6 13V6.3a1.4 1.4 0 0 1 2.8 0V12"/><path d="M11.4 11.5V5.4a1.4 1.4 0 0 1 2.8 0V12"/><path d="M14.2 12V7.7a1.4 1.4 0 0 1 2.8 0v7c0 3-2.2 5.3-5.2 5.3-2.4 0-3.7-1-4.8-2.6l-2.1-3.2a1.4 1.4 0 0 1 2.1-1.8l1.6 1.6"/></svg>
-            Masajes deportivos
-          </span>
-          <span class="fila-desc">Descarga muscular y recuperación. El descanso también construye resultados.</span>
-          <span class="fila-mas" aria-hidden="true">→</span>
-        </a>
-      </li>
-
-      <li class="fila" data-ent="sube" style="--retardo:.4s">
-        <a href="#contacto">
-          <span class="fila-num">11</span>
-          <span class="fila-nombre">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M15.6 8.4 13.4 13.4 8.4 15.6l2.2-5z"/></svg>
-            Wellness coaching
-          </span>
-          <span class="fila-desc">Hábitos, sueño, estrés y mentalidad. Acompañamiento para sostener el cambio.</span>
-          <span class="fila-mas" aria-hidden="true">→</span>
-        </a>
-      </li>
-
-      <li class="fila" data-ent="sube" style="--retardo:.44s">
-        <a href="#contacto">
-          <span class="fila-num">12</span>
-          <span class="fila-nombre">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2 19 6v5.2c0 4.2-2.9 7.5-7 9.2-4.1-1.7-7-5-7-9.2V6z"/><path d="M12 9.2v5M9.5 11.7h5"/></svg>
-            Rehabilitación física
-          </span>
-          <span class="fila-desc">Vuelve a moverte sin dolor. Trabajo progresivo y seguro para volver mejor que antes.</span>
-          <span class="fila-mas" aria-hidden="true">→</span>
-        </a>
-      </li>
-
-    </ol>
-
-    <div class="indice-pie" data-ent="sube">
-      <p>¿No sabes por dónde partir? Te hacemos una evaluación inicial y armamos tu ruta.</p>
-      <a href="#contacto" class="boton boton-linea">Quiero mi evaluación <span class="flecha">→</span></a>
+    <div class="planes-pie" data-ent="sube">
+      <p>¿No sabes cuál te conviene? Cuéntanos tu rutina y te recomendamos el plan justo.</p>
+      <a href="#contacto" class="boton boton-linea">Quiero orientación <span class="flecha">→</span></a>
     </div>
 
   </div>
@@ -2439,7 +2459,7 @@ body.trabado{ overflow:hidden; }
         <ul class="pie-lista">
           <li><a href="socios/" style="color:var(--oro-claro)">Paga tu mensualidad →</a></li>
           <li><a href="#inicio">Inicio</a></li>
-          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="#planes">Planes</a></li>
           <li><a href="#nosotros">Nosotros</a></li>
           <li><a href="#porque">Por qué elegirnos</a></li>
           <li><a href="#horarios">Horarios</a></li>
@@ -2450,12 +2470,12 @@ body.trabado{ overflow:hidden; }
       <div>
         <h4>Disciplinas</h4>
         <ul class="pie-lista">
-          <li><a href="#servicios">Personalizado</a></li>
-          <li><a href="#servicios">Clases grupales</a></li>
-          <li><a href="#servicios">Funcional y fuerza</a></li>
-          <li><a href="#servicios">Yoga, Pilates y Zumba</a></li>
-          <li><a href="#servicios">Nutrición y masajes</a></li>
-          <li><a href="#servicios">Rehabilitación</a></li>
+          <li><a href="#planes">Personalizado</a></li>
+          <li><a href="#planes">Clases grupales</a></li>
+          <li><a href="#planes">Funcional y fuerza</a></li>
+          <li><a href="#planes">Yoga, Pilates y Zumba</a></li>
+          <li><a href="#planes">Nutrición y masajes</a></li>
+          <li><a href="#planes">Rehabilitación</a></li>
         </ul>
       </div>
 
@@ -2492,6 +2512,41 @@ body.trabado{ overflow:hidden; }
   </svg>
   <span class="txt">WhatsApp</span>
 </a>
+
+<!-- ============================================================
+     MINI FORMULARIO DEL PLAN
+     Lo abre el JS al tocar "Contratar". El nombre y el precio los
+     escribe el script desde los data- del botón, así los planes se
+     editan en un solo lugar (la sección de planes) y esto no se toca.
+     ============================================================ -->
+<dialog class="modal-plan" id="modal-plan" aria-labelledby="modal-plan-nombre">
+  <div class="modal-cuerpo">
+    <button type="button" class="modal-cerrar" id="modal-cerrar" aria-label="Cerrar">✕</button>
+
+    <span class="sello">Plan elegido</span>
+    <h3 class="modal-plan-nombre" id="modal-plan-nombre">—</h3>
+    <p class="modal-plan-precio" id="modal-plan-precio">—</p>
+
+    <form id="form-plan" novalidate>
+      <div class="campo">
+        <label for="plan-nombre-socio">Nombre</label>
+        <input type="text" id="plan-nombre-socio" name="nombre" placeholder="Camila Riquelme" required>
+        <span class="subrayado"></span>
+      </div>
+
+      <div class="campo">
+        <label for="plan-telefono">Teléfono</label>
+        <input type="tel" id="plan-telefono" name="telefono" placeholder="+56 9 ..." required>
+        <span class="subrayado"></span>
+      </div>
+
+      <button type="submit" class="boton boton-oro" style="width:100%;justify-content:center">
+        Continuar por WhatsApp <span class="flecha">→</span>
+      </button>
+      <p class="form-nota">Te respondemos con el link de pago. Tú decides cuándo enviarlo.</p>
+    </form>
+  </div>
+</dialog>
 
 <script type="application/ld+json">
 {
@@ -3069,6 +3124,68 @@ body.trabado{ overflow:hidden; }
         '\n\nMe gustaría agendar una clase.';
 
       window.open('https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(texto), '_blank', 'noopener');
+    });
+  }
+
+  /* ---------- J2 · PLANES → MINI FORMULARIO → WHATSAPP --------------------
+     Cada botón "Contratar" ya es un enlace de WhatsApp válido escrito en el
+     HTML. Acá le robamos el clic para pedir antes el nombre y el teléfono,
+     y recién entonces armar el mensaje completo.
+
+     Si este bloque no corre —JS caído, navegador viejo, <dialog> sin
+     soporte— no se rompe nada: el enlace original sigue ahí y lleva a
+     WhatsApp con el plan ya nombrado. Solo se pierde el nombre del socio,
+     que de todos modos el gimnasio pregunta en el chat.                   */
+  const modalPlan = $('#modal-plan');
+  const soportaDialog = modalPlan && typeof modalPlan.showModal === 'function';
+
+  if(soportaDialog){
+    const formPlan   = $('#form-plan');
+    const verNombre  = $('#modal-plan-nombre');
+    const verPrecio  = $('#modal-plan-precio');
+    const campoSocio = $('#plan-nombre-socio');
+    const campoFono  = $('#plan-telefono');
+    let planActivo   = null;
+
+    $$('.plan-cta').forEach(cta => {
+      cta.addEventListener('click', e => {
+        e.preventDefault();
+        planActivo = { nombre: cta.dataset.plan, precio: cta.dataset.precio };
+        verNombre.textContent = planActivo.nombre;
+        verPrecio.textContent = planActivo.precio + ' al mes';
+        formPlan.reset();
+        modalPlan.showModal();
+        // El foco va al primer campo, no al botón de cerrar
+        setTimeout(() => campoSocio.focus(), 80);
+      });
+    });
+
+    $('#modal-cerrar').addEventListener('click', () => modalPlan.close());
+
+    // Clic en el fondo oscuro: el <dialog> reporta el clic sobre sí mismo
+    // cuando cae fuera del contenido, así que basta comparar el target.
+    modalPlan.addEventListener('click', e => {
+      if(e.target === modalPlan) modalPlan.close();
+    });
+
+    formPlan.addEventListener('submit', e => {
+      e.preventDefault();
+      const nombre   = campoSocio.value.trim();
+      const telefono = campoFono.value.trim();
+
+      if(!nombre){ campoSocio.focus(); return; }
+      if(!telefono){ campoFono.focus(); return; }
+
+      const texto =
+        '¡Hola The Temple! 👋\n\n' +
+        'Quiero contratar el ' + planActivo.nombre +
+        ' (' + planActivo.precio + ' al mes).\n\n' +
+        'Nombre: ' + nombre + '\n' +
+        'Teléfono: ' + telefono + '\n\n' +
+        '¿Cómo puedo pagar?';
+
+      window.open('https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(texto), '_blank', 'noopener');
+      modalPlan.close();
     });
   }
 
