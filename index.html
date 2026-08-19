@@ -33,6 +33,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
+<!-- El póster de la portada es lo primero que se ve y lo que mide el LCP.
+     Sin esta línea el navegador no lo descubre hasta parsear el <video>,
+     que está 1.600 líneas más abajo. -->
+<link rel="preload" as="image" href="imagenes/pasillo-luces.webp" fetchpriority="high">
+
 <!-- Marca que el JS está vivo. Si no corre, se desactivan las animaciones
      de entrada y el contenido se ve igual. -->
 <script>document.documentElement.classList.add('js');</script>
@@ -132,7 +137,17 @@ html{
   scroll-behavior:smooth;              /* respaldo si Lenis no carga */
   scroll-padding-top:calc(var(--header-h) + 20px);
   -webkit-text-size-adjust:100%;
+  /* La barra de scroll gris de sistema desentona con el negro del sitio.
+     Firefox usa estas dos; WebKit va abajo con ::-webkit-scrollbar. */
+  scrollbar-color:#2b2820 var(--negro);
+  scrollbar-width:thin;
 }
+::-webkit-scrollbar{ width:10px; height:10px; }
+::-webkit-scrollbar-track{ background:var(--negro); }
+::-webkit-scrollbar-thumb{
+  background:#2b2820; border:2px solid var(--negro); border-radius:6px;
+}
+::-webkit-scrollbar-thumb:hover{ background:var(--oro); }
 /* Lenis pone la clase .lenis en <html>. El scroll suave nativo debe
    apagarse o los dos sistemas pelean por la misma posición. */
 html.lenis{ scroll-behavior:auto; }
@@ -957,6 +972,26 @@ body.trabado{ overflow:hidden; }
 .plan-destacado::after,.plan-oro::after{ transform:scaleX(1); opacity:.45; }
 .plan-destacado:hover::after,.plan-oro:hover::after{ opacity:1; }
 
+/* · Marco de luz del Plan Oro ·
+   El mismo conic-gradient giratorio de .marco, pero como elemento hijo:
+   ::before y ::after de .plan ya están ocupados por el lavado y el hilo,
+   y dos reglas sobre el mismo pseudoelemento se pisan (la trampa que ya
+   está anotada en los corchetes de .marco). */
+.plan-luz{
+  position:absolute; inset:0; z-index:0; padding:1px; pointer-events:none;
+  background:conic-gradient(from var(--giro),
+      transparent 0%, transparent 62%,
+      rgba(201,162,39,.12) 72%, var(--oro-claro) 82%, var(--oro) 87%, transparent 95%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  animation:girar 11s linear infinite;
+  opacity:.55;
+}
+.plan-oro:hover .plan-luz{ opacity:1; }
+@media(prefers-reduced-motion: reduce){
+  .plan-luz{ animation:none; opacity:.35; }
+}
+
 .planes-pie{
   margin-top:44px; display:flex; flex-wrap:wrap; align-items:center;
   justify-content:space-between; gap:20px;
@@ -1599,8 +1634,9 @@ body.trabado{ overflow:hidden; }
   <div class="envoltura">
 
     <a href="#inicio" class="marca" aria-label="The Temple Fitness Club, ir al inicio">
-      <img class="marca-glifo" src="imagenes/logo-temple.webp"
-           width="510" height="510" alt="" aria-hidden="true" decoding="async">
+      <img class="marca-glifo" src="imagenes/logo-temple-288.webp"
+           width="288" height="288" alt="" aria-hidden="true"
+           fetchpriority="high" decoding="async">
       <span class="marca-texto">
         <span class="marca-nombre">The <em>Temple</em></span>
         <span class="marca-lugar">Fitness Club — Loncoche</span>
@@ -1681,10 +1717,10 @@ body.trabado{ overflow:hidden; }
          abajo, y sólo se descarga si alguien lo pide. -->
     <!-- Versión ancha generada con Lanczos + enfoque. La original es vertical
          (720x1280) y acá se mostraba estirada 1.76x por el object-fit cover. -->
-    <div class="foto" style="background-image:url('imagenes/pasillo-luces-ancha.jpg')"></div>
+    <div class="foto" style="background-image:url('imagenes/pasillo-luces-ancha.webp')"></div>
     <video class="video-fondo" id="video-portada"
            muted loop playsinline preload="none"
-           poster="imagenes/pasillo-luces.jpg"></video>
+           poster="imagenes/pasillo-luces.webp"></video>
     <div class="foto-velo"></div>
     <div class="aurora"><i></i><i></i><i></i></div>
     <div class="reticula"></div>
@@ -1763,7 +1799,7 @@ body.trabado{ overflow:hidden; }
      ============================================================ -->
 <section class="bloque" id="planes">
   <div class="telon" aria-hidden="true" data-telon>
-    <img src="imagenes/sala-general-ancha.jpg" alt="" loading="lazy" decoding="async">
+    <img src="imagenes/sala-general-ancha-telon.webp" alt="" width="560" height="373" loading="lazy" decoding="async">
   </div>
   <div class="envoltura">
 
@@ -1839,6 +1875,7 @@ body.trabado{ overflow:hidden; }
 
       <!-- ---------- 03 · Sin límites ---------- -->
       <article class="plan plan-oro" data-ent="sube" style="--retardo:.16s">
+        <i class="plan-luz" aria-hidden="true"></i>
         <span class="plan-num">03</span>
         <span class="plan-insignia plan-insignia-oro">Sin límites</span>
         <h3 class="plan-nombre">Plan Oro</h3>
@@ -1879,7 +1916,7 @@ body.trabado{ overflow:hidden; }
      ============================================================ -->
 <section class="bloque filosofia" id="nosotros">
   <div class="telon" aria-hidden="true" data-telon>
-    <img src="imagenes/pasillo-luces-ancha.jpg" alt="" loading="lazy" decoding="async">
+    <img src="imagenes/pasillo-luces-ancha-telon.webp" alt="" width="560" height="373" loading="lazy" decoding="async">
   </div>
   <div class="escenario" aria-hidden="true">
     <div class="aurora" style="opacity:.32"><i></i><i></i><i></i></div>
@@ -1901,7 +1938,7 @@ body.trabado{ overflow:hidden; }
       <!-- Encuadre con zoom lento, marco con luz y corchetes.
            👉 FOTO REAL: pon background-image en .encuadre-foto de aquí abajo. -->
       <figure class="encuadre marco esquinas filo-encuadre" data-ent="cortina">
-        <div class="encuadre-foto foto" style="background-image:url('imagenes/vista-final.jpg')"></div>
+        <div class="encuadre-foto foto" style="background-image:url('imagenes/vista-final.webp')"></div>
         <i class="corte corte-1" aria-hidden="true"></i>
         <i class="corte corte-2" aria-hidden="true"></i>
         <figcaption class="pie">
@@ -1960,7 +1997,7 @@ body.trabado{ overflow:hidden; }
      ============================================================ -->
 <section class="bloque" id="porque">
   <div class="telon" aria-hidden="true" data-telon>
-    <img src="imagenes/zona-funcional.jpg" alt="" loading="lazy" decoding="async">
+    <img src="imagenes/zona-funcional-telon.webp" alt="" width="560" height="996" loading="lazy" decoding="async">
   </div>
   <div class="escenario" aria-hidden="true"><div class="reticula puntos"></div></div>
 
@@ -2049,10 +2086,10 @@ body.trabado{ overflow:hidden; }
     <div class="tour" id="tour-recinto" data-ent="sube">
 
       <div class="tour-marco">
-        <img class="tour-poster" src="imagenes/pasillo-luces.jpg" alt="Vista general de la sala principal de The Temple Fitness Club" loading="lazy" width="720" height="1280">
+        <img class="tour-poster" src="imagenes/pasillo-luces.webp" alt="Vista general de la sala principal de The Temple Fitness Club" loading="lazy" width="720" height="1280">
         <div class="tour-velo"></div>
         <video class="tour-video" controls playsinline preload="none"
-               poster="imagenes/pasillo-luces.jpg"></video>
+               poster="imagenes/pasillo-luces.webp"></video>
         <button class="tour-play" type="button" aria-label="Reproducir el recorrido en video"></button>
         <span class="tour-credito">Video <b>@johnfilms.cl</b></span>
       </div>
@@ -2077,73 +2114,73 @@ body.trabado{ overflow:hidden; }
     <!-- GALERÍA -->
     <div class="galeria" id="galeria">
 
-      <a class="pieza" href="imagenes/luces-hexagonales.jpg" tabindex="0" role="button"
-         data-grande="imagenes/luces-hexagonales.jpg" data-pie="Pista funcional marcada, bajo la luz hexagonal">
+      <a class="pieza" href="imagenes/luces-hexagonales.webp" tabindex="0" role="button"
+         data-grande="imagenes/luces-hexagonales.webp" data-pie="Pista funcional marcada, bajo la luz hexagonal">
         <span class="pieza-num">01</span>
-        <img src="imagenes/luces-hexagonales.jpg" alt="Pista funcional pintada en el suelo bajo una lámpara LED hexagonal" loading="lazy" width="720" height="1280">
+        <img src="imagenes/luces-hexagonales.webp" alt="Pista funcional pintada en el suelo bajo una lámpara LED hexagonal" loading="lazy" width="720" height="1280">
         <span class="pieza-pie">Pista funcional</span>
       </a>
 
-      <a class="pieza" href="imagenes/peso-libre.jpg" tabindex="0" role="button"
-         data-grande="imagenes/peso-libre.jpg" data-pie="Zona de peso libre, bancos y barras">
+      <a class="pieza" href="imagenes/peso-libre.webp" tabindex="0" role="button"
+         data-grande="imagenes/peso-libre.webp" data-pie="Zona de peso libre, bancos y barras">
         <span class="pieza-num">02</span>
-        <img src="imagenes/peso-libre.jpg" alt="Zona de peso libre con bancos, barras y discos" loading="lazy" width="720" height="1280">
+        <img src="imagenes/peso-libre.webp" alt="Zona de peso libre con bancos, barras y discos" loading="lazy" width="720" height="1280">
         <span class="pieza-pie">Peso libre</span>
       </a>
 
-      <a class="pieza" href="imagenes/logo-pared.jpg" tabindex="0" role="button"
-         data-grande="imagenes/logo-pared.jpg" data-pie="El letrero de neón sobre la nave">
+      <a class="pieza" href="imagenes/logo-pared.webp" tabindex="0" role="button"
+         data-grande="imagenes/logo-pared.webp" data-pie="El letrero de neón sobre la nave">
         <span class="pieza-num">03</span>
-        <img src="imagenes/logo-pared.jpg" alt="Letrero de neón de The Temple Fitness Club en lo alto de la nave" loading="lazy" width="480" height="854">
+        <img src="imagenes/logo-pared.webp" alt="Letrero de neón de The Temple Fitness Club en lo alto de la nave" loading="lazy" width="480" height="854">
         <span class="pieza-pie">El letrero</span>
       </a>
 
-      <a class="pieza" href="imagenes/kettlebells.jpg" tabindex="0" role="button"
-         data-grande="imagenes/kettlebells.jpg" data-pie="Kettlebells y discos por color de peso">
+      <a class="pieza" href="imagenes/kettlebells.webp" tabindex="0" role="button"
+         data-grande="imagenes/kettlebells.webp" data-pie="Kettlebells y discos por color de peso">
         <span class="pieza-num">04</span>
-        <img src="imagenes/kettlebells.jpg" alt="Estantería con kettlebells y discos de colores ordenados por peso" loading="lazy" width="480" height="854">
+        <img src="imagenes/kettlebells.webp" alt="Estantería con kettlebells y discos de colores ordenados por peso" loading="lazy" width="480" height="854">
         <span class="pieza-pie">Material</span>
       </a>
 
-      <a class="pieza" href="imagenes/logo-piso.jpg" tabindex="0" role="button"
-         data-grande="imagenes/logo-piso.jpg" data-pie="Recepción y zona de cardio">
+      <a class="pieza" href="imagenes/logo-piso.webp" tabindex="0" role="button"
+         data-grande="imagenes/logo-piso.webp" data-pie="Recepción y zona de cardio">
         <span class="pieza-num">05</span>
-        <img src="imagenes/logo-piso.jpg" alt="Recepción del gimnasio y fila de trotadoras al fondo" loading="lazy" width="720" height="1280">
+        <img src="imagenes/logo-piso.webp" alt="Recepción del gimnasio y fila de trotadoras al fondo" loading="lazy" width="720" height="1280">
         <span class="pieza-pie">Recepción y cardio</span>
       </a>
 
-      <a class="pieza" href="imagenes/maquinas-fila.jpg" tabindex="0" role="button"
-         data-grande="imagenes/maquinas-fila.jpg" data-pie="Máquinas guiadas, una junto a otra">
+      <a class="pieza" href="imagenes/maquinas-fila.webp" tabindex="0" role="button"
+         data-grande="imagenes/maquinas-fila.webp" data-pie="Máquinas guiadas, una junto a otra">
         <span class="pieza-num">06</span>
-        <img src="imagenes/maquinas-fila.jpg" alt="Fila de máquinas guiadas sobre pasto sintético" loading="lazy" width="720" height="1280">
+        <img src="imagenes/maquinas-fila.webp" alt="Fila de máquinas guiadas sobre pasto sintético" loading="lazy" width="720" height="1280">
         <span class="pieza-pie">Máquinas</span>
       </a>
 
-      <a class="pieza" href="imagenes/sala-amplia.jpg" tabindex="0" role="button"
-         data-grande="imagenes/sala-amplia.jpg" data-pie="La nave completa, de extremo a extremo">
+      <a class="pieza" href="imagenes/sala-amplia.webp" tabindex="0" role="button"
+         data-grande="imagenes/sala-amplia.webp" data-pie="La nave completa, de extremo a extremo">
         <span class="pieza-num">07</span>
-        <img src="imagenes/sala-amplia.jpg" alt="Vista amplia de la nave del gimnasio de extremo a extremo" loading="lazy" width="720" height="1280">
+        <img src="imagenes/sala-amplia.webp" alt="Vista amplia de la nave del gimnasio de extremo a extremo" loading="lazy" width="720" height="1280">
         <span class="pieza-pie">La nave</span>
       </a>
 
-      <a class="pieza" href="imagenes/equipamiento.jpg" tabindex="0" role="button"
-         data-grande="imagenes/equipamiento.jpg" data-pie="Cajones, mancuernas y material de funcional">
+      <a class="pieza" href="imagenes/equipamiento.webp" tabindex="0" role="button"
+         data-grande="imagenes/equipamiento.webp" data-pie="Cajones, mancuernas y material de funcional">
         <span class="pieza-num">08</span>
-        <img src="imagenes/equipamiento.jpg" alt="Cajones de salto, mancuernas y material de entrenamiento funcional" loading="lazy" width="720" height="1280">
+        <img src="imagenes/equipamiento.webp" alt="Cajones de salto, mancuernas y material de entrenamiento funcional" loading="lazy" width="720" height="1280">
         <span class="pieza-pie">Funcional</span>
       </a>
 
-      <a class="pieza" href="imagenes/zona-funcional.jpg" tabindex="0" role="button"
-         data-grande="imagenes/zona-funcional.jpg" data-pie="La pista de trabajo, vista desde el fondo">
+      <a class="pieza" href="imagenes/zona-funcional.webp" tabindex="0" role="button"
+         data-grande="imagenes/zona-funcional.webp" data-pie="La pista de trabajo, vista desde el fondo">
         <span class="pieza-num">09</span>
-        <img src="imagenes/zona-funcional.jpg" alt="Pista de entrenamiento funcional vista desde el fondo de la nave" loading="lazy" width="720" height="1280">
+        <img src="imagenes/zona-funcional.webp" alt="Pista de entrenamiento funcional vista desde el fondo de la nave" loading="lazy" width="720" height="1280">
         <span class="pieza-pie">La pista</span>
       </a>
 
-      <a class="pieza" href="imagenes/mancuernas.jpg" tabindex="0" role="button"
-         data-grande="imagenes/mancuernas.jpg" data-pie="Rack de mancuernas, de menor a mayor">
+      <a class="pieza" href="imagenes/mancuernas.webp" tabindex="0" role="button"
+         data-grande="imagenes/mancuernas.webp" data-pie="Rack de mancuernas, de menor a mayor">
         <span class="pieza-num">10</span>
-        <img src="imagenes/mancuernas.jpg" alt="Rack con mancuernas ordenadas de menor a mayor peso" loading="lazy" width="480" height="854">
+        <img src="imagenes/mancuernas.webp" alt="Rack con mancuernas ordenadas de menor a mayor peso" loading="lazy" width="480" height="854">
         <span class="pieza-pie">Mancuernas</span>
       </a>
 
@@ -2172,7 +2209,7 @@ body.trabado{ overflow:hidden; }
      ============================================================ -->
 <section class="bloque" id="horarios">
   <div class="telon" aria-hidden="true" data-telon>
-    <img src="imagenes/luces-hexagonales.jpg" alt="" loading="lazy" decoding="async">
+    <img src="imagenes/luces-hexagonales-telon.webp" alt="" width="560" height="996" loading="lazy" decoding="async">
   </div>
   <div class="envoltura">
 
@@ -2273,7 +2310,7 @@ body.trabado{ overflow:hidden; }
 <section class="llamado">
   <div class="escenario" aria-hidden="true">
     <!-- Versión ancha generada con Lanczos + enfoque. Ver nota en la portada. -->
-    <div class="foto" style="background-image:url('imagenes/sala-general-ancha.jpg')"></div>
+    <div class="foto" style="background-image:url('imagenes/sala-general-ancha.webp')"></div>
     <div class="foto-velo"></div>
     <div class="aurora"><i></i><i></i><i></i></div>
     <div class="reticula"></div>
@@ -2321,7 +2358,7 @@ body.trabado{ overflow:hidden; }
      ============================================================ -->
 <section class="bloque" id="contacto">
   <div class="telon" aria-hidden="true" data-telon>
-    <img src="imagenes/peso-libre.jpg" alt="" loading="lazy" decoding="async">
+    <img src="imagenes/peso-libre-telon.webp" alt="" width="560" height="996" loading="lazy" decoding="async">
   </div>
   <div class="envoltura">
 
@@ -2493,8 +2530,8 @@ body.trabado{ overflow:hidden; }
     </div>
 
     <div class="pie-firma">
-      <img class="pie-sello" src="imagenes/logo-temple.webp"
-           width="510" height="510" alt="" aria-hidden="true" loading="lazy" decoding="async">
+      <img class="pie-sello" src="imagenes/logo-temple-288.webp"
+           width="288" height="288" alt="" aria-hidden="true" loading="lazy" decoding="async">
       <span class="letras">The <em>Temple</em></span>
     </div>
 

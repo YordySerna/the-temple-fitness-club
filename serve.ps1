@@ -26,6 +26,45 @@ while ($listener.IsListening) {
     if ([string]::IsNullOrWhiteSpace($rel)) { $rel = "index.html" }
     $path = Join-Path $Root ($rel -replace '/', '\')
 
+    # --- POST /guardar --------------------------------------------------
+    # Solo para desarrollo. Esta maquina no tiene ffmpeg ni encoder WebP,
+    # pero el navegador si: canvas.toBlob('image/webp') comprime y ademas
+    # respeta el canal alfa, que WIC no sabe leer de un WebP.
+    # Recibe ?destino=imagenes/algo.webp y escribe el cuerpo crudo.
+    #
+    # Acotado a proposito: solo POST, solo dentro de $Root, y solo
+    # extensiones de imagen. No sirve para nada mas.
+    if ($req.HttpMethod -eq 'POST' -and $rel -eq 'guardar') {
+      $destino = $req.QueryString['destino']
+      $lleno = $null
+      if ($destino) {
+        $tentativa = Join-Path $Root ($destino -replace '/', '\')
+        $completo  = [System.IO.Path]::GetFullPath($tentativa)
+        $raizFull  = [System.IO.Path]::GetFullPath($Root)
+        $ext2      = [System.IO.Path]::GetExtension($completo).ToLower()
+        if ($completo.StartsWith($raizFull) -and $ext2 -in @('.webp','.png','.jpg','.jpeg')) {
+          $lleno = $completo
+        }
+      }
+      if ($lleno) {
+        $ms = New-Object System.IO.MemoryStream
+        $req.InputStream.CopyTo($ms)
+        [System.IO.File]::WriteAllBytes($lleno, $ms.ToArray())
+        $txt = "OK $($ms.Length)"
+        Write-Host "guardado $destino ($([math]::Round($ms.Length/1KB,1)) KB)"
+      } else {
+        $res.StatusCode = 400
+        $txt = "destino invalido"
+      }
+      $b = [System.Text.Encoding]::UTF8.GetBytes($txt)
+      $res.ContentType = "text/plain; charset=utf-8"
+      $res.AddHeader("Access-Control-Allow-Origin", "*")
+      $res.ContentLength64 = $b.Length
+      $res.OutputStream.Write($b, 0, $b.Length)
+      $res.OutputStream.Close()
+      continue
+    }
+
     if ((Test-Path $path -PathType Container)) { $path = Join-Path $path "index.html" }
 
     if (Test-Path $path -PathType Leaf) {
