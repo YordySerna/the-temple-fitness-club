@@ -33,7 +33,7 @@
      ══════════════════════════════════════════════════════════════════════ -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;500;700&family=Barlow:wght@400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@300;700&family=Barlow+Condensed:wght@500&family=Barlow:wght@400&display=swap">
 
 <!-- La primera foto de portada es lo que mide el LCP. Sin esto el navegador
      no la descubre hasta parsear el cuerpo del documento. -->
@@ -87,7 +87,13 @@
   --linea:     rgba(242,240,235,.10);
   --linea-oro: rgba(201,162,39,.34);
 
-  --display: 'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
+  /* Barlow Semi Condensed para los titulares: la Condensed pura quedaba
+     demasiado apretada a tamaño grande. La Semi respira sin perder el aire
+     atlético, y a escala de portada sigue leyéndose como inscripción. */
+  --display: 'Barlow Semi Condensed', 'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
+  /* La Condensed pura se queda solo para las etiquetas chicas, donde lo
+     apretado es una virtud. */
+  --etiqueta-f:'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
   --cuerpo:  'Barlow', system-ui, -apple-system, sans-serif;
 
   --ancho:  1240px;
@@ -170,7 +176,7 @@ input,select,textarea{ font:inherit; color:inherit; }
 /* La etiqueta: la misma condensada, chica y muy abierta. Hace de pie de
    plano técnico. Nunca lleva color de acento por sí sola. */
 .etiqueta{
-  font-family:var(--display); font-weight:500;
+  font-family:var(--etiqueta-f); font-weight:500;
   font-size:.8125rem; letter-spacing:.28em; text-transform:uppercase;
   color:var(--cal-tenue);
 }
@@ -215,22 +221,55 @@ input,select,textarea{ font:inherit; color:inherit; }
 
 /* ── 03 · BOTONES ──────────────────────────────────────────────────────── */
 .boton{
+  position:relative; overflow:hidden;
   display:inline-flex; align-items:center; justify-content:center; gap:10px;
   min-height:48px; padding:14px 28px;
-  font-family:var(--display); font-weight:700;
-  font-size:.9375rem; letter-spacing:.14em; text-transform:uppercase;
+  font-family:var(--etiqueta-f); font-weight:500;
+  font-size:.9375rem; letter-spacing:.16em; text-transform:uppercase;
   border-radius:0;                 /* nunca. Un templo no tiene esquinas blandas */
   transition:background .2s var(--suave), color .2s var(--suave),
-             border-color .2s var(--suave), transform .2s var(--suave);
+             border-color .2s var(--suave), transform .2s var(--suave),
+             box-shadow .3s var(--suave);
 }
+/* El texto va sobre el destello */
+.boton > *{ position:relative; z-index:1; }
+
+/* DESTELLO AL PASAR EL CURSOR.
+   Una banda de luz diagonal que cruza el botón. Es un pseudo-elemento que se
+   DESPLAZA con transform, no un degradado animado: lo mueve el compositor y
+   no repinta nada. Y solo existe mientras el cursor está encima, así que en
+   reposo cuesta cero. */
+.boton::after{
+  content:''; position:absolute; z-index:0; top:-60%; bottom:-60%; left:-40%;
+  width:34%;
+  background:linear-gradient(100deg, transparent, rgba(255,255,255,.42), transparent);
+  transform:translateX(-260%) skewX(-18deg);
+  transition:transform .62s var(--salida);
+  pointer-events:none;
+}
+.boton:hover::after,
+.boton:focus-visible::after{ transform:translateX(560%) skewX(-18deg); }
+
 .boton .punta{ transition:transform .2s var(--suave); }
 .boton:hover .punta{ transform:translateX(4px); }
 
-.boton-oro{ background:var(--oro); color:var(--piedra); }
-.boton-oro:hover{ background:var(--oro-luz); }
+.boton-oro{
+  background:var(--oro); color:var(--piedra);
+  box-shadow:0 6px 22px -10px rgba(201,162,39,.7);
+}
+.boton-oro:hover{
+  background:var(--oro-luz);
+  box-shadow:0 12px 34px -10px rgba(201,162,39,.85);
+  transform:translateY(-2px);
+}
 
 .boton-linea{ border:1px solid var(--linea); color:var(--cal); }
-.boton-linea:hover{ border-color:var(--linea-oro); color:var(--oro-luz); }
+.boton-linea::after{ background:linear-gradient(100deg, transparent, rgba(232,206,114,.30), transparent); }
+.boton-linea:hover{
+  border-color:var(--linea-oro); color:var(--oro-luz);
+  box-shadow:0 10px 30px -14px rgba(201,162,39,.5);
+  transform:translateY(-2px);
+}
 
 .boton:active{ transform:translateY(1px); }
 
@@ -262,7 +301,7 @@ input,select,textarea{ font:inherit; color:inherit; }
   letter-spacing:.02em; text-transform:uppercase; color:var(--cal);
 }
 .marca-txt span{
-  font-family:var(--display); font-weight:500;
+  font-family:var(--etiqueta-f); font-weight:500;
   font-size:.75rem; letter-spacing:.2em; text-transform:uppercase;
   color:var(--cal-tenue);
 }
@@ -505,7 +544,7 @@ body.trabado{ overflow:hidden; }
    así que va arriba de todo y se calcula con la hora real de Chile. */
 .estado{
   display:inline-flex; align-items:center; gap:9px;
-  font-family:var(--display); font-weight:500;
+  font-family:var(--etiqueta-f); font-weight:500;
   font-size:.8125rem; letter-spacing:.16em; text-transform:uppercase;
 }
 .estado .pip{
@@ -529,29 +568,56 @@ body.trabado{ overflow:hidden; }
   text-transform:uppercase; color:var(--cal);
   margin-left:-.04em;               /* corrige el apoyo óptico de la condensada */
 }
-/* El oro en la letra.
+/* EL BARRIDO DE LUZ — el mismo recurso del portafolio de Yordy.
 
-   No es una palabra pintada de dorado —ese es el recurso que usa todo el
-   mundo—: es un degradado que recorre TODA la inscripción, de cal arriba a
-   oro abajo, como la luz rasante sobre piedra tallada. La palabra que
-   importa sigue destacando por peso, y además recibe la parte más encendida
-   del degradado.
+   El relleno de las letras no es un color: es un degradado ancho que cruza
+   la palabra, como un reflejo recorriendo metal pulido.
 
-   background-clip:text pintado UNA vez no cuesta nada. Lo caro es animarlo:
-   mover el background-position obliga a volver a rasterizar toda la palabra
-   en cada fotograma. Por eso el degradado es fijo. */
+   Esto SÍ repinta el texto en cada fotograma, que es justo lo que se saco
+   del sitio por lento. Se admite acá con tres candados:
+     · una sola pieza en toda la página, la inscripción de portada;
+     · ciclo largo (9s) y en @supports, para que sin recorte al texto la
+       palabra siga siendo blanca en vez de desaparecer;
+     · se congela apenas la portada sale de pantalla (clase .quieta),
+       así el costo solo existe mientras alguien la está mirando.       */
 .inscripcion{
-  background:linear-gradient(174deg,
-    var(--cal) 0%, var(--cal) 34%,
-    #D9CFA8 62%, var(--oro-luz) 84%, var(--oro) 100%);
-  -webkit-background-clip:text; background-clip:text;
-  color:transparent;
+  color:var(--cal);
+  /* Sombra en el borde: separa la letra de la foto de fondo y le da cuerpo.
+     Es una sombra estática, se pinta una vez. */
+  text-shadow:
+    0 1px 0 rgba(8,9,10,.55),
+    0 0 26px rgba(8,9,10,.85),
+    0 0 70px rgba(201,162,39,.16);
 }
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  .inscripcion{
+    background-image:linear-gradient(100deg,
+      var(--cal) 0%, var(--cal) 33%,
+      #E4D5A4 44%, var(--oro-luz) 49%, #FFF3CE 51%, var(--oro-luz) 53%, #E4D5A4 58%,
+      var(--cal) 70%, var(--cal) 100%);
+    background-size:300% 100%;
+    background-position:100% 0;
+    -webkit-background-clip:text; background-clip:text;
+    color:transparent; -webkit-text-fill-color:transparent;
+    animation:barrido 9s linear infinite;
+    /* Con el texto recortado el text-shadow no se ve, y un drop-shadow acá
+       sería un filtro re-ejecutándose en cada fotograma junto al barrido.
+       El cuerpo lo da el velo oscuro del fondo, que ya está pintado. */
+    text-shadow:none;
+  }
+}
+@keyframes barrido{ to{ background-position:-200% 0; } }
 .inscripcion b{ font-weight:700; }
 .inscripcion .remate{
   display:block; margin-top:.28em;
+  font-family:var(--etiqueta-f);
   font-size:clamp(.9rem,2.1vw,1.35rem); font-weight:500;
-  letter-spacing:.26em; color:var(--oro); line-height:1.2;
+  letter-spacing:.26em; line-height:1.2;
+  /* -webkit-text-fill-color HEREDA: sin esta línea el remate saldría
+     transparente por el recorte del titular de arriba. */
+  color:var(--oro); -webkit-text-fill-color:var(--oro);
+  background:none;
+  text-shadow:0 0 18px rgba(8,9,10,.9);
 }
 
 .portada-bajada{
@@ -579,7 +645,7 @@ body.trabado{ overflow:hidden; }
   color:var(--oro-luz); font-variant-numeric:tabular-nums;
 }
 .cifras span{
-  font-family:var(--display); font-weight:500;
+  font-family:var(--etiqueta-f); font-weight:500;
   font-size:.75rem; letter-spacing:.18em; text-transform:uppercase;
   color:var(--cal-tenue);
 }
@@ -678,13 +744,13 @@ body.trabado{ overflow:hidden; }
 
 .plan-cima{ display:flex; align-items:center; justify-content:space-between; gap:var(--e2); }
 .plan-n{
-  font-family:var(--display); font-weight:500; font-size:.8125rem;
+  font-family:var(--etiqueta-f); font-weight:500; font-size:.8125rem;
   letter-spacing:.2em; color:var(--cal-tenue);
   transition:color .3s var(--suave);
 }
 .plan:hover .plan-n{ color:var(--oro); }
 .plan-marca{
-  font-family:var(--display); font-weight:500;
+  font-family:var(--etiqueta-f); font-weight:500;
   font-size:.75rem; letter-spacing:.16em; text-transform:uppercase;
   color:var(--oro-luz); border:1px solid var(--linea-oro);
   padding:4px 10px; white-space:nowrap;
@@ -698,9 +764,24 @@ body.trabado{ overflow:hidden; }
 }
 .plan-bajada{ margin-top:10px; font-size:.9375rem; max-width:30ch; }
 
+/* El plan del medio es el que el gimnasio quiere vender: se le sube el
+   contraste con fondo propio, filo dorado permanente y sombra que lo
+   despega del resto. Las sombras son estáticas: se pintan una vez. */
+.plan--destaca{
+  background:linear-gradient(180deg, rgba(201,162,39,.07), rgba(8,9,10,0) 62%), var(--nave);
+  box-shadow:0 30px 70px -40px rgba(0,0,0,.9), inset 0 0 0 1px var(--linea-oro);
+  z-index:1;
+}
+.plan--destaca::before{ transform:scaleX(1); }
+.plan--destaca .plan-nombre{ color:var(--cal); }
+@media (min-width:900px){
+  /* En escritorio además sobresale del bloque, como una lápida más alta */
+  .plan--destaca{ margin-block:-14px; padding-top:calc(var(--e4) + 14px); }
+}
+
 .plan-precio{
   margin-top:var(--e3); padding-top:var(--e3);
-  border-top:1px solid var(--linea);
+  border-top:1px solid var(--linea-oro);
   display:flex; align-items:baseline; gap:8px; flex-wrap:nowrap;
 }
 .plan-monto{
@@ -714,7 +795,7 @@ body.trabado{ overflow:hidden; }
   color:transparent;
 }
 .plan-periodo{
-  font-family:var(--display); font-weight:500; font-size:.8125rem;
+  font-family:var(--etiqueta-f); font-weight:500; font-size:.8125rem;
   letter-spacing:.14em; text-transform:uppercase; color:var(--cal-tenue);
   white-space:nowrap;
 }
@@ -799,7 +880,7 @@ body.trabado{ overflow:hidden; }
   transform:rotate(-45deg);
 }
 .tour-play .rotulo{
-  font-family:var(--display); font-weight:500; font-size:.8125rem;
+  font-family:var(--etiqueta-f); font-weight:500; font-size:.8125rem;
   letter-spacing:.2em; text-transform:uppercase; color:var(--cal);
 }
 
@@ -809,6 +890,10 @@ body.trabado{ overflow:hidden; }
   grid-template-columns:repeat(2,1fr);
 }
 @media (min-width:760px){ .galeria{ grid-template-columns:repeat(4,1fr); } }
+/* La galería trabaja por CONTRASTE: en reposo las fotos están apagadas y
+   frías; la que recibe el cursor se enciende sola y las de al lado quedan
+   como fondo. El velo es un gradiente pintado una vez y lo que se anima es
+   su opacidad, no un filtro. */
 .galeria button{
   position:relative; display:block; overflow:hidden;
   background:var(--nave); aspect-ratio:1/1;
@@ -816,11 +901,44 @@ body.trabado{ overflow:hidden; }
 }
 .galeria img{
   width:100%; height:100%; object-fit:cover;
-  transition:transform .5s var(--salida), opacity .3s;
-  opacity:.78;
+  opacity:.5;
+  transition:transform .55s var(--salida), opacity .35s var(--suave);
+}
+/* Velo oscuro con una pizca de oro arriba: apaga la foto en reposo */
+.galeria button::before{
+  content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(8,9,10,.30), rgba(8,9,10,.86)),
+    radial-gradient(90% 70% at 50% 0%, rgba(201,162,39,.14), transparent 70%);
+  transition:opacity .35s var(--suave);
+}
+/* Filo dorado que se dibuja al entrar */
+.galeria button::after{
+  content:''; position:absolute; inset:0; z-index:2; pointer-events:none;
+  border:1px solid var(--oro);
+  opacity:0; transform:scale(.97);
+  transition:opacity .35s var(--suave), transform .45s var(--salida);
 }
 .galeria button:hover img,
-.galeria button:focus-visible img{ transform:scale(1.05); opacity:1; }
+.galeria button:focus-visible img{ transform:scale(1.07); opacity:1; }
+.galeria button:hover::before,
+.galeria button:focus-visible::before{ opacity:.25; }
+.galeria button:hover::after,
+.galeria button:focus-visible::after{ opacity:1; transform:none; }
+
+/* El nombre de la zona, que antes solo existía en el visor */
+.galeria .pie-foto{
+  position:absolute; z-index:3; left:0; right:0; bottom:0;
+  padding:10px 12px;
+  font-family:var(--etiqueta-f); font-weight:500;
+  font-size:.75rem; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--cal); text-align:left;
+  text-shadow:0 1px 10px rgba(8,9,10,.9);
+  opacity:0; transform:translateY(8px);
+  transition:opacity .3s var(--suave), transform .35s var(--salida);
+}
+.galeria button:hover .pie-foto,
+.galeria button:focus-visible .pie-foto{ opacity:1; transform:none; }
 
 /* ── 10 · HORARIOS ─────────────────────────────────────────────────────── */
 .horario-cuerpo{
@@ -835,12 +953,12 @@ body.trabado{ overflow:hidden; }
   padding:15px 0; border-bottom:1px solid var(--linea);
 }
 .dias .dia{
-  font-family:var(--display); font-weight:500;
+  font-family:var(--etiqueta-f); font-weight:500;
   font-size:1rem; letter-spacing:.16em; text-transform:uppercase;
   color:var(--cal-media);
 }
 .dias .rango{
-  font-family:var(--display); font-weight:500; font-size:1rem;
+  font-family:var(--etiqueta-f); font-weight:500; font-size:1rem;
   letter-spacing:.08em; color:var(--cal-media);
   font-variant-numeric:tabular-nums;
 }
@@ -854,7 +972,7 @@ body.trabado{ overflow:hidden; }
 .ficha{ border-top:1px solid var(--linea); }
 .ficha > div{ padding:18px 0; border-bottom:1px solid var(--linea); }
 .ficha dt{
-  font-family:var(--display); font-weight:500;
+  font-family:var(--etiqueta-f); font-weight:500;
   font-size:.75rem; letter-spacing:.2em; text-transform:uppercase;
   color:var(--cal-tenue); margin-bottom:5px;
 }
@@ -890,7 +1008,7 @@ body.trabado{ overflow:hidden; }
 .campo{ position:relative; margin-bottom:var(--e3); }
 .campo label{
   display:block; margin-bottom:8px;
-  font-family:var(--display); font-weight:500;
+  font-family:var(--etiqueta-f); font-weight:500;
   font-size:.75rem; letter-spacing:.2em; text-transform:uppercase;
   color:var(--cal-tenue);
 }
@@ -925,7 +1043,7 @@ body.trabado{ overflow:hidden; }
    así se ve sin tener que buscarlo. */
 .campo-error{
   display:block; margin-top:7px;
-  font-family:var(--display); font-weight:500;
+  font-family:var(--etiqueta-f); font-weight:500;
   font-size:.8125rem; letter-spacing:.06em;
   color:var(--oro-luz);
 }
@@ -942,7 +1060,7 @@ body.trabado{ overflow:hidden; }
 }
 @media (min-width:760px){ .pie-grilla{ grid-template-columns:1.4fr 1fr 1fr; gap:var(--e5); } }
 .pie h4{
-  font-family:var(--display); font-weight:500;
+  font-family:var(--etiqueta-f); font-weight:500;
   font-size:.75rem; letter-spacing:.2em; text-transform:uppercase;
   color:var(--oro); margin-bottom:var(--e2);
 }
@@ -1006,7 +1124,7 @@ body.trabado{ overflow:hidden; }
 }
 .visor-cerrar:hover{ color:var(--oro-luz); border-color:var(--linea-oro); }
 .visor-pie{
-  font-family:var(--display); font-weight:500; font-size:.8125rem;
+  font-family:var(--etiqueta-f); font-weight:500; font-size:.8125rem;
   letter-spacing:.2em; text-transform:uppercase; color:var(--cal-tenue);
 }
 
@@ -1028,12 +1146,16 @@ html.js .sube.dentro{ opacity:1; transform:none; }
 .quieta .fondos img,
 .quieta .luz i,
 .quieta .suelo::before,
+.quieta .inscripcion,
 .quieta .polvo i{ animation-play-state:paused; }
 
 @media (prefers-reduced-motion:reduce){
   html.js .sube{ opacity:1; transform:none; transition:none; }
   .fondos img:not(:first-child){ animation:none; }
   .luz i,.suelo::before{ animation:none; }
+  /* Sin barrido: la inscripción se queda en el punto más luminoso */
+  .inscripcion{ animation:none; background-position:46% 0; }
+  .boton::after{ display:none; }
   .polvo{ display:none; }        /* las partículas son puro movimiento */
   .boton,.boton .punta,.galeria img,.plan,.razon,.tour-play .disco{ transition:none; }
 }
@@ -1191,7 +1313,7 @@ html.js .sube.dentro{ opacity:1; transform:none; }
         </a>
       </article>
 
-      <article class="plan sube" style="--retardo:.06s">
+      <article class="plan plan--destaca sube" style="--retardo:.06s">
         <div class="plan-cima">
           <span class="plan-n">02</span>
           <span class="plan-marca">El más elegido</span>
@@ -1322,27 +1444,35 @@ html.js .sube.dentro{ opacity:1; transform:none; }
     <div class="galeria">
       <button type="button" data-foto="imagenes/zona-funcional.webp" data-pie="Zona funcional">
         <img src="imagenes/zona-funcional.webp" width="720" height="1280" alt="Zona de entrenamiento funcional" loading="lazy" decoding="async">
+        <span class="pie-foto">Zona funcional</span>
       </button>
       <button type="button" data-foto="imagenes/peso-libre.webp" data-pie="Peso libre">
         <img src="imagenes/peso-libre.webp" width="720" height="1280" alt="Sector de peso libre con discos y barras" loading="lazy" decoding="async">
+        <span class="pie-foto">Peso libre</span>
       </button>
       <button type="button" data-foto="imagenes/maquinas-fila.webp" data-pie="Sala de máquinas">
         <img src="imagenes/maquinas-fila.webp" width="720" height="1280" alt="Fila de máquinas de musculación" loading="lazy" decoding="async">
+        <span class="pie-foto">Sala de máquinas</span>
       </button>
       <button type="button" data-foto="imagenes/luces-hexagonales.webp" data-pie="Sala de clases">
         <img src="imagenes/luces-hexagonales.webp" width="720" height="1280" alt="Sala de clases con luces hexagonales en el techo" loading="lazy" decoding="async">
+        <span class="pie-foto">Sala de clases</span>
       </button>
       <button type="button" data-foto="imagenes/kettlebells.webp" data-pie="Kettlebells">
         <img src="imagenes/kettlebells.webp" width="480" height="854" alt="Kettlebells ordenadas en su soporte" loading="lazy" decoding="async">
+        <span class="pie-foto">Kettlebells</span>
       </button>
       <button type="button" data-foto="imagenes/sala-amplia.webp" data-pie="Sala principal">
         <img src="imagenes/sala-amplia.webp" width="720" height="1280" alt="Vista amplia de la sala principal" loading="lazy" decoding="async">
+        <span class="pie-foto">Sala principal</span>
       </button>
       <button type="button" data-foto="imagenes/logo-piso.webp" data-pie="El logo en el piso">
         <img src="imagenes/logo-piso.webp" width="720" height="1280" alt="El logo del gimnasio pintado sobre el pasto sintético" loading="lazy" decoding="async">
+        <span class="pie-foto">El logo en el piso</span>
       </button>
       <button type="button" data-foto="imagenes/equipamiento.webp" data-pie="Equipamiento">
         <img src="imagenes/equipamiento.webp" width="720" height="1280" alt="Equipamiento de la sala de musculación" loading="lazy" decoding="async">
+        <span class="pie-foto">Equipamiento</span>
       </button>
     </div>
   </div>
