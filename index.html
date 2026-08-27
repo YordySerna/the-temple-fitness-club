@@ -338,6 +338,7 @@ button,input,textarea,select{ font:inherit; color:inherit; background:none; bord
    .plan-luz—: un cónico no se puede interpolar en el compositor, así que
    cada vuelta se repinta en CPU, aunque la sección esté a ocho pantallas. */
 .quieta .aurora i,
+.quieta .fondos .fondo,
 .quieta .suelo,
 .quieta .humo,
 .quieta .encuadre-foto,
@@ -404,7 +405,12 @@ button,input,textarea,select{ font:inherit; color:inherit; background:none; bord
   inset:-10%;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='h'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.008' numOctaves='4'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23h)'/%3E%3C/svg%3E");
   background-size:760px 760px;
-  opacity:.055; mix-blend-mode:overlay;
+  /* Sin mix-blend-mode, por lo mismo que el grano: es otra capa del tamaño
+     de la sección y un blend obliga a componer todo lo que hay debajo en
+     cada fotograma. Medido sobre los tres fondos reales de la portada, el
+     overlay a .055 daba un rango de 0 a 2 sobre 255 —o sea, no se veía— y
+     .008 en modo normal lo reproduce con 0,5 de diferencia. */
+  opacity:.008;
   animation:vagar 120s linear infinite;
 }
 @keyframes vagar{ to{ background-position:760px 380px; } }
@@ -537,28 +543,52 @@ body::after{
   transition:transform 1.4s var(--salida);
 }
 
-/* · TRATAMIENTO DE FOTO ·
+/* · FONDO DE PORTADA Y DEL LLAMADO FINAL ·
+
    Las fotos van DETRÁS de texto, así que se apagan para que el titular se
-   lea. Antes iban a blanco y negro puro; ahora se deja pasar algo de color
-   (grayscale .72 en vez de 1) porque el verde del pasto es parte de la
-   identidad del lugar y en B/N el gimnasio se veía muerto. El velo mezcla
-   dorado y verde, que son los dos colores del sitio. */
-.foto{
+   lea: grayscale .72 —no 1, porque el verde del pasto es parte de la
+   identidad del lugar y en blanco y negro el gimnasio se veía muerto— más
+   contraste, brillo bajo y un velo que mezcla el dorado y el verde del
+   sitio.
+
+   Nada de eso está acá: va HORNEADO en el archivo .webp. Antes eran dos
+   cosas caras a pantalla completa, un filter de cuatro operaciones y un
+   ::after con mix-blend-mode:overlay, y un blend de pantalla completa
+   obliga a componer todo lo que hay debajo en cada fotograma. Ahora el
+   navegador decodifica la imagen una vez y no vuelve a tocarla. Junto con
+   eso va el desenfoque, calculado por imagen según cuánto la agranda el
+   navegador para cubrir la portada. */
+.fondo{
   position:absolute; inset:0;
   background-position:center; background-size:cover; background-repeat:no-repeat;
-  filter:grayscale(.72) contrast(1.1) brightness(.7) saturate(1.15);
 }
-.foto::after{
-  content:''; position:absolute; inset:0;
-  background:linear-gradient(150deg,rgba(201,162,39,.30),rgba(78,154,47,.20) 58%,transparent);
-  mix-blend-mode:overlay;
+
+/* Relevo entre las tres fotos de la portada, en CSS puro para que siga
+   andando sin JavaScript. Anima solo opacity, que la GPU resuelve sin
+   repintar nada.
+
+   La primera foto NO se anima: es una base siempre opaca, y eso es lo que
+   evita el bajón de brillo en el cruce. Si solo se cruzaran dos capas sobre
+   negro, en el punto medio (50% y 50%) el resultado no es 100% sino 75%
+   —así compone el alfa— y se vería un parpadeo oscuro en cada vuelta. Con
+   una base opaca debajo, el peso total es siempre 1 y el cruce queda parejo.
+
+   Las otras dos se turnan encima; cuando las dos están en cero, la que se ve
+   es la base. Por eso son tres fotos con solo dos animaciones. */
+.fondos{ position:absolute; inset:0; overflow:hidden; }
+.fondos .fondo{ animation:relevo-fondo 27s linear infinite; }
+.fondos .fondo:first-child{ animation:none; opacity:1; }
+.fondos .fondo:nth-child(2){ animation-delay:0s; }
+.fondos .fondo:nth-child(3){ animation-delay:-18s; }
+@keyframes relevo-fondo{
+  0%,    33.3% { opacity:1; }
+  39.2%, 94.1% { opacity:0; }
+  100%         { opacity:1; }
 }
-/* Variante a color pleno, para la galería: ahí la foto ES el contenido y
-   no hay texto encima que proteger. */
-.foto--viva{ filter:contrast(1.06) saturate(1.08) brightness(.94); }
-.foto--viva::after{
-  background:linear-gradient(170deg,transparent 55%,rgba(8,8,8,.5));
-  mix-blend-mode:normal;
+/* Sin movimiento: se queda la primera y no se releva nada. */
+@media (prefers-reduced-motion: reduce){
+  .fondos .fondo{ animation:none; opacity:0; }
+  .fondos .fondo:nth-child(1){ opacity:1; }
 }
 /* Velo extra para que el texto encima siempre se lea */
 .foto-velo{
@@ -872,19 +902,6 @@ body.trabado{ overflow:hidden; }
    completo se lee como una foto movida. Con desenfoque deja de competir
    con el titular y pasa a ser lo que tiene que ser, atmósfera. El scale
    evita que el blur deje los bordes transparentes. */
-.video-fondo{
-  position:absolute; inset:0; width:100%; height:100%;
-  object-fit:cover; object-position:center;
-  /* Sin blur: el archivo ya viene desenfocado desde el encode, así que el
-     blur(1.2px) que había acá era redundante — y era la única parte cara de
-     la cadena. Un desenfoque sobre video se recalcula en CADA fotograma del
-     mp4, no una vez. El resto son operaciones por píxel, que salen casi
-     gratis en la GPU. */
-  filter:grayscale(.55) contrast(1.08) brightness(.42) saturate(1.2);
-  transform:scale(1.04);
-  opacity:0; transition:opacity 1.6s var(--suave);
-}
-.video-fondo.visible{ opacity:1; }
 .portada .envoltura{ position:relative; z-index:1; width:100%; }
 
 /* Coordenadas verticales en el borde (puro adorno técnico) */
@@ -1602,13 +1619,14 @@ body.trabado{ overflow:hidden; }
   .aurora{ opacity:.5; }
   /* Estas dos animan background-position: se quedan quietas, no se van */
   .suelo{ animation:none; opacity:.4; }
-  .humo{ animation:none; mix-blend-mode:normal; opacity:.035; }
+  .humo{ animation:none; }
   /* El marco giratorio repinta un conic-gradient sin parar */
   .marco::before{ animation:none; }
   /* El brillo del texto usa background-clip:text, caro en móvil */
   .brillo{ animation:none; }
-  /* El velo dorado sobre las fotos también mezcla a pantalla completa */
-  .foto::after{ mix-blend-mode:normal; opacity:.5; }
+  /* En pantalla chica tampoco se releva el fondo: se queda la primera foto */
+  .fondos .fondo{ animation:none; opacity:0; }
+  .fondos .fondo:nth-child(1){ opacity:1; }
 }
 
 /* Sin hover (táctil): los efectos de hover no aportan y sí cuestan */
@@ -1810,18 +1828,24 @@ body.trabado{ overflow:hidden; }
 <section class="portada" id="inicio">
 
   <div class="escenario" aria-hidden="true">
-    <!-- FONDO DE PORTADA
-         Debajo va SIEMPRE la foto: si el video no carga, no arranca, o el
-         visitante pidió menos movimiento, la portada igual se ve completa.
-         El video (1,6 MB) se monta encima sólo cuando el JS confirma que
-         puede reproducirlo. El tour pesado de 13 MB NO va acá: está más
-         abajo, y sólo se descarga si alguien lo pide. -->
-    <!-- Versión ancha generada con Lanczos + enfoque. La original es vertical
-         (720x1280) y acá se mostraba estirada 1.76x por el object-fit cover. -->
-    <div class="foto" style="background-image:url('imagenes/pasillo-luces-ancha.webp')"></div>
-    <video class="video-fondo" id="video-portada"
-           muted loop playsinline preload="none"
-           poster="imagenes/pasillo-luces.webp"></video>
+    <!-- FONDO DE PORTADA — tres fotos que se van relevando.
+         Acá iba un <video> de 2 MB, y era el mayor gasto de la portada:
+         decodificar video es trabajo por fotograma que no para nunca. Encima
+         el archivo era vertical (720×1280) estirado a pantalla ancha, que es
+         de donde venía el pixelado.
+
+         Las tres fotos llevan el desenfoque, la gradación y el velo dorado
+         HORNEADOS en el archivo, así que estas capas no tienen ni filtro ni
+         mezcla. Entre las tres pesan 52 KB contra los 2.063 KB del video.
+
+         El relevo es CSS puro: si el JavaScript no corre, las fotos siguen
+         pasando igual. -->
+    <div class="fondos">
+      <!-- La primera es la base y no se anima nunca. Ver la nota del CSS. -->
+      <div class="fondo" style="background-image:url('imagenes/portada-3.webp')"></div>
+      <div class="fondo" style="background-image:url('imagenes/portada-1.webp')"></div>
+      <div class="fondo" style="background-image:url('imagenes/portada-2.webp')"></div>
+    </div>
     <div class="foto-velo"></div>
     <div class="aurora"><i></i><i></i><i></i></div>
     <div class="reticula"></div>
@@ -2398,8 +2422,9 @@ body.trabado{ overflow:hidden; }
      ============================================================ -->
 <section class="llamado">
   <div class="escenario" aria-hidden="true">
-    <!-- Versión ancha generada con Lanczos + enfoque. Ver nota en la portada. -->
-    <div class="foto" style="background-image:url('imagenes/sala-general-ancha.webp')"></div>
+    <!-- Misma foto horneada que cierra el relevo de la portada. Ver la nota
+         de allá: trae el desenfoque y el velo dentro del archivo. -->
+    <div class="fondo" style="background-image:url('imagenes/portada-3.webp')"></div>
     <div class="foto-velo"></div>
     <div class="aurora"><i></i><i></i><i></i></div>
     <div class="reticula"></div>
@@ -3346,36 +3371,10 @@ body.trabado{ overflow:hidden; }
     });
   }
 
-  /* ---------- K · VIDEO DE FONDO EN LA PORTADA ----------------------------
-     El <video> nace SIN src y con preload="none": así el archivo no se
-     descarga hasta que decidimos que vale la pena. Se salta entero si el
-     visitante pidió menos movimiento o si el navegador declara conexión
-     lenta / ahorro de datos. La foto de abajo ya es un fondo completo, así
-     que no perder el video no rompe nada.                                  */
-  const videoPortada = $('#video-portada');
-  if(videoPortada){
-    const red = navigator.connection || {};
-    const conexionPobre = red.saveData === true || /^([23]g|slow-2g)$/.test(red.effectiveType || '');
-
-    if(!quieto && !conexionPobre){
-      // fondo-portada.mp4 sale del tour (720px) en vez del clip viejo (480px):
-      // 1.5x más resolución para el mismo peso. Va pre-desenfocado desde el
-      // encode, que comprime mucho mejor que desenfocarlo solo por CSS.
-      videoPortada.src = 'imagenes/fondo-portada.mp4';
-      videoPortada.load();
-      // .visible recién cuando hay imagen de verdad: evita el parpadeo negro
-      videoPortada.addEventListener('playing', () => videoPortada.classList.add('visible'), {once:true});
-      const arranque = videoPortada.play();
-      // Si el navegador bloquea el autoplay, se queda la foto y ya está
-      if(arranque && arranque.catch) arranque.catch(() => {});
-
-      // No gastar batería ni CPU animando algo que nadie está viendo
-      document.addEventListener('visibilitychange', () => {
-        if(document.hidden) videoPortada.pause();
-        else if(videoPortada.classList.contains('visible')) videoPortada.play().catch(() => {});
-      });
-    }
-  }
+  /* El bloque K manejaba el <video> de fondo de la portada: lo cargaba a
+     mano, lo arrancaba y lo pausaba con la pestaña. Ya no existe. El fondo
+     ahora son tres fotos que se relevan con una animación CSS, así que no
+     hace falta ni una línea de JavaScript para que funcione.              */
 
   /* ---------- L · TOUR EN VIDEO (bajo demanda) ----------------------------
      Son 13 MB. No se tocan hasta que alguien pulsa play: hasta entonces lo
