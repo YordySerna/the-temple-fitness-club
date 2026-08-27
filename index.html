@@ -339,11 +339,9 @@ button,input,textarea,select{ font:inherit; color:inherit; background:none; bord
    cada vuelta se repinta en CPU, aunque la sección esté a ocho pantallas. */
 .quieta .aurora i,
 .quieta .fondos .fondo,
-.quieta .suelo,
-.quieta .humo,
+.quieta .suelo::before,
 .quieta .encuadre-foto,
 .quieta .cinta-pista,
-.quieta .brillo,
 .quieta .marco::before,
 .quieta .tour-play::after,
 .quieta .plan-luz{ animation-play-state:paused; }
@@ -382,20 +380,36 @@ button,input,textarea,select{ font:inherit; color:inherit; background:none; bord
 }
 
 /* SUELO EN PERSPECTIVA — la nave del templo alejándose */
+/* La grilla no va en el fondo del propio .suelo, va en un ::before que se
+   desplaza con transform.
+
+   Antes esto animaba background-position, y esa propiedad NO se puede
+   componer: obliga a repintar el elemento entero en cada fotograma. Y este
+   elemento mide 320% de ancho, está rotado en perspectiva y lleva una
+   máscara encima, así que era de lo más caro de la portada. Un transform,
+   en cambio, lo resuelve la GPU sin repintar nada.
+
+   El truco del bucle: el hijo empieza 74px más arriba —una casilla— y baja
+   exactamente esa casilla. Al reiniciarse, la grilla calza consigo misma y
+   no se ve el salto. */
 .suelo{
   left:50%; bottom:-4%; width:320%; height:62vh;
   transform:translateX(-50%) perspective(300px) rotateX(64deg);
   transform-origin:bottom center;
+  -webkit-mask-image:linear-gradient(to top,#000 2%,transparent 72%);
+          mask-image:linear-gradient(to top,#000 2%,transparent 72%);
+  opacity:.55;
+  overflow:hidden;
+}
+.suelo::before{
+  content:''; position:absolute; left:0; right:0; top:-74px; bottom:0;
   background-image:
     linear-gradient(rgba(201,162,39,.32) 1px,transparent 1px),
     linear-gradient(90deg,rgba(201,162,39,.32) 1px,transparent 1px);
   background-size:74px 74px;
-  -webkit-mask-image:linear-gradient(to top,#000 2%,transparent 72%);
-          mask-image:linear-gradient(to top,#000 2%,transparent 72%);
-  opacity:.55;
   animation:avanzar 16s linear infinite;
 }
-@keyframes avanzar{ to{ background-position:0 74px, 0 0; } }
+@keyframes avanzar{ to{ transform:translate3d(0,74px,0); } }
 
 /* CONSTELACIÓN — canvas de puntos conectados (se dibuja en JS) */
 .constelacion{ inset:0; width:100%; height:100%; opacity:.75; }
@@ -411,9 +425,11 @@ button,input,textarea,select{ font:inherit; color:inherit; background:none; bord
      overlay a .055 daba un rango de 0 a 2 sobre 255 —o sea, no se veía— y
      .008 en modo normal lo reproduce con 0,5 de diferencia. */
   opacity:.008;
-  animation:vagar 120s linear infinite;
+  /* Sin animación. Movía background-position, que repinta la capa entera en
+     cada fotograma, y a esta opacidad el movimiento no se ve: la textura
+     queda igual de quieta a la vista y deja de costar. Ya estaba apagada en
+     móvil por lo mismo; ahora tampoco corre en escritorio. */
 }
-@keyframes vagar{ to{ background-position:760px 380px; } }
 
 /* VIÑETA — cierra los bordes y garantiza contraste del texto */
 .vineta{
@@ -492,16 +508,26 @@ body::after{
 .enlace-luz:hover{ color:var(--oro-claro); }
 .enlace-luz:hover::after{ transform:scaleX(1); transform-origin:left; }
 
-/* · BRILLO SOBRE TEXTO — la luz que "luce" cada tanto · */
+/* · BRILLO SOBRE TEXTO — degradado dorado con la luz al centro ·
+
+   El degradado se queda; lo que se fue es el barrido.
+
+   Animaba background-position sobre un background-clip:text, y eso obliga a
+   volver a rasterizar TODA la palabra en cada fotograma. Medido en la
+   portada: "templo" ocupa 1189×144, o sea 172.000 píxeles de texto
+   redibujados sesenta veces por segundo, más otros 103.000 de la palabra del
+   llamado final. Rasterizar texto cuesta bastante más por píxel que rellenar
+   un color, y esto corría solo en escritorio —en móvil ya estaba apagado—,
+   que es justamente donde se notaba la lentitud.
+
+   Con la posición fija en el centro, la luz del degradado cae sobre la mitad
+   de la palabra, que es el momento más lindo del barrido. Se pinta una vez y
+   no se vuelve a tocar. */
 .brillo{
   background:linear-gradient(100deg,var(--oro) 22%,var(--oro-luz) 44%,var(--oro-claro) 52%,var(--oro) 72%);
   background-size:260% 100%;
+  background-position:50% 0;
   -webkit-background-clip:text; background-clip:text; color:transparent;
-  animation:lucir 7s ease-in-out infinite;
-}
-@keyframes lucir{
-  0%      { background-position:190% 0; }
-  55%,100%{ background-position:-70% 0; }
 }
 
 /* · MARCO CON LUZ QUE LO RECORRE (para encuadres de foto) · */
@@ -1617,13 +1643,13 @@ body.trabado{ overflow:hidden; }
   /* La aurora ya no lleva blur (la caída va dentro del degradado); en
      pantalla chica solo se contiene un poco más */
   .aurora{ opacity:.5; }
-  /* Estas dos animan background-position: se quedan quietas, no se van */
-  .suelo{ animation:none; opacity:.4; }
-  .humo{ animation:none; }
+  /* La grilla del suelo ya no anima background-position sino un transform en
+     su ::before, así que sale barata; igual se queda quieta acá y un punto
+     más apagada. Ojo: la animación vive en el ::before, no en .suelo. */
+  .suelo{ opacity:.4; }
+  .suelo::before{ animation:none; }
   /* El marco giratorio repinta un conic-gradient sin parar */
   .marco::before{ animation:none; }
-  /* El brillo del texto usa background-clip:text, caro en móvil */
-  .brillo{ animation:none; }
   /* En pantalla chica tampoco se releva el fondo: se queda la primera foto */
   .fondos .fondo{ animation:none; opacity:0; }
   .fondos .fondo:nth-child(1){ opacity:1; }
@@ -3141,15 +3167,36 @@ body.trabado{ overflow:hidden; }
 
     // Imán: el elemento se acerca al cursor. Solo en piezas chicas —
     // arrastrar una fila de ancho completo se ve mal.
+    //
+    // El centro se mide UNA vez, al entrar, y no en cada movimiento.
+    // Antes acá había un getBoundingClientRect() dentro del mousemove, y era
+    // lo peor que podía haber: pedir la posición de un elemento obliga al
+    // navegador a resolver el layout pendiente antes de contestar, y el
+    // mousemove de un mouse moderno dispara más de cien veces por segundo.
+    // Encima se le preguntaba por el MISMO elemento que GSAP estaba moviendo,
+    // así que era leer justo después de escribir: el caso de manual de
+    // layout thrashing.
+    //
+    // De paso arregla un error de comportamiento: al leer la posición ya
+    // desplazada, el imán se realimentaba a sí mismo y el botón se arrancaba
+    // de más. Ahora el centro es siempre el de reposo, descontando lo que el
+    // propio imán ya movió.
     $$('.boton, .enlace-luz, .flotante, .redes a, .marca').forEach(el => {
       const moverX = gsap.quickTo(el, 'x', {duration:.5, ease:'power3'});
       const moverY = gsap.quickTo(el, 'y', {duration:.5, ease:'power3'});
-      el.addEventListener('mouseenter', () => crecer(1.9, .9));
-      el.addEventListener('mousemove', e => {
+      let cx = 0, cy = 0;
+
+      const medirCentro = () => {
         const r = el.getBoundingClientRect();
-        moverX((e.clientX - (r.left + r.width  / 2)) * .28);
-        moverY((e.clientY - (r.top  + r.height / 2)) * .38);
-      });
+        cx = r.left + r.width  / 2 - (parseFloat(gsap.getProperty(el,'x')) || 0);
+        cy = r.top  + r.height / 2 - (parseFloat(gsap.getProperty(el,'y')) || 0);
+      };
+
+      el.addEventListener('mouseenter', () => { medirCentro(); crecer(1.9, .9); });
+      el.addEventListener('mousemove', e => {
+        moverX((e.clientX - cx) * .28);
+        moverY((e.clientY - cy) * .38);
+      }, {passive:true});
       el.addEventListener('mouseleave', () => { moverX(0); moverY(0); crecer(1, .55); });
     });
 
@@ -3175,7 +3222,13 @@ body.trabado{ overflow:hidden; }
 
     const ctx = cv.getContext('2d', {alpha:true});
     const unir  = !chico;                       // líneas solo en escritorio
-    const dprMax = chico ? 1.25 : 2;
+
+    /* La resolución se topa en 1.25 también en escritorio. Antes iba a 2, y
+       en una pantalla retina eso significa un lienzo de 2880×1800: cuatro
+       veces los píxeles que hay que borrar y volver a dibujar en cada
+       fotograma. Para puntos difusos y líneas de menos de un píxel, 1.25 se
+       ve idéntico y cuesta la tercera parte. */
+    const dprMax = 1.25;
     let an = 0, w = 0, h = 0, pts = [], corriendo = false;
 
     function medir(){
@@ -3184,7 +3237,7 @@ body.trabado{ overflow:hidden; }
       if(!w || !h) return;
       cv.width = w * dpr; cv.height = h * dpr;
       ctx.setTransform(dpr,0,0,dpr,0,0);
-      const tope = chico ? 26 : 58;
+      const tope = chico ? 26 : 40;
       const n = Math.max(14, Math.min(tope, Math.round(w*h/17000)));
       pts = Array.from({length:n}, () => ({
         x: Math.random()*w, y: Math.random()*h,
@@ -3193,25 +3246,55 @@ body.trabado{ overflow:hidden; }
       }));
     }
 
+    /* Las líneas se agrupan en cuatro tramos de opacidad. Antes cada línea
+       armaba su propio color con una concatenación y un toFixed, y se
+       dibujaba sola: con unas setenta líneas por fotograma eran setenta
+       cambios de estado y setenta llamadas de dibujo. Ahora son cuatro
+       trazos y cuatro colores fijos, y los puntos van todos en un solo
+       relleno. El degradado de opacidad según la distancia se conserva, solo
+       que en escalones que a esta transparencia no se distinguen. */
     const LIM = 132*132;
+    const TRAMOS = 4;
+    const COLORES = Array.from({length:TRAMOS}, (_, i) =>
+      'rgba(201,162,39,' + (0.15 * (i + 0.5) / TRAMOS).toFixed(3) + ')');
+    const caminos = Array.from({length:TRAMOS}, () => new Path2D());
+
     function pintar(){
       ctx.clearRect(0,0,w,h);
+
+      // Todos los puntos en un solo camino y un solo relleno
+      const dots = new Path2D();
       for(const p of pts){
         p.x += p.vx; p.y += p.vy;
         if(p.x < 0 || p.x > w) p.vx *= -1;
         if(p.y < 0 || p.y > h) p.vy *= -1;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.2832);
-        ctx.fillStyle = 'rgba(201,162,39,.5)'; ctx.fill();
+        dots.moveTo(p.x + p.r, p.y);
+        dots.arc(p.x, p.y, p.r, 0, 6.2832);
       }
+      ctx.fillStyle = 'rgba(201,162,39,.5)';
+      ctx.fill(dots);
+
       if(unir){
-        ctx.lineWidth = .6;
+        for(let i=0;i<TRAMOS;i++) caminos[i] = new Path2D();
+        let hay = false;
         for(let i=0;i<pts.length;i++){
+          const a = pts[i];
           for(let j=i+1;j<pts.length;j++){
-            const dx = pts[i].x-pts[j].x, dy = pts[i].y-pts[j].y, d = dx*dx+dy*dy;
+            const b = pts[j];
+            const dx = a.x-b.x, dy = a.y-b.y, d = dx*dx+dy*dy;
             if(d < LIM){
-              ctx.strokeStyle = 'rgba(201,162,39,' + (.15*(1-d/LIM)).toFixed(3) + ')';
-              ctx.beginPath(); ctx.moveTo(pts[i].x,pts[i].y); ctx.lineTo(pts[j].x,pts[j].y); ctx.stroke();
+              const t = (1 - d/LIM) * TRAMOS | 0;
+              const c = caminos[t < TRAMOS ? t : TRAMOS-1];
+              c.moveTo(a.x,a.y); c.lineTo(b.x,b.y);
+              hay = true;
             }
+          }
+        }
+        if(hay){
+          ctx.lineWidth = .6;
+          for(let i=0;i<TRAMOS;i++){
+            ctx.strokeStyle = COLORES[i];
+            ctx.stroke(caminos[i]);
           }
         }
       }
