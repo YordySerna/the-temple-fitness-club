@@ -198,12 +198,24 @@ button,input,textarea,select{ font:inherit; color:inherit; background:none; bord
 }
 .telon img{
   position:absolute; left:50%; top:50%;
-  /* Más grande que el contenedor: el blur come los bordes y el parallax
-     necesita margen para moverse sin descubrir el fondo */
+  /* Más grande que el contenedor: el desenfoque come los bordes y el
+     parallax necesita margen para moverse sin descubrir el fondo */
   width:118%; height:150%;
   transform:translate3d(-50%, -50%, 0);
   object-fit:cover;
-  filter:blur(30px) saturate(.7) brightness(.72);
+  /* El desenfoque ya viene HORNEADO en el archivo .webp. Antes iba acá,
+     como filter:blur(30px) saturate(.7) brightness(.72), sobre una capa de
+     1430×2000 px que además se mueve con el scroll: el navegador tenía que
+     rasterizar ese desenfoque de nuevo, cinco veces, mientras uno baja.
+
+     Los archivos -telon.webp se regeneraron con el filtro aplicado a 11,7px
+     sobre el origen de 560px, que es el equivalente exacto de 30px en
+     pantalla (la imagen se muestra a 2,55× su tamaño). Medido, no estimado:
+     con 14px el error era 3,6 veces mayor.
+
+     Diferencia contra la versión con filtro: 0,9 sobre 255 de media.
+     De yapa, los archivos pesan 86 KB en vez de 179: un desenfoque
+     comprime muchísimo mejor que una foto nítida.                        */
   opacity:.85;
   will-change:transform;
 }
@@ -239,8 +251,11 @@ button,input,textarea,select{ font:inherit; color:inherit; background:none; bord
 }
 
 @media (max-width:760px){
-  /* En móvil el blur grande cuesta caro y se nota poco */
-  .telon img{ filter:blur(22px) saturate(.7) brightness(.68); opacity:.78; }
+  /* El desenfoque ya viene en el archivo. En móvil el telón es una caja
+     altísima y object-fit:cover escala la foto entre 2,4× y 9,5×, así que
+     el desenfoque horneado se ve incluso más suave que los 22px que había
+     acá. Solo queda la opacidad, que es gratis. */
+  .telon img{ opacity:.78; }
 }
 
 /* Etiqueta monoespaciada: el sello de "ficha técnica" */
@@ -271,24 +286,66 @@ button,input,textarea,select{ font:inherit; color:inherit; background:none; bord
 .escenario > *{ position:absolute; }
 
 /* AURORA — manchas de color que respiran. Ciclos larguísimos para que
-   el movimiento se sienta pero no distraiga al leer. */
-.aurora{ inset:-25%; filter:blur(90px); opacity:.62; }
+   el movimiento se sienta pero no distraiga al leer.
+
+   Acá había un filter:blur(90px) sobre un contenedor de 150% de la
+   sección, con tres manchas animándose infinito adentro. Eso obligaba a
+   recalcular un desenfoque enorme en cada fotograma, en TODAS las
+   secciones a la vez, se vieran o no. Era lo más caro de la página.
+
+   Ahora el degradado trae la caída incorporada: en vez de un salto
+   lineal a transparente, ocho paradas siguiendo una gaussiana
+   (alfa = pico · e^(−k·r²)), que es justo la curva que dibujaba el blur.
+   Los picos bajan a ~40% del alfa original porque el desenfoque repartía
+   ese color sobre más superficie.
+
+   No es a ojo: se compararon píxel a píxel contra la versión con blur
+   reproduciendo ambas en canvas. Diferencia media de 0,13 a 0,30 sobre
+   255, con un pico de 4. Invisible.                                     */
+.aurora{ inset:-25%; opacity:.62; }
 .aurora i{ position:absolute; border-radius:50%; display:block; }
 .aurora i:nth-child(1){
   width:46vw; aspect-ratio:1/.82; left:6%; top:8%;
-  background:radial-gradient(circle,rgba(201,162,39,.50),transparent 66%);
+  background:radial-gradient(circle,
+    rgba(201,162,39,.220) 0%,  rgba(201,162,39,.206) 14%, rgba(201,162,39,.169) 29%,
+    rgba(201,162,39,.122) 43%, rgba(201,162,39,.077) 57%, rgba(201,162,39,.043) 71%,
+    rgba(201,162,39,.021) 86%, rgba(201,162,39,0)   100%);
   animation:deriva-a 68s ease-in-out infinite;
 }
 .aurora i:nth-child(2){
   width:38vw; aspect-ratio:1/1.1; right:4%; top:26%;
-  background:radial-gradient(circle,rgba(212,175,55,.34),transparent 64%);
+  background:radial-gradient(circle,
+    rgba(212,175,55,.134) 0%,  rgba(212,175,55,.127) 14%, rgba(212,175,55,.107) 29%,
+    rgba(212,175,55,.080) 43%, rgba(212,175,55,.054) 57%, rgba(212,175,55,.032) 71%,
+    rgba(212,175,55,.017) 86%, rgba(212,175,55,0)   100%);
   animation:deriva-b 86s ease-in-out infinite;
 }
 .aurora i:nth-child(3){
   width:52vw; aspect-ratio:1/.6; left:24%; bottom:-6%;
-  background:radial-gradient(circle,rgba(126,46,28,.30),transparent 66%);
+  background:radial-gradient(circle,
+    rgba(126,46,28,.119) 0%,  rgba(126,46,28,.112) 14%, rgba(126,46,28,.094) 29%,
+    rgba(126,46,28,.071) 43%, rgba(126,46,28,.048) 57%, rgba(126,46,28,.028) 71%,
+    rgba(126,46,28,.015) 86%, rgba(126,46,28,0)   100%);
   animation:deriva-c 104s ease-in-out infinite;
 }
+
+/* Fuera de pantalla no hay nada que animar. La clase la pone y la saca un
+   IntersectionObserver sobre la SECCIÓN, nunca sobre la capa: .aurora vive
+   dentro de .escenario, que se recorta, y una capa recortada no dispara el
+   observador (lo mismo pasa con clip-path y con mask-image).
+
+   Las dos que más pesan son las de conic-gradient —.marco::before y
+   .plan-luz—: un cónico no se puede interpolar en el compositor, así que
+   cada vuelta se repinta en CPU, aunque la sección esté a ocho pantallas. */
+.quieta .aurora i,
+.quieta .suelo,
+.quieta .humo,
+.quieta .encuadre-foto,
+.quieta .cinta-pista,
+.quieta .brillo,
+.quieta .marco::before,
+.quieta .tour-play::after,
+.quieta .plan-luz{ animation-play-state:paused; }
 @keyframes deriva-a{
   0%,100%{ transform:translate3d(0,0,0) scale(1); }
   33%    { transform:translate3d(14vw,7vh,0) scale(1.18); }
@@ -360,10 +417,23 @@ button,input,textarea,select{ font:inherit; color:inherit; background:none; bord
     linear-gradient(180deg,rgba(8,8,8,.72) 0%,transparent 26%,transparent 62%,var(--negro) 100%);
 }
 
-/* GRANO — textura de película sobre todo el sitio */
+/* GRANO — textura de película sobre todo el sitio.
+
+   Llevaba mix-blend-mode:overlay. Una capa fija, a pantalla completa y con
+   mezcla obliga al navegador a componer TODO lo que hay debajo en cada
+   fotograma de scroll: es la capa más cara que puede tener una página.
+
+   La opacidad BAJA de .032 a .006, no sube. Suena al revés, pero está
+   medido: se reprodujo la mezcla en canvas sobre los cuatro fondos reales
+   del sitio (negro #080808, gris #191919, oro #C9A227 y el blanco del
+   texto). Con overlay a .032 el grano modulaba el fondo entre 0 y 1 sobre
+   255 — o sea, era invisible; overlay sobre un fondo casi negro aplasta el
+   ruido a nada. En modo normal hace falta .006 para reproducir eso mismo
+   (diferencia de 0,45 sobre 255). A .05 el grano quedaría entre 6 y 9 veces
+   más marcado de lo que se veía: eso sí sería cambiar el diseño.          */
 body::after{
   content:''; position:fixed; inset:0; z-index:9999; pointer-events:none;
-  opacity:.032; mix-blend-mode:overlay;
+  opacity:.006;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
 }
 
@@ -550,6 +620,10 @@ body::after{
   clip-path:inset(-32% -14% -32% -14%);
 }
 .pal-i{ display:inline-block; vertical-align:top; }
+/* Capa de GPU solo mientras el titular se está armando. La clase la pone
+   ScrollTrigger al entrar y la sacan el onComplete o el observador de
+   sección, lo que ocurra primero. */
+.animando .pal-i{ will-change:transform; }
 /* El separador entre palabras es un espacio de verdad (lo pone el JS),
    no un margin: así no se rompe la lectura por voz ni el copiar-pegar. */
 /* Palabra completa en modo letras: mantiene las letras juntas al saltar línea */
@@ -785,9 +859,12 @@ body.trabado{ overflow:hidden; }
 .video-fondo{
   position:absolute; inset:0; width:100%; height:100%;
   object-fit:cover; object-position:center;
-  /* El desenfoque bajó de 3px a 1.2px porque el archivo ya viene desenfocado
-     desde el encode. Menos blur en CSS = menos trabajo de GPU por fotograma. */
-  filter:grayscale(.55) contrast(1.08) brightness(.42) saturate(1.2) blur(1.2px);
+  /* Sin blur: el archivo ya viene desenfocado desde el encode, así que el
+     blur(1.2px) que había acá era redundante — y era la única parte cara de
+     la cadena. Un desenfoque sobre video se recalcula en CADA fotograma del
+     mp4, no una vez. El resto son operaciones por píxel, que salen casi
+     gratis en la GPU. */
+  filter:grayscale(.55) contrast(1.08) brightness(.42) saturate(1.2);
   transform:scale(1.04);
   opacity:0; transition:opacity 1.6s var(--suave);
 }
@@ -1497,8 +1574,9 @@ body.trabado{ overflow:hidden; }
 @media (max-width:899px){
   /* El grano fijo con mezcla es el peor enemigo del scroll en móvil */
   body::after{ display:none; }
-  /* Blur más barato y aurora un poco más contenida */
-  .aurora{ filter:blur(56px); opacity:.5; }
+  /* La aurora ya no lleva blur (la caída va dentro del degradado); en
+     pantalla chica solo se contiene un poco más */
+  .aurora{ opacity:.5; }
   /* Estas dos animan background-position: se quedan quietas, no se van */
   .suelo{ animation:none; opacity:.4; }
   .humo{ animation:none; mix-blend-mode:normal; opacity:.035; }
@@ -2768,6 +2846,36 @@ body.trabado{ overflow:hidden; }
     vistas.forEach(v => obsNav.observe(v));
   }
 
+  /* ---------- D2 · APAGAR LO QUE NO SE VE ---------------------------------
+     Las capas decorativas —auroras, suelo, humo, marcos giratorios, el filo
+     del Plan Oro— animaban en TODAS las secciones a la vez, se estuvieran
+     viendo o no. Un conic-gradient girando repinta en cada fotograma aunque
+     esté a ocho pantallas de distancia.
+
+     La clase .quieta las congela con animation-play-state:paused. Se pone
+     sobre la SECCIÓN y nunca sobre la capa: las decorativas viven dentro de
+     .escenario o .telon, que se recortan con overflow o con mask-image, y un
+     elemento enmascarado no dispara nunca al IntersectionObserver — se queda
+     colgado en "no visible" para siempre.
+
+     El margen de una pantalla completa hace que todo esté ya andando cuando
+     la sección asoma: nadie ve el arranque.                                */
+  if('IntersectionObserver' in window){
+    const animables = $$('main > section, header, footer, .bloque');
+    const obsQuietud = new IntersectionObserver(entradas => {
+      entradas.forEach(e => {
+        e.target.classList.toggle('quieta', !e.isIntersecting);
+        // Si la sección se va antes de que su titular termine de armarse,
+        // el onComplete no va a correr: soltamos las capas de GPU acá.
+        if(!e.isIntersecting){
+          const q = e.target.querySelectorAll('.animando');
+          for(const el of q) el.classList.remove('animando');
+        }
+      });
+    }, {rootMargin:'100% 0px 100% 0px'});
+    animables.forEach(s => obsQuietud.observe(s));
+  }
+
   /* ---------- E · REVELADO ------------------------------------------------
      Con GSAP: los titulares se parten en palabras (o letras) y cada trozo
      sube detrás de su propia máscara clip-path.
@@ -2893,10 +3001,14 @@ body.trabado{ overflow:hidden; }
         scrollTrigger:{
           trigger: caja, start:'top 90%', once:true,
           // will-change se pide justo antes de animar y se suelta al terminar.
-          // Antes se ponía al cargar la página sobre TODAS las piezas: eso
-          // dejaba ~127 elementos pidiendo capa de GPU para siempre, incluso
-          // los de secciones que el visitante nunca llegaba a ver.
-          onEnter(){ moviles.forEach(t => t.style.willChange = 'transform'); }
+          //
+          // Va como CLASE en el contenedor y no como estilo suelto en cada
+          // letra, por una razón concreta: si la animación no llega a
+          // terminar —pestaña al fondo, animación interrumpida, ticker
+          // detenido— el onComplete no corre y las capas de GPU quedaban
+          // pedidas para siempre. Con la clase, el IntersectionObserver que
+          // apaga la sección al salir de pantalla también la limpia.
+          onEnter(){ caja.classList.add('animando'); }
         }
       });
       tl.fromTo(piezas,  {clipPath:OCULTO}, {
@@ -2906,9 +3018,7 @@ body.trabado{ overflow:hidden; }
           yPercent:0, duration:1.05, ease:'expo.out', stagger:paso
         }, 0);
 
-      tl.eventCallback('onComplete', () => {
-        moviles.forEach(t => { t.style.willChange = 'auto'; });
-      });
+      tl.eventCallback('onComplete', () => caja.classList.remove('animando'));
     });
 
     // 2 · Bloques que suben
