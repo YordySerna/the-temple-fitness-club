@@ -685,9 +685,25 @@ html.js [data-ent="cortina"].dentro{ clip-path:inset(0 0 0 0); }
   border-bottom:1px solid transparent;
   transition:height .45s var(--suave),background .45s var(--suave),border-color .45s var(--suave);
 }
+/* ESTE era el freno del scroll.
+
+   Acá había backdrop-filter:blur(16px) saturate(1.2). Un backdrop-filter
+   sobre una barra fija y de ancho completo es la propiedad más cara que
+   existe en CSS para hacer scroll: el navegador tiene que LEER DE VUELTA
+   todo lo que quedó pintado detrás de la barra y desenfocarlo otra vez en
+   cada fotograma, porque el contenido de atrás se está moviendo. Eso rompe
+   el camino rápido del compositor para la página entera, no solo para la
+   barra.
+
+   Y explica el síntoma exacto: la clase .pegada entra recién pasados los
+   30px de scroll, así que arriba de todo la página iba bien y se ponía
+   pesada apenas uno empezaba a bajar.
+
+   El reemplazo es un fondo más opaco: de .86 a .94. Sobre una página negra
+   la diferencia es que en vez de un manchón desenfocado se ve un fantasma
+   nítido al 6% cuando pasa algo claro por debajo. */
 .cabecera.pegada{
-  height:62px; background:rgba(8,8,8,.86);
-  backdrop-filter:blur(16px) saturate(1.2); -webkit-backdrop-filter:blur(16px) saturate(1.2);
+  height:62px; background:rgba(8,8,8,.94);
   border-bottom-color:var(--linea);
 }
 .cabecera .envoltura{ display:flex; align-items:center; justify-content:space-between; gap:24px; }
@@ -1093,7 +1109,9 @@ body.trabado{ overflow:hidden; }
   background:var(--gris-900); color:var(--texto);
   box-shadow:0 30px 90px rgba(0,0,0,.7);
 }
-.modal-plan::backdrop{ background:rgba(4,4,4,.82); backdrop-filter:blur(4px); }
+/* Sin backdrop-filter, por lo mismo que el visor: se sube la opacidad y
+   listo. Un desenfoque de fondo obliga a recomponer todo lo que hay detrás. */
+.modal-plan::backdrop{ background:rgba(4,4,4,.90); }
 .modal-cuerpo{ padding:34px 30px 30px; position:relative; }
 
 .modal-cerrar{
@@ -1240,13 +1258,6 @@ body.trabado{ overflow:hidden; }
 .dias li.hoy .rango{ color:var(--oro-claro); }
 .nota{ margin-top:22px; font-family:var(--mono); font-size:var(--etiqueta); line-height:1.85; letter-spacing:.03em; color:var(--tenue); }
 
-/* Acceso al portal de socios. Sin caja: hilo dorado arriba y ya. */
-.socios-acceso{
-  margin-top:34px; padding-top:26px; border-top:1px solid var(--linea-oro);
-  display:flex; flex-direction:column; align-items:flex-start; gap:14px;
-}
-.socios-acceso p{ font-size:.94rem; color:var(--texto); max-width:42ch; }
-
 /* Datos de contacto en formato ficha */
 .ficha{ display:grid; gap:0; border-top:1px solid var(--linea); }
 .ficha > div{ padding:20px 0; border-bottom:1px solid var(--linea); display:grid; gap:8px; grid-template-columns:1fr; }
@@ -1267,8 +1278,15 @@ body.trabado{ overflow:hidden; }
 }
 .mapa iframe{
   position:absolute; inset:0; width:100%; height:100%; border:0;
-  /* Un punto menos de brillo para que no encandile sobre el fondo negro */
-  filter:brightness(.92) saturate(.95);
+}
+/* El punto menos de brillo va como velo encima y no como filter sobre el
+   <iframe>. Un filtro sobre un iframe obliga a pasar por una etapa de
+   filtrado TODO lo que dibuja ese documento —y adentro corre Google Maps,
+   que se repinta solo—. Un velo con un color plano lo compone la GPU sin
+   leer nada de vuelta. */
+.mapa::after{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:rgba(8,8,8,.10);
 }
 .mapa-ir{ display:inline-flex; margin-top:16px; font-size:var(--etiqueta-md); }
 
@@ -1329,8 +1347,11 @@ body.trabado{ overflow:hidden; }
 .tour-play{
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
   width:92px; height:92px; border-radius:50%; cursor:pointer;
-  border:1px solid var(--oro); background:rgba(8,8,8,.5);
-  backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px);
+  /* Sin backdrop-filter: este botón está encima del video del tour, así que
+     el fondo a desenfocar cambiaba en cada fotograma del mp4 y el blur se
+     recalculaba sin parar, incluso con el video quieto de fondo. El fondo
+     sube de .5 a .72 para conservar el contraste del triángulo. */
+  border:1px solid var(--oro); background:rgba(8,8,8,.72);
   display:grid; place-items:center; transition:.4s var(--salida);
 }
 .tour-play::before{
@@ -1409,8 +1430,10 @@ body.trabado{ overflow:hidden; }
   position:fixed; inset:0; z-index:1500;
   display:grid; grid-template-rows:auto minmax(0,1fr) auto;
   justify-items:center; align-content:center; gap:14px;
-  background:rgba(4,4,4,.96);
-  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  /* El fondo ya va al 96% de opacidad: lo que se alcanzaba a ver detrás
+     para desenfocar era un 4%. El blur no aportaba nada y obligaba a
+     recomponer la página entera mientras el visor estuviera abierto. */
+  background:rgba(4,4,4,.975);
   opacity:0; pointer-events:none; transition:opacity .35s;
   /* En móvil las flechas van ABAJO, no a los lados: a 375px de ancho,
      descontar 72px por lado dejaba la foto reducida a un sello. El
@@ -1756,8 +1779,8 @@ body.trabado{ overflow:hidden; }
     </ul>
   </nav>
   <div class="panel-botones">
+    <a href="#planes" class="boton boton-linea">Ver planes <span class="flecha">→</span></a>
     <a href="#contacto" class="boton boton-oro">Agenda tu clase <span class="flecha">→</span></a>
-    <a href="socios/" class="boton boton-linea">Paga tu mensualidad <span class="flecha">→</span></a>
   </div>
   <div class="panel-pie">
     <span class="dir-larga">Av. José Manuel Balmaceda 921, Loncoche</span>
@@ -1830,10 +1853,7 @@ body.trabado{ overflow:hidden; }
 
     <div class="portada-acciones" data-ent="sube" style="--retardo:.44s">
       <a href="#contacto" class="boton boton-oro">Agenda tu clase <span class="flecha">→</span></a>
-      <!-- El socio que ya entrena viene a esto, no a inscribirse. Va en
-           contorno para no competir con el CTA principal, que es captar. -->
-      <a href="socios/" class="boton boton-linea">Pagar mensualidad <span class="flecha">→</span></a>
-      <a href="#planes" class="enlace-luz">Ver planes <span class="flecha">↓</span></a>
+      <a href="#planes" class="boton boton-linea">Ver los planes <span class="flecha">→</span></a>
     </div>
 
     <div class="franja" data-ent="sube" style="--retardo:.56s">
@@ -2327,15 +2347,6 @@ body.trabado{ overflow:hidden; }
           Reserva tu cupo por WhatsApp. Feriados con horario especial.
         </p>
 
-        <!-- Portal de socios. Va acá porque es donde el socio que ya entrena
-             viene a mirar: primero revisa el horario, después su mensualidad. -->
-        <aside class="socios-acceso" data-ent="sube" style="--retardo:.2s">
-          <span class="sello">¿Ya eres socio?</span>
-          <p>Revisa cuándo vence tu plan y renuévalo en línea, sin pasar por recepción.</p>
-          <a href="socios/" class="boton boton-oro">
-            Paga tu mensualidad <span class="flecha">→</span>
-          </a>
-        </aside>
       </div>
 
       <div data-ent="sube" style="--retardo:.12s">
@@ -2572,7 +2583,6 @@ body.trabado{ overflow:hidden; }
       <div>
         <h4>Navegación</h4>
         <ul class="pie-lista">
-          <li><a href="socios/" style="color:var(--oro-claro)">Paga tu mensualidad →</a></li>
           <li><a href="#inicio">Inicio</a></li>
           <li><a href="#planes">Planes</a></li>
           <li><a href="#nosotros">Nosotros</a></li>
