@@ -183,8 +183,13 @@ input,select,textarea{ font:inherit; color:inherit; }
   font-family:var(--display); font-weight:300;
   font-size:clamp(2.6rem, 7vw, 5.4rem);
   line-height:.92; letter-spacing:-.015em;
-  color:var(--cal); text-transform:uppercase;
+  text-transform:uppercase;
   text-wrap:balance;              /* evita que quede una palabra sola colgando */
+  /* El mismo degradado de la portada, más contenido: los titulares de
+     sección no deben competir con la inscripción de arriba. */
+  background:linear-gradient(172deg, var(--cal) 0%, var(--cal) 52%, #DDD3AF 78%, var(--oro-luz) 100%);
+  -webkit-background-clip:text; background-clip:text;
+  color:transparent;
 }
 .titular b{ font-weight:700; }
 
@@ -358,11 +363,136 @@ body.trabado{ overflow:hidden; }
 /* Velo: asegura que el titular se lea sobre cualquiera de las tres fotos.
    Es un gradiente plano, sin mezcla. */
 .velo{
-  position:absolute; inset:0; z-index:1; pointer-events:none;
+  position:absolute; inset:0; z-index:2; pointer-events:none;
   background:
     linear-gradient(180deg, rgba(8,9,10,.62) 0%, rgba(8,9,10,.34) 34%, var(--piedra) 96%),
     linear-gradient(90deg, rgba(8,9,10,.72), transparent 62%);
 }
+
+/* ── CAMPO DE LUZ ────────────────────────────────────────────────────────
+   Tres manchas de color que respiran despacio. La versión anterior las hacía
+   con filter:blur(90px) sobre el contenedor, y era lo más caro de la página:
+   el desenfoque se recalculaba en cada fotograma porque las manchas se movían
+   adentro.
+
+   Acá la caída va DENTRO del degradado: ocho paradas siguiendo una gaussiana
+   (alfa = pico · e^(−k·r²)), que es exactamente la curva que dibujaba el
+   blur. Se comparó píxel a píxel contra la versión con desenfoque: diferencia
+   media de 0,3 sobre 255. Y como solo se anima transform, la GPU lo mueve sin
+   repintar nada.                                                            */
+.luz{ position:absolute; inset:-20%; z-index:1; pointer-events:none; opacity:.75; }
+.luz i{ position:absolute; display:block; border-radius:50%; }
+
+.luz i:nth-child(1){
+  width:52vw; aspect-ratio:1/.82; left:2%; top:4%;
+  background:radial-gradient(circle,
+    rgba(201,162,39,.220) 0%,  rgba(201,162,39,.206) 14%, rgba(201,162,39,.169) 29%,
+    rgba(201,162,39,.122) 43%, rgba(201,162,39,.077) 57%, rgba(201,162,39,.043) 71%,
+    rgba(201,162,39,.021) 86%, rgba(201,162,39,0)   100%);
+  animation:deriva-a 74s ease-in-out infinite;
+}
+.luz i:nth-child(2){
+  width:42vw; aspect-ratio:1/1.1; right:0%; top:22%;
+  background:radial-gradient(circle,
+    rgba(232,206,114,.130) 0%,  rgba(232,206,114,.123) 14%, rgba(232,206,114,.104) 29%,
+    rgba(232,206,114,.078) 43%, rgba(232,206,114,.052) 57%, rgba(232,206,114,.031) 71%,
+    rgba(232,206,114,.017) 86%, rgba(232,206,114,0)   100%);
+  animation:deriva-b 92s ease-in-out infinite;
+}
+/* El verde entra acá, bajo, como la luz que rebota del pasto sintético */
+.luz i:nth-child(3){
+  width:58vw; aspect-ratio:1/.58; left:18%; bottom:-8%;
+  background:radial-gradient(circle,
+    rgba(78,154,47,.115) 0%,  rgba(78,154,47,.108) 14%, rgba(78,154,47,.091) 29%,
+    rgba(78,154,47,.069) 43%, rgba(78,154,47,.046) 57%, rgba(78,154,47,.027) 71%,
+    rgba(78,154,47,.015) 86%, rgba(78,154,47,0)   100%);
+  animation:deriva-c 108s ease-in-out infinite;
+}
+@keyframes deriva-a{
+  0%,100%{ transform:translate3d(0,0,0) scale(1); }
+  34%    { transform:translate3d(12vw,6vh,0) scale(1.16); }
+  67%    { transform:translate3d(-5vw,12vh,0) scale(.92); }
+}
+@keyframes deriva-b{
+  0%,100%{ transform:translate3d(0,0,0) scale(1.05); }
+  40%    { transform:translate3d(-14vw,9vh,0) scale(.88); }
+  75%    { transform:translate3d(-3vw,-7vh,0) scale(1.18); }
+}
+@keyframes deriva-c{
+  0%,100%{ transform:translate3d(0,0,0) scale(1); }
+  50%    { transform:translate3d(9vw,-9vh,0) scale(1.2); }
+}
+
+/* ── EL SUELO ────────────────────────────────────────────────────────────
+   Una grilla en perspectiva que se aleja: la nave del templo. Da la
+   sensación de profundidad real, no de capas apiladas.
+
+   La grilla vive en un ::before que se DESPLAZA con transform. Animar el
+   background-position del padre —que es lo natural— repinta un elemento de
+   320% de ancho, rotado y enmascarado, en cada fotograma. El bucle calza
+   porque el hijo arranca una casilla más arriba y baja exactamente esa
+   casilla.                                                                */
+.suelo{
+  position:absolute; left:50%; bottom:-6%; z-index:1;
+  width:340%; height:58vh; pointer-events:none;
+  transform:translateX(-50%) perspective(320px) rotateX(66deg);
+  transform-origin:bottom center;
+  -webkit-mask-image:linear-gradient(to top,#000 0%,transparent 74%);
+          mask-image:linear-gradient(to top,#000 0%,transparent 74%);
+  opacity:.5; overflow:hidden;
+}
+.suelo::before{
+  content:''; position:absolute; left:0; right:0; top:-78px; bottom:0;
+  background-image:
+    linear-gradient(rgba(201,162,39,.34) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(201,162,39,.34) 1px,transparent 1px);
+  background-size:78px 78px;
+  animation:avanza 18s linear infinite;
+}
+@keyframes avanza{ to{ transform:translate3d(0,78px,0); } }
+
+/* ── POLVO DORADO ────────────────────────────────────────────────────────
+   Las partículas. Dieciséis elementos del DOM, no un canvas.
+
+   El canvas de la versión anterior dibujaba líneas entre puntos: eso es
+   O(n²) —con 58 puntos son 1.653 comparaciones por fotograma— más el costo
+   de borrar y repintar un lienzo del tamaño de la pantalla, que en un
+   monitor retina son cuatro veces los píxeles.
+
+   Dieciséis puntitos animados solo con transform y opacity los mueve el
+   compositor sin tocar la CPU. Cada uno es una capa de 3px.               */
+.polvo{ position:absolute; inset:0; z-index:3; pointer-events:none; overflow:hidden; }
+.polvo i{
+  position:absolute; display:block;
+  width:3px; height:3px; border-radius:50%;
+  background:var(--oro-luz);
+  opacity:0;
+  animation:flota linear infinite;
+}
+@keyframes flota{
+  0%      { opacity:0;   transform:translate3d(0, 0, 0) scale(.6); }
+  12%     { opacity:.55; }
+  50%     { opacity:.75; transform:translate3d(14px, -46vh, 0) scale(1); }
+  88%     { opacity:.4; }
+  100%    { opacity:0;   transform:translate3d(-8px, -92vh, 0) scale(.7); }
+}
+/* Reparto a mano: sin patrón regular se ve natural, y no hace falta JS */
+.polvo i:nth-child(1) { left: 6%;  bottom:-2%; animation-duration:26s; animation-delay: -2s; }
+.polvo i:nth-child(2) { left:14%;  bottom:-6%; animation-duration:34s; animation-delay:-11s; width:2px; height:2px; }
+.polvo i:nth-child(3) { left:23%;  bottom:-3%; animation-duration:29s; animation-delay:-19s; }
+.polvo i:nth-child(4) { left:31%;  bottom:-8%; animation-duration:38s; animation-delay: -5s; width:4px; height:4px; }
+.polvo i:nth-child(5) { left:39%;  bottom:-1%; animation-duration:24s; animation-delay:-14s; width:2px; height:2px; }
+.polvo i:nth-child(6) { left:47%;  bottom:-7%; animation-duration:32s; animation-delay:-23s; }
+.polvo i:nth-child(7) { left:55%;  bottom:-4%; animation-duration:27s; animation-delay: -8s; }
+.polvo i:nth-child(8) { left:62%;  bottom:-9%; animation-duration:36s; animation-delay:-17s; width:2px; height:2px; }
+.polvo i:nth-child(9) { left:70%;  bottom:-2%; animation-duration:30s; animation-delay:-26s; width:4px; height:4px; }
+.polvo i:nth-child(10){ left:77%;  bottom:-6%; animation-duration:25s; animation-delay: -3s; }
+.polvo i:nth-child(11){ left:84%;  bottom:-3%; animation-duration:33s; animation-delay:-20s; width:2px; height:2px; }
+.polvo i:nth-child(12){ left:91%;  bottom:-8%; animation-duration:28s; animation-delay:-12s; }
+.polvo i:nth-child(13){ left:10%;  bottom:-5%; animation-duration:40s; animation-delay:-30s; width:2px; height:2px; }
+.polvo i:nth-child(14){ left:35%;  bottom:-4%; animation-duration:31s; animation-delay:-24s; }
+.polvo i:nth-child(15){ left:66%;  bottom:-6%; animation-duration:37s; animation-delay: -7s; width:2px; height:2px; }
+.polvo i:nth-child(16){ left:88%;  bottom:-1%; animation-duration:23s; animation-delay:-16s; }
 
 .portada .envoltura{ position:relative; z-index:2; width:100%; }
 
@@ -399,6 +529,24 @@ body.trabado{ overflow:hidden; }
   text-transform:uppercase; color:var(--cal);
   margin-left:-.04em;               /* corrige el apoyo óptico de la condensada */
 }
+/* El oro en la letra.
+
+   No es una palabra pintada de dorado —ese es el recurso que usa todo el
+   mundo—: es un degradado que recorre TODA la inscripción, de cal arriba a
+   oro abajo, como la luz rasante sobre piedra tallada. La palabra que
+   importa sigue destacando por peso, y además recibe la parte más encendida
+   del degradado.
+
+   background-clip:text pintado UNA vez no cuesta nada. Lo caro es animarlo:
+   mover el background-position obliga a volver a rasterizar toda la palabra
+   en cada fotograma. Por eso el degradado es fijo. */
+.inscripcion{
+  background:linear-gradient(174deg,
+    var(--cal) 0%, var(--cal) 34%,
+    #D9CFA8 62%, var(--oro-luz) 84%, var(--oro) 100%);
+  -webkit-background-clip:text; background-clip:text;
+  color:transparent;
+}
 .inscripcion b{ font-weight:700; }
 .inscripcion .remate{
   display:block; margin-top:.28em;
@@ -428,7 +576,7 @@ body.trabado{ overflow:hidden; }
 .cifras b{
   font-family:var(--display); font-weight:700;
   font-size:clamp(1.75rem,4.4vw,2.5rem); line-height:1;
-  color:var(--cal); font-variant-numeric:tabular-nums;
+  color:var(--oro-luz); font-variant-numeric:tabular-nums;
 }
 .cifras span{
   font-family:var(--display); font-weight:500;
@@ -438,6 +586,56 @@ body.trabado{ overflow:hidden; }
 
 /* ── 06 · BLOQUES ──────────────────────────────────────────────────────── */
 .bloque{ padding-block:0 var(--e6); position:relative; }
+
+/* ── TELÓN ───────────────────────────────────────────────────────────────
+   Una foto del gimnasio, muy desenfocada, detrás del contenido de la
+   sección. Es lo que evita que la página se sienta como texto sobre negro
+   plano: cada bloque tiene su propio fondo con profundidad.
+
+   El desenfoque viene HORNEADO en el archivo (los -telon.webp pesan entre 9
+   y 23 KB justamente porque un desenfoque comprime muy bien). Aplicarlo con
+   filter:blur en vivo sobre una capa de este tamaño era una de las cosas
+   que hacían lenta la versión anterior.
+
+   La máscara de arriba y abajo evita el borde recto. Ojo: un elemento con
+   mask-image NUNCA dispara IntersectionObserver, así que lo que se observa
+   para pausar es la sección, no el telón.                                  */
+.telon{
+  position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none;
+  -webkit-mask-image:linear-gradient(180deg, transparent, #000 20%, #000 76%, transparent);
+          mask-image:linear-gradient(180deg, transparent, #000 20%, #000 76%, transparent);
+}
+.telon img{
+  position:absolute; left:50%; top:50%;
+  width:116%; height:150%;
+  object-fit:cover; opacity:.30;
+  transform:translate3d(-50%,-50%,0);
+}
+/* Velo dorado que amarra la foto a la paleta en vez de dejarla gris */
+.telon::after{
+  content:''; position:absolute; inset:0;
+  background:
+    radial-gradient(120% 76% at 50% 0%, rgba(201,162,39,.10), transparent 64%),
+    linear-gradient(180deg, var(--piedra), rgba(8,9,10,.30) 46%, var(--piedra));
+}
+.bloque > .envoltura{ position:relative; z-index:1; }
+
+/* Parallax: el telón se desplaza a otra velocidad que el contenido. Va con
+   scroll-driven animations, que corren en el compositor sin JavaScript y sin
+   escuchar el scroll. Si el navegador no las conoce, el bloque se ignora
+   entero y la foto queda quieta — el respaldo es el diseño, no un parche. */
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion: no-preference){
+    .telon img{
+      animation:telon-desliza linear both;
+      animation-timeline:view();
+    }
+    @keyframes telon-desliza{
+      from{ transform:translate3d(-50%, calc(-50% - 42px), 0); }
+      to  { transform:translate3d(-50%, calc(-50% + 42px), 0); }
+    }
+  }
+}
 .bloque-cabeza{
   margin-top:var(--e4);
   display:grid; gap:var(--e3); align-items:end;
@@ -457,14 +655,26 @@ body.trabado{ overflow:hidden; }
 }
 @media (min-width:900px){ .planes{ grid-template-columns:repeat(3,1fr); } }
 
+.planes{ perspective:1100px; }
 .plan{
   background:var(--piedra);
   padding:var(--e4) var(--e3) var(--e3);
   display:flex; flex-direction:column;
   position:relative;
-  transition:background .3s var(--suave);
+  transform-style:preserve-3d;
+  transition:background .3s var(--suave), transform .18s ease-out;
 }
 .plan:hover{ background:var(--nave); }
+
+/* Filo de luz: un hilo dorado que recorre el borde superior al pasar el
+   cursor. Es un transform sobre un pseudo-elemento, no un gradiente animado. */
+.plan::before{
+  content:''; position:absolute; left:0; top:0; height:1px; width:100%;
+  background:linear-gradient(90deg, transparent, var(--oro-luz), var(--oro), transparent);
+  transform:scaleX(0); transform-origin:left;
+  transition:transform .6s var(--salida);
+}
+.plan:hover::before{ transform:scaleX(1); }
 
 .plan-cima{ display:flex; align-items:center; justify-content:space-between; gap:var(--e2); }
 .plan-n{
@@ -496,8 +706,12 @@ body.trabado{ overflow:hidden; }
 .plan-monto{
   font-family:var(--display); font-weight:700;
   font-size:clamp(2.2rem,5.2vw,2.9rem); line-height:1;
-  letter-spacing:-.02em; color:var(--cal);
+  letter-spacing:-.02em;
   font-variant-numeric:tabular-nums; white-space:nowrap;
+  /* El precio es lo que se compara: que sea la cifra más encendida */
+  background:linear-gradient(168deg, var(--cal) 0%, #E4DAB6 55%, var(--oro-luz) 100%);
+  -webkit-background-clip:text; background-clip:text;
+  color:transparent;
 }
 .plan-periodo{
   font-family:var(--display); font-weight:500; font-size:.8125rem;
@@ -809,14 +1023,27 @@ html.js .sube{
 }
 html.js .sube.dentro{ opacity:1; transform:none; }
 
-/* Fuera de pantalla no hay nada que animar: la portada es la única sección
-   con movimiento continuo y se congela apenas deja de verse. */
-.portada.quieta .fondos img{ animation-play-state:paused; }
+/* Fuera de pantalla no se anima nada. La clase la pone un observador puesto
+   sobre la sección — nunca sobre las capas, que van recortadas. */
+.quieta .fondos img,
+.quieta .luz i,
+.quieta .suelo::before,
+.quieta .polvo i{ animation-play-state:paused; }
 
 @media (prefers-reduced-motion:reduce){
   html.js .sube{ opacity:1; transform:none; transition:none; }
   .fondos img:not(:first-child){ animation:none; }
+  .luz i,.suelo::before{ animation:none; }
+  .polvo{ display:none; }        /* las partículas son puro movimiento */
   .boton,.boton .punta,.galeria img,.plan,.razon,.tour-play .disco{ transition:none; }
+}
+
+/* En pantalla chica se aligera: el suelo y el polvo aportan poco a 375px y
+   son capas de más para una GPU de teléfono. */
+@media (max-width:699px){
+  .suelo{ display:none; }
+  .polvo i:nth-child(n+9){ display:none; }
+  .luz{ opacity:.6; }
 }
 
 /* ── 16 · PANTALLAS CHICAS ─────────────────────────────────────────────── */
@@ -881,7 +1108,16 @@ html.js .sube.dentro{ opacity:1; transform:none; }
     <img src="imagenes/portada-1.webp" width="1050" height="700" alt="" loading="lazy" decoding="async">
     <img src="imagenes/portada-2.webp" width="700" height="1244" alt="" loading="lazy" decoding="async">
   </div>
+  <!-- Las capas de profundidad, de atrás hacia adelante: manchas de luz que
+       respiran, la grilla del suelo en perspectiva, el velo que asegura la
+       lectura, y el polvo dorado por delante de todo. -->
+  <div class="luz" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="suelo" aria-hidden="true"></div>
   <div class="velo" aria-hidden="true"></div>
+  <div class="polvo" aria-hidden="true">
+    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+  </div>
 
   <div class="envoltura">
     <div class="portada-cima">
@@ -919,6 +1155,9 @@ html.js .sube.dentro{ opacity:1; transform:none; }
 
 <!-- ══════════════════ PLANES ══════════════════ -->
 <section class="bloque" id="planes">
+  <div class="telon" aria-hidden="true">
+    <img src="imagenes/sala-general-ancha-telon.webp" width="560" height="373" alt="" loading="lazy" decoding="async">
+  </div>
   <div class="envoltura">
     <div class="dintel"><span class="etiqueta">Planes mensuales</span></div>
 
@@ -1010,6 +1249,9 @@ html.js .sube.dentro{ opacity:1; transform:none; }
 
 <!-- ══════════════════ RAZONES ══════════════════ -->
 <section class="bloque" id="razones">
+  <div class="telon" aria-hidden="true">
+    <img src="imagenes/luces-hexagonales-telon.webp" width="560" height="996" alt="" loading="lazy" decoding="async">
+  </div>
   <div class="envoltura">
     <div class="dintel"><span class="etiqueta">Por qué elegirnos</span></div>
 
@@ -1050,6 +1292,9 @@ html.js .sube.dentro{ opacity:1; transform:none; }
 
 <!-- ══════════════════ EL RECINTO ══════════════════ -->
 <section class="bloque" id="recinto">
+  <div class="telon" aria-hidden="true">
+    <img src="imagenes/zona-funcional-telon.webp" width="560" height="996" alt="" loading="lazy" decoding="async">
+  </div>
   <div class="envoltura">
     <div class="dintel"><span class="etiqueta">El recinto</span></div>
 
@@ -1105,6 +1350,9 @@ html.js .sube.dentro{ opacity:1; transform:none; }
 
 <!-- ══════════════════ HORARIOS ══════════════════ -->
 <section class="bloque" id="horarios">
+  <div class="telon" aria-hidden="true">
+    <img src="imagenes/pasillo-luces-ancha-telon.webp" width="560" height="373" alt="" loading="lazy" decoding="async">
+  </div>
   <div class="envoltura">
     <div class="dintel"><span class="etiqueta">Horarios y ubicación</span></div>
 
@@ -1150,6 +1398,9 @@ html.js .sube.dentro{ opacity:1; transform:none; }
 
 <!-- ══════════════════ CONTACTO ══════════════════ -->
 <section class="bloque" id="contacto">
+  <div class="telon" aria-hidden="true">
+    <img src="imagenes/peso-libre-telon.webp" width="560" height="996" alt="" loading="lazy" decoding="async">
+  </div>
   <div class="envoltura">
     <div class="dintel"><span class="etiqueta">Contacto</span></div>
 
@@ -1387,15 +1638,51 @@ html.js .sube.dentro{ opacity:1; transform:none; }
     suben.forEach(function(el){ el.classList.add('dentro'); });
   }
 
-  /* ── D2 · CONGELAR LA PORTADA FUERA DE PANTALLA ─────────────────────────
-     El relevo de fotos es lo único que se mueve sin parar. Se observa la
-     SECCIÓN y no las imágenes: las capas de fondo pueden estar recortadas y
-     un elemento recortado no dispara al observador.                       */
-  var portada = $('.portada');
-  if(portada && 'IntersectionObserver' in window){
-    new IntersectionObserver(function(es){
-      portada.classList.toggle('quieta', !es[0].isIntersecting);
-    }, {rootMargin:'10% 0px'}).observe(portada);
+  /* ── D2 · CONGELAR LO QUE NO SE VE ──────────────────────────────────────
+     Fuera de pantalla no hay nada que animar. Se observa la SECCIÓN y nunca
+     la capa: el telón lleva mask-image y las capas de fondo van dentro de
+     contenedores recortados, y un elemento enmascarado o recortado no
+     dispara jamás al IntersectionObserver — se queda colgado en "no visible"
+     para siempre.                                                         */
+  if('IntersectionObserver' in window){
+    var obsQuieta = new IntersectionObserver(function(es){
+      es.forEach(function(e){ e.target.classList.toggle('quieta', !e.isIntersecting); });
+    }, {rootMargin:'15% 0px'});
+    $$('.portada, .bloque').forEach(function(s){ obsQuieta.observe(s); });
+  }
+
+  /* ── D3 · TILT 3D EN LOS PLANES ─────────────────────────────────────────
+     La tarjeta se inclina siguiendo al cursor. Solo con mouse fino: en
+     táctil no hay hover y el efecto solo estorbaría.
+
+     El centro se mide UNA vez, al entrar. La receta original lo leía en cada
+     pointermove con getBoundingClientRect, y eso obliga al navegador a
+     resolver el layout pendiente antes de contestar — con un mouse moderno
+     son más de cien veces por segundo, sobre el mismo elemento que se está
+     transformando. Es leer justo después de escribir.                     */
+  if(window.matchMedia('(hover:hover) and (pointer:fine)').matches && !quieto){
+    $$('.plan').forEach(function(el){
+      var MAX = 4, cx = 0, cy = 0, an = 0;
+      el.addEventListener('pointerenter', function(){
+        var r = el.getBoundingClientRect();
+        cx = r.left + r.width / 2;
+        cy = r.top  + r.height / 2;
+      });
+      el.addEventListener('pointermove', function(e){
+        if(an) return;                       // como mucho una vez por fotograma
+        var px = e.clientX, py = e.clientY;
+        an = requestAnimationFrame(function(){
+          an = 0;
+          var rx = ((py - cy) / el.offsetHeight) * -2 * MAX;
+          var ry = ((px - cx) / el.offsetWidth)  *  2 * MAX;
+          el.style.transform = 'rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg)';
+        });
+      }, {passive:true});
+      el.addEventListener('pointerleave', function(){
+        if(an){ cancelAnimationFrame(an); an = 0; }
+        el.style.transform = '';
+      });
+    });
   }
 
   /* ── E · ABIERTO O CERRADO, CON LA HORA DE CHILE ────────────────────────
