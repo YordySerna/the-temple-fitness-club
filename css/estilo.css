@@ -1,0 +1,1147 @@
+/* Estilos de The Temple. Vivian dentro del index.html en un <style>;
+   se movieron a este archivo el 30-08-2026 para poder declarar una
+   Content-Security-Policy con style-src 'self', que bloquea todo
+   estilo en linea. Ademas ahora el navegador lo cachea aparte del
+   HTML: en la segunda visita no se vuelve a descargar. */
+/* ══════════════════════════════════════════════════════════════════════════
+   THE TEMPLE FITNESS CLUB — Loncoche
+   HTML + CSS + JS a secas. Sin build, sin framework, sin librerías.
+
+   REGLAS DE RENDIMIENTO, que acá no son un consejo sino la causa de que la
+   versión anterior fuera lenta. Todas salieron de medir, no de suponer:
+
+     · Nada de backdrop-filter. Sobre una barra fija obliga al navegador a
+       releer lo que quedó pintado detrás y desenfocarlo en cada fotograma.
+     · Nada de mix-blend-mode en capas grandes: obliga a componer todo lo
+       que hay debajo.
+     · Nada de filter: blur() en elementos grandes. El desenfoque de las
+       fotos viene HORNEADO en los .webp.
+     · Solo se animan transform y opacity. Nunca background-position,
+       box-shadow, filter, width/height ni propiedades que alimenten un
+       gradiente: todas obligan a repintar.
+     · Nada de canvas ni de librerías de scroll.
+     · Nada de getBoundingClientRect dentro de un mousemove.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 00 · FICHAS ───────────────────────────────────────────────────────── */
+:root{
+  /* La paleta lleva los nombres del lugar, no nombres de sistema: es más
+     fácil recordar por qué existe cada color. */
+  --piedra:   #08090A;   /* el negro del fondo. No es #000: sobre negro puro
+                            las fotos oscuras se empastan */
+  --nave:     #101214;   /* superficie elevada: filas, formulario, pie */
+  --junta:    #1C1F23;   /* el gris de las juntas entre bloques */
+  --oro:      #C9A227;
+  --oro-luz:  #E8CE72;
+  --pasto:    #4E9A2F;   /* el verde REAL del pasto sintético que cubre todo
+                            el piso del gimnasio. Solo aparece donde se habla
+                            del recinto */
+  --cal:      #F2F0EB;   /* blanco cal, no #FFF: cansa menos sobre negro */
+  --cal-media:#A8A49C;   /* 8.02:1 sobre piedra */
+  /* Este empezó en #6E6A64 y daba 3.71:1, bajo el mínimo de 4.5:1 — y lo usan
+     TODAS las etiquetas del sitio, que además son texto chico. Subido hasta
+     5.30:1 sobre piedra y 4.99:1 sobre nave, que es el fondo más exigente. */
+  --cal-tenue:#88837C;
+
+  --linea:     rgba(242,240,235,.10);
+  --linea-oro: rgba(201,162,39,.34);
+
+  /* Barlow Semi Condensed para los titulares: la Condensed pura quedaba
+     demasiado apretada a tamaño grande. La Semi respira sin perder el aire
+     atlético, y a escala de portada sigue leyéndose como inscripción. */
+  --display: 'Barlow Semi Condensed', 'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
+  /* La Condensed pura se queda solo para las etiquetas chicas, donde lo
+     apretado es una virtud. */
+  --etiqueta-f:'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
+  --cuerpo:  'Barlow', system-ui, -apple-system, sans-serif;
+
+  --ancho:  1240px;
+  --margen: clamp(20px, 5vw, 56px);
+  --alto-barra: 68px;
+
+  /* Escala de espaciado, densidad estándar */
+  --e1: 8px;  --e2: 16px; --e3: 24px; --e4: 40px;
+  --e5: 64px; --e6: 96px; --e7: 128px;
+
+  --salida: cubic-bezier(.16,1,.3,1);
+  --suave:  cubic-bezier(.33,1,.68,1);
+}
+
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+
+html{
+  scroll-behavior:smooth;
+  -webkit-text-size-adjust:100%;
+  /* Le avisa al navegador que el sitio es oscuro: arregla el color de la
+     barra de scroll, de los <select> nativos y de los controles del video
+     sin tener que estilarlos uno por uno. */
+  color-scheme:dark;
+}
+@media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto; } }
+
+body{
+  background:var(--piedra);
+  color:var(--cal-media);
+  font-family:var(--cuerpo);
+  font-size:1rem;
+  line-height:1.65;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  /* Quita el retardo de 300ms del doble toque en móvil y el destello gris
+     de Android al tocar, que acá se veía sucio sobre el negro. */
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:rgba(201,162,39,.18);
+}
+
+/* La barra está fija y mide 68px: sin esto, cualquier enlace #seccion deja
+   el título tapado debajo de ella. */
+section[id]{ scroll-margin-top:calc(var(--alto-barra) + 12px); }
+
+img,video{ display:block; max-width:100%; }
+a{ color:inherit; text-decoration:none; }
+ul,ol{ list-style:none; }
+button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+input,select,textarea{ font:inherit; color:inherit; }
+[hidden]{ display:none !important; }
+
+::selection{ background:var(--oro); color:var(--piedra); }
+
+:focus-visible{
+  outline:2px solid var(--oro-luz);
+  outline-offset:3px;
+}
+
+.envoltura{
+  width:100%; max-width:var(--ancho);
+  margin-inline:auto; padding-inline:var(--margen);
+}
+
+.oculto-visual{
+  position:absolute; width:1px; height:1px; overflow:hidden;
+  clip-path:inset(50%); white-space:nowrap;
+}
+
+.saltar{
+  position:absolute; left:var(--margen); top:-100px; z-index:200;
+  background:var(--oro); color:var(--piedra);
+  padding:12px 20px; font-family:var(--display); font-weight:700;
+  letter-spacing:.08em; text-transform:uppercase;
+  transition:top .2s;
+}
+.saltar:focus{ top:12px; }
+
+/* ── 01 · TIPOGRAFÍA ───────────────────────────────────────────────────── */
+
+/* La etiqueta: la misma condensada, chica y muy abierta. Hace de pie de
+   plano técnico. Nunca lleva color de acento por sí sola. */
+.etiqueta{
+  font-family:var(--etiqueta-f); font-weight:500;
+  font-size:.8125rem; letter-spacing:.28em; text-transform:uppercase;
+  color:var(--cal-tenue);
+}
+
+/* Titulares. El contraste va por PESO, no por color: la palabra que importa
+   es la misma medida y el mismo tono, solo que en 700 contra 300. Resaltar
+   una palabra en dorado es el recurso que usa todo el mundo; el peso suena
+   a piedra tallada y no a oferta. */
+.titular{
+  font-family:var(--display); font-weight:300;
+  font-size:clamp(2.6rem, 7vw, 5.4rem);
+  line-height:.92; letter-spacing:-.015em;
+  text-transform:uppercase;
+  text-wrap:balance;              /* evita que quede una palabra sola colgando */
+  /* El mismo degradado de la portada, más contenido: los titulares de
+     sección no deben competir con la inscripción de arriba. */
+  background:linear-gradient(172deg, var(--cal) 0%, var(--cal) 52%, #DDD3AF 78%, var(--oro-luz) 100%);
+  -webkit-background-clip:text; background-clip:text;
+  color:transparent;
+}
+.titular b{ font-weight:700; }
+
+.parrafo{ max-width:62ch; color:var(--cal-media); }
+.parrafo + .parrafo{ margin-top:var(--e2); }
+
+/* ── 02 · EL DINTEL ────────────────────────────────────────────────────────
+   La firma del sitio. Cada sección abre con un hilo dorado y su nombre
+   TALLADO dentro, rompiendo la línea. Es el dintel de un templo: la piedra
+   horizontal sobre la entrada, con la inscripción encima.
+
+   No es decoración: la línea marca dónde empieza cada sección y el nombre
+   dice cuál es. Estructura que además informa.                            */
+.dintel{
+  display:flex; align-items:center; gap:var(--e3);
+  padding-top:var(--e5);
+}
+.dintel::after{
+  content:''; flex:1 1 auto; height:1px;
+  background:linear-gradient(90deg, var(--linea-oro), var(--linea) 42%, transparent);
+}
+.dintel .etiqueta{ flex:none; color:var(--oro); }
+
+/* ── 03 · BOTONES ──────────────────────────────────────────────────────── */
+.boton{
+  position:relative; overflow:hidden;
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  min-height:48px; padding:14px 28px;
+  font-family:var(--etiqueta-f); font-weight:500;
+  font-size:.9375rem; letter-spacing:.16em; text-transform:uppercase;
+  border-radius:0;                 /* nunca. Un templo no tiene esquinas blandas */
+  transition:background .2s var(--suave), color .2s var(--suave),
+             border-color .2s var(--suave), transform .2s var(--suave),
+             box-shadow .3s var(--suave);
+}
+/* El texto va sobre el destello */
+.boton > *{ position:relative; z-index:1; }
+
+/* DESTELLO AL PASAR EL CURSOR.
+   Una banda de luz diagonal que cruza el botón. Es un pseudo-elemento que se
+   DESPLAZA con transform, no un degradado animado: lo mueve el compositor y
+   no repinta nada. Y solo existe mientras el cursor está encima, así que en
+   reposo cuesta cero. */
+.boton::after{
+  content:''; position:absolute; z-index:0; top:-60%; bottom:-60%; left:-40%;
+  width:34%;
+  background:linear-gradient(100deg, transparent, rgba(255,255,255,.42), transparent);
+  transform:translateX(-260%) skewX(-18deg);
+  transition:transform .62s var(--salida);
+  pointer-events:none;
+}
+.boton:hover::after,
+.boton:focus-visible::after{ transform:translateX(560%) skewX(-18deg); }
+
+.boton .punta{ transition:transform .2s var(--suave); }
+.boton:hover .punta{ transform:translateX(4px); }
+
+.boton-oro{
+  background:var(--oro); color:var(--piedra);
+  box-shadow:0 6px 22px -10px rgba(201,162,39,.7);
+}
+.boton-oro:hover{
+  background:var(--oro-luz);
+  box-shadow:0 12px 34px -10px rgba(201,162,39,.85);
+  transform:translateY(-2px);
+}
+
+.boton-linea{ border:1px solid var(--linea); color:var(--cal); }
+.boton-linea::after{ background:linear-gradient(100deg, transparent, rgba(232,206,114,.30), transparent); }
+.boton-linea:hover{
+  border-color:var(--linea-oro); color:var(--oro-luz);
+  box-shadow:0 10px 30px -14px rgba(201,162,39,.5);
+  transform:translateY(-2px);
+}
+
+.boton:active{ transform:translateY(1px); }
+
+/* ── 04 · BARRA ────────────────────────────────────────────────────────── */
+.barra{
+  position:fixed; inset:0 0 auto; z-index:100;
+  height:var(--alto-barra);
+  display:flex; align-items:center;
+  border-bottom:1px solid transparent;
+  /* Fondo opaco, no desenfocado. Un backdrop-filter acá era lo que hacía
+     pesado el scroll en la versión anterior. */
+  background:transparent;
+  transition:background .3s var(--suave), border-color .3s var(--suave);
+}
+.barra.posada{
+  background:rgba(8,9,10,.94);
+  border-bottom-color:var(--linea);
+}
+.barra .envoltura{ display:flex; align-items:center; gap:var(--e3); }
+
+.marca{
+  display:flex; align-items:center; gap:12px; margin-right:auto;
+  min-height:44px;                /* el logo mide 34: sin esto no llega */
+}
+.marca img{ width:34px; height:34px; object-fit:contain; flex:none; }
+.marca-txt{ display:flex; flex-direction:column; line-height:1.05; }
+.marca-txt b{
+  font-family:var(--display); font-weight:700; font-size:1.0625rem;
+  letter-spacing:.02em; text-transform:uppercase; color:var(--cal);
+}
+.marca-txt span{
+  font-family:var(--etiqueta-f); font-weight:500;
+  font-size:.75rem; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--cal-tenue);
+}
+
+.menu{ display:none; gap:var(--e3); }
+/* min-height 44px: el menú aparece desde 1000px, y a ese ancho puede ser una
+   tablet táctil. Un enlace de 35px de alto se falla al tocarlo. */
+.menu a{
+  display:inline-flex; align-items:center; min-height:44px;
+  font-family:var(--display); font-weight:500;
+  font-size:.875rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--cal-media); position:relative;
+  transition:color .2s var(--suave);
+}
+.menu a::after{
+  content:''; position:absolute; left:0; right:0; bottom:0; height:1px;
+  background:var(--oro); transform:scaleX(0); transform-origin:right;
+  transition:transform .3s var(--salida);
+}
+.menu a:hover,.menu a[aria-current="true"]{ color:var(--cal); }
+.menu a:hover::after,.menu a[aria-current="true"]::after{
+  transform:scaleX(1); transform-origin:left;
+}
+@media (min-width:1000px){ .menu{ display:flex; } }
+
+.barra .boton{ display:none; }
+@media (min-width:1140px){ .barra .boton{ display:inline-flex; } }
+
+/* Botón hamburguesa */
+.abrir{
+  width:44px; height:44px; display:grid; place-items:center; gap:5px;
+  margin-right:-10px;
+}
+.abrir span{
+  display:block; width:22px; height:1.5px; background:var(--cal);
+  transition:transform .3s var(--salida), opacity .2s;
+}
+.abrir[aria-expanded="true"] span:nth-child(1){ transform:translateY(6.5px) rotate(45deg); }
+.abrir[aria-expanded="true"] span:nth-child(2){ opacity:0; }
+.abrir[aria-expanded="true"] span:nth-child(3){ transform:translateY(-6.5px) rotate(-45deg); }
+@media (min-width:1000px){ .abrir{ display:none; } }
+
+/* Panel móvil */
+.panel{
+  position:fixed; inset:0; z-index:99;
+  background:var(--piedra);
+  padding:calc(var(--alto-barra) + var(--e4)) var(--margen) var(--e4);
+  display:flex; flex-direction:column;
+  overflow-y:auto; overscroll-behavior:contain;
+  opacity:0; visibility:hidden; transform:translateY(-8px);
+  transition:opacity .28s var(--suave), transform .28s var(--suave), visibility .28s;
+}
+.panel.abierto{ opacity:1; visibility:visible; transform:none; }
+.panel nav{ display:grid; gap:2px; }
+.panel nav a{
+  font-family:var(--display); font-weight:300;
+  font-size:clamp(1.9rem,8vw,2.6rem); line-height:1.15;
+  text-transform:uppercase; color:var(--cal);
+  padding:6px 0; border-bottom:1px solid var(--linea);
+}
+.panel nav a:hover{ color:var(--oro-luz); }
+.panel-pie{ margin-top:auto; padding-top:var(--e4); display:grid; gap:var(--e2); }
+.panel-pie .boton{ width:100%; }
+body.trabado{ overflow:hidden; }
+
+/* ── 05 · PORTADA ──────────────────────────────────────────────────────── */
+.portada{
+  position:relative;
+  min-height:100svh;
+  display:flex; align-items:flex-end;
+  padding:calc(var(--alto-barra) + var(--e6)) 0 var(--e5);
+  overflow:hidden;
+}
+
+/* Fondo: tres fotos que se relevan.
+   El desenfoque y la gradación vienen dentro del .webp — cero filtros en
+   tiempo real. Las tres pesan 50 KB. */
+.fondos{ position:absolute; inset:0; z-index:0; }
+.fondos img{
+  position:absolute; inset:0;
+  width:100%; height:100%; object-fit:cover;
+}
+/* La primera no se anima: es la base opaca. Con algo opaco abajo, el cruce
+   nunca baja de peso 1. Si solo se cruzaran dos capas sobre negro, al 50%
+   y 50% el resultado sería 75% y se vería un parpadeo oscuro cada vuelta. */
+.fondos img:not(:first-child){
+  opacity:0;
+  animation:relevo 24s linear infinite;
+}
+.fondos img:nth-child(2){ animation-delay:0s; }
+.fondos img:nth-child(3){ animation-delay:-16s; }
+@keyframes relevo{
+  0%,   33.3% { opacity:1; }
+  39.2%,94.1% { opacity:0; }
+  100%        { opacity:1; }
+}
+
+/* Velo: asegura que el titular se lea sobre cualquiera de las tres fotos.
+   Es un gradiente plano, sin mezcla. */
+.velo{
+  position:absolute; inset:0; z-index:2; pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(8,9,10,.62) 0%, rgba(8,9,10,.34) 34%, var(--piedra) 96%),
+    linear-gradient(90deg, rgba(8,9,10,.72), transparent 62%);
+}
+
+/* ── CAMPO DE LUZ ────────────────────────────────────────────────────────
+   Tres manchas de color que respiran despacio. La versión anterior las hacía
+   con filter:blur(90px) sobre el contenedor, y era lo más caro de la página:
+   el desenfoque se recalculaba en cada fotograma porque las manchas se movían
+   adentro.
+
+   Acá la caída va DENTRO del degradado: ocho paradas siguiendo una gaussiana
+   (alfa = pico · e^(−k·r²)), que es exactamente la curva que dibujaba el
+   blur. Se comparó píxel a píxel contra la versión con desenfoque: diferencia
+   media de 0,3 sobre 255. Y como solo se anima transform, la GPU lo mueve sin
+   repintar nada.                                                            */
+.luz{ position:absolute; inset:-20%; z-index:1; pointer-events:none; opacity:.75; }
+.luz i{ position:absolute; display:block; border-radius:50%; }
+
+.luz i:nth-child(1){
+  width:52vw; aspect-ratio:1/.82; left:2%; top:4%;
+  background:radial-gradient(circle,
+    rgba(201,162,39,.220) 0%,  rgba(201,162,39,.206) 14%, rgba(201,162,39,.169) 29%,
+    rgba(201,162,39,.122) 43%, rgba(201,162,39,.077) 57%, rgba(201,162,39,.043) 71%,
+    rgba(201,162,39,.021) 86%, rgba(201,162,39,0)   100%);
+  animation:deriva-a 74s ease-in-out infinite;
+}
+.luz i:nth-child(2){
+  width:42vw; aspect-ratio:1/1.1; right:0%; top:22%;
+  background:radial-gradient(circle,
+    rgba(232,206,114,.130) 0%,  rgba(232,206,114,.123) 14%, rgba(232,206,114,.104) 29%,
+    rgba(232,206,114,.078) 43%, rgba(232,206,114,.052) 57%, rgba(232,206,114,.031) 71%,
+    rgba(232,206,114,.017) 86%, rgba(232,206,114,0)   100%);
+  animation:deriva-b 92s ease-in-out infinite;
+}
+/* El verde entra acá, bajo, como la luz que rebota del pasto sintético */
+.luz i:nth-child(3){
+  width:58vw; aspect-ratio:1/.58; left:18%; bottom:-8%;
+  background:radial-gradient(circle,
+    rgba(78,154,47,.115) 0%,  rgba(78,154,47,.108) 14%, rgba(78,154,47,.091) 29%,
+    rgba(78,154,47,.069) 43%, rgba(78,154,47,.046) 57%, rgba(78,154,47,.027) 71%,
+    rgba(78,154,47,.015) 86%, rgba(78,154,47,0)   100%);
+  animation:deriva-c 108s ease-in-out infinite;
+}
+@keyframes deriva-a{
+  0%,100%{ transform:translate3d(0,0,0) scale(1); }
+  34%    { transform:translate3d(12vw,6vh,0) scale(1.16); }
+  67%    { transform:translate3d(-5vw,12vh,0) scale(.92); }
+}
+@keyframes deriva-b{
+  0%,100%{ transform:translate3d(0,0,0) scale(1.05); }
+  40%    { transform:translate3d(-14vw,9vh,0) scale(.88); }
+  75%    { transform:translate3d(-3vw,-7vh,0) scale(1.18); }
+}
+@keyframes deriva-c{
+  0%,100%{ transform:translate3d(0,0,0) scale(1); }
+  50%    { transform:translate3d(9vw,-9vh,0) scale(1.2); }
+}
+
+/* ── EL SUELO ────────────────────────────────────────────────────────────
+   Una grilla en perspectiva que se aleja: la nave del templo. Da la
+   sensación de profundidad real, no de capas apiladas.
+
+   La grilla vive en un ::before que se DESPLAZA con transform. Animar el
+   background-position del padre —que es lo natural— repinta un elemento de
+   320% de ancho, rotado y enmascarado, en cada fotograma. El bucle calza
+   porque el hijo arranca una casilla más arriba y baja exactamente esa
+   casilla.                                                                */
+.suelo{
+  position:absolute; left:50%; bottom:-6%; z-index:1;
+  width:340%; height:58vh; pointer-events:none;
+  transform:translateX(-50%) perspective(320px) rotateX(66deg);
+  transform-origin:bottom center;
+  -webkit-mask-image:linear-gradient(to top,#000 0%,transparent 74%);
+          mask-image:linear-gradient(to top,#000 0%,transparent 74%);
+  opacity:.5; overflow:hidden;
+}
+.suelo::before{
+  content:''; position:absolute; left:0; right:0; top:-78px; bottom:0;
+  background-image:
+    linear-gradient(rgba(201,162,39,.34) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(201,162,39,.34) 1px,transparent 1px);
+  background-size:78px 78px;
+  animation:avanza 18s linear infinite;
+}
+@keyframes avanza{ to{ transform:translate3d(0,78px,0); } }
+
+/* ── POLVO DORADO ────────────────────────────────────────────────────────
+   Las partículas. Dieciséis elementos del DOM, no un canvas.
+
+   El canvas de la versión anterior dibujaba líneas entre puntos: eso es
+   O(n²) —con 58 puntos son 1.653 comparaciones por fotograma— más el costo
+   de borrar y repintar un lienzo del tamaño de la pantalla, que en un
+   monitor retina son cuatro veces los píxeles.
+
+   Dieciséis puntitos animados solo con transform y opacity los mueve el
+   compositor sin tocar la CPU. Cada uno es una capa de 3px.               */
+.polvo{ position:absolute; inset:0; z-index:3; pointer-events:none; overflow:hidden; }
+.polvo i{
+  position:absolute; display:block;
+  width:3px; height:3px; border-radius:50%;
+  background:var(--oro-luz);
+  opacity:0;
+  animation:flota linear infinite;
+}
+@keyframes flota{
+  0%      { opacity:0;   transform:translate3d(0, 0, 0) scale(.6); }
+  12%     { opacity:.55; }
+  50%     { opacity:.75; transform:translate3d(14px, -46vh, 0) scale(1); }
+  88%     { opacity:.4; }
+  100%    { opacity:0;   transform:translate3d(-8px, -92vh, 0) scale(.7); }
+}
+/* Reparto a mano: sin patrón regular se ve natural, y no hace falta JS */
+.polvo i:nth-child(1) { left: 6%;  bottom:-2%; animation-duration:26s; animation-delay: -2s; }
+.polvo i:nth-child(2) { left:14%;  bottom:-6%; animation-duration:34s; animation-delay:-11s; width:2px; height:2px; }
+.polvo i:nth-child(3) { left:23%;  bottom:-3%; animation-duration:29s; animation-delay:-19s; }
+.polvo i:nth-child(4) { left:31%;  bottom:-8%; animation-duration:38s; animation-delay: -5s; width:4px; height:4px; }
+.polvo i:nth-child(5) { left:39%;  bottom:-1%; animation-duration:24s; animation-delay:-14s; width:2px; height:2px; }
+.polvo i:nth-child(6) { left:47%;  bottom:-7%; animation-duration:32s; animation-delay:-23s; }
+.polvo i:nth-child(7) { left:55%;  bottom:-4%; animation-duration:27s; animation-delay: -8s; }
+.polvo i:nth-child(8) { left:62%;  bottom:-9%; animation-duration:36s; animation-delay:-17s; width:2px; height:2px; }
+.polvo i:nth-child(9) { left:70%;  bottom:-2%; animation-duration:30s; animation-delay:-26s; width:4px; height:4px; }
+.polvo i:nth-child(10){ left:77%;  bottom:-6%; animation-duration:25s; animation-delay: -3s; }
+.polvo i:nth-child(11){ left:84%;  bottom:-3%; animation-duration:33s; animation-delay:-20s; width:2px; height:2px; }
+.polvo i:nth-child(12){ left:91%;  bottom:-8%; animation-duration:28s; animation-delay:-12s; }
+.polvo i:nth-child(13){ left:10%;  bottom:-5%; animation-duration:40s; animation-delay:-30s; width:2px; height:2px; }
+.polvo i:nth-child(14){ left:35%;  bottom:-4%; animation-duration:31s; animation-delay:-24s; }
+.polvo i:nth-child(15){ left:66%;  bottom:-6%; animation-duration:37s; animation-delay: -7s; width:2px; height:2px; }
+.polvo i:nth-child(16){ left:88%;  bottom:-1%; animation-duration:23s; animation-delay:-16s; }
+
+.portada .envoltura{ position:relative; z-index:2; width:100%; }
+
+.portada-cima{
+  display:flex; flex-wrap:wrap; align-items:center; gap:var(--e2) var(--e3);
+  margin-bottom:var(--e4);
+}
+
+/* El cartel de abierto/cerrado. Es el dato que más se busca de un gimnasio,
+   así que va arriba de todo y se calcula con la hora real de Chile. */
+.estado{
+  display:inline-flex; align-items:center; gap:9px;
+  font-family:var(--etiqueta-f); font-weight:500;
+  font-size:.8125rem; letter-spacing:.16em; text-transform:uppercase;
+}
+.estado .pip{
+  width:7px; height:7px; flex:none;
+  background:var(--cal-tenue);
+  transform:rotate(45deg);          /* rombo, no círculo: coherente con el resto */
+}
+.estado[data-abierto="si"]{ color:var(--pasto); }
+.estado[data-abierto="si"] .pip{ background:var(--pasto); }
+.estado[data-abierto="no"]{ color:var(--cal-tenue); }
+
+/* LA INSCRIPCIÓN.
+   El riesgo del diseño: el titular se sale por los bordes. Está calculado
+   con clamp para desbordar apenas —lo justo para que se lea completo pero
+   se sienta que la pieza es más grande que la pantalla, como una fachada
+   que no cabe en la foto. */
+.inscripcion{
+  font-family:var(--display); font-weight:300;
+  font-size:clamp(3.4rem, 15.5vw, 11rem);
+  line-height:.82; letter-spacing:-.03em;
+  text-transform:uppercase; color:var(--cal);
+  margin-left:-.04em;               /* corrige el apoyo óptico de la condensada */
+}
+/* EL BARRIDO DE LUZ — el mismo recurso del portafolio de Yordy.
+
+   El relleno de las letras no es un color: es un degradado ancho que cruza
+   la palabra, como un reflejo recorriendo metal pulido.
+
+   Esto SÍ repinta el texto en cada fotograma, que es justo lo que se saco
+   del sitio por lento. Se admite acá con tres candados:
+     · una sola pieza en toda la página, la inscripción de portada;
+     · ciclo largo (9s) y en @supports, para que sin recorte al texto la
+       palabra siga siendo blanca en vez de desaparecer;
+     · se congela apenas la portada sale de pantalla (clase .quieta),
+       así el costo solo existe mientras alguien la está mirando.       */
+.inscripcion{
+  color:var(--cal);
+  /* Sombra en el borde: separa la letra de la foto de fondo y le da cuerpo.
+     Es una sombra estática, se pinta una vez. */
+  text-shadow:
+    0 1px 0 rgba(8,9,10,.55),
+    0 0 26px rgba(8,9,10,.85),
+    0 0 70px rgba(201,162,39,.16);
+}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  .inscripcion{
+    background-image:linear-gradient(100deg,
+      var(--cal) 0%, var(--cal) 33%,
+      #E4D5A4 44%, var(--oro-luz) 49%, #FFF3CE 51%, var(--oro-luz) 53%, #E4D5A4 58%,
+      var(--cal) 70%, var(--cal) 100%);
+    background-size:300% 100%;
+    background-position:100% 0;
+    -webkit-background-clip:text; background-clip:text;
+    color:transparent; -webkit-text-fill-color:transparent;
+    animation:barrido 9s linear infinite;
+    /* Con el texto recortado el text-shadow no se ve, y un drop-shadow acá
+       sería un filtro re-ejecutándose en cada fotograma junto al barrido.
+       El cuerpo lo da el velo oscuro del fondo, que ya está pintado. */
+    text-shadow:none;
+  }
+}
+@keyframes barrido{ to{ background-position:-200% 0; } }
+.inscripcion b{ font-weight:700; }
+.inscripcion .remate{
+  display:block; margin-top:.28em;
+  font-family:var(--etiqueta-f);
+  font-size:clamp(.9rem,2.1vw,1.35rem); font-weight:500;
+  letter-spacing:.26em; line-height:1.2;
+  /* -webkit-text-fill-color HEREDA: sin esta línea el remate saldría
+     transparente por el recorte del titular de arriba. */
+  color:var(--oro); -webkit-text-fill-color:var(--oro);
+  background:none;
+  text-shadow:0 0 18px rgba(8,9,10,.9);
+}
+
+.portada-bajada{
+  margin-top:var(--e4); max-width:46ch;
+  font-size:clamp(1rem,2.1vw,1.125rem);
+}
+
+.portada-acciones{
+  margin-top:var(--e4);
+  display:flex; flex-wrap:wrap; gap:var(--e2);
+}
+
+/* Cifras: van pegadas al pie de la portada, sobre el hilo dorado, como la
+   base de la fachada. */
+.cifras{
+  margin-top:var(--e5); padding-top:var(--e3);
+  border-top:1px solid var(--linea-oro);
+  display:grid; grid-template-columns:repeat(2,1fr); gap:var(--e3) var(--e2);
+}
+@media (min-width:760px){ .cifras{ grid-template-columns:repeat(4,1fr); } }
+.cifras div{ display:flex; flex-direction:column; gap:2px; }
+.cifras b{
+  font-family:var(--display); font-weight:700;
+  font-size:clamp(1.75rem,4.4vw,2.5rem); line-height:1;
+  color:var(--oro-luz); font-variant-numeric:tabular-nums;
+}
+.cifras span{
+  font-family:var(--etiqueta-f); font-weight:500;
+  font-size:.75rem; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--cal-tenue);
+}
+
+/* ── 06 · BLOQUES ──────────────────────────────────────────────────────── */
+.bloque{ padding-block:0 var(--e6); position:relative; }
+
+/* ── TELÓN ───────────────────────────────────────────────────────────────
+   Una foto del gimnasio, muy desenfocada, detrás del contenido de la
+   sección. Es lo que evita que la página se sienta como texto sobre negro
+   plano: cada bloque tiene su propio fondo con profundidad.
+
+   El desenfoque viene HORNEADO en el archivo (los -telon.webp pesan entre 9
+   y 23 KB justamente porque un desenfoque comprime muy bien). Aplicarlo con
+   filter:blur en vivo sobre una capa de este tamaño era una de las cosas
+   que hacían lenta la versión anterior.
+
+   La máscara de arriba y abajo evita el borde recto. Ojo: un elemento con
+   mask-image NUNCA dispara IntersectionObserver, así que lo que se observa
+   para pausar es la sección, no el telón.                                  */
+.telon{
+  position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none;
+  -webkit-mask-image:linear-gradient(180deg, transparent, #000 20%, #000 76%, transparent);
+          mask-image:linear-gradient(180deg, transparent, #000 20%, #000 76%, transparent);
+}
+.telon img{
+  position:absolute; left:50%; top:50%;
+  width:116%; height:150%;
+  object-fit:cover; opacity:.30;
+  transform:translate3d(-50%,-50%,0);
+}
+/* Velo dorado que amarra la foto a la paleta en vez de dejarla gris */
+.telon::after{
+  content:''; position:absolute; inset:0;
+  background:
+    radial-gradient(120% 76% at 50% 0%, rgba(201,162,39,.10), transparent 64%),
+    linear-gradient(180deg, var(--piedra), rgba(8,9,10,.30) 46%, var(--piedra));
+}
+.bloque > .envoltura{ position:relative; z-index:1; }
+
+/* Parallax: el telón se desplaza a otra velocidad que el contenido. Va con
+   scroll-driven animations, que corren en el compositor sin JavaScript y sin
+   escuchar el scroll. Si el navegador no las conoce, el bloque se ignora
+   entero y la foto queda quieta — el respaldo es el diseño, no un parche. */
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion: no-preference){
+    .telon img{
+      animation:telon-desliza linear both;
+      animation-timeline:view();
+    }
+    @keyframes telon-desliza{
+      from{ transform:translate3d(-50%, calc(-50% - 42px), 0); }
+      to  { transform:translate3d(-50%, calc(-50% + 42px), 0); }
+    }
+  }
+}
+.bloque-cabeza{
+  margin-top:var(--e4);
+  display:grid; gap:var(--e3); align-items:end;
+}
+@media (min-width:900px){
+  .bloque-cabeza{ grid-template-columns:1.15fr .85fr; gap:var(--e5); }
+}
+
+/* ── 07 · PLANES ───────────────────────────────────────────────────────── */
+/* Tres columnas separadas por juntas, no tres tarjetas. La numeración sí
+   significa algo acá: los planes van de menor a mayor compromiso. */
+.planes{
+  margin-top:var(--e5);
+  display:grid; gap:1px;
+  background:var(--linea);          /* las juntas son el fondo que se asoma */
+  border-block:1px solid var(--linea);
+}
+@media (min-width:900px){ .planes{ grid-template-columns:repeat(3,1fr); } }
+
+.planes{ perspective:1100px; }
+.plan{
+  background:var(--piedra);
+  padding:var(--e4) var(--e3) var(--e3);
+  display:flex; flex-direction:column;
+  position:relative;
+  transform-style:preserve-3d;
+  transition:background .3s var(--suave), transform .18s ease-out;
+}
+.plan:hover{ background:var(--nave); }
+
+/* Filo de luz: un hilo dorado que recorre el borde superior al pasar el
+   cursor. Es un transform sobre un pseudo-elemento, no un gradiente animado. */
+.plan::before{
+  content:''; position:absolute; left:0; top:0; height:1px; width:100%;
+  background:linear-gradient(90deg, transparent, var(--oro-luz), var(--oro), transparent);
+  transform:scaleX(0); transform-origin:left;
+  transition:transform .6s var(--salida);
+}
+.plan:hover::before{ transform:scaleX(1); }
+
+.plan-cima{ display:flex; align-items:center; justify-content:space-between; gap:var(--e2); }
+.plan-n{
+  font-family:var(--etiqueta-f); font-weight:500; font-size:.8125rem;
+  letter-spacing:.2em; color:var(--cal-tenue);
+  transition:color .3s var(--suave);
+}
+.plan:hover .plan-n{ color:var(--oro); }
+.plan-marca{
+  font-family:var(--etiqueta-f); font-weight:500;
+  font-size:.75rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--oro-luz); border:1px solid var(--linea-oro);
+  padding:4px 10px; white-space:nowrap;
+}
+
+.plan-nombre{
+  margin-top:var(--e3);
+  font-family:var(--display); font-weight:700;
+  font-size:clamp(1.9rem,4.6vw,2.4rem); line-height:1;
+  letter-spacing:-.01em; text-transform:uppercase; color:var(--cal);
+}
+.plan-bajada{ margin-top:10px; font-size:.9375rem; max-width:30ch; }
+
+/* El plan del medio es el que el gimnasio quiere vender: se le sube el
+   contraste con fondo propio, filo dorado permanente y sombra que lo
+   despega del resto. Las sombras son estáticas: se pintan una vez. */
+.plan--destaca{
+  background:linear-gradient(180deg, rgba(201,162,39,.07), rgba(8,9,10,0) 62%), var(--nave);
+  box-shadow:0 30px 70px -40px rgba(0,0,0,.9), inset 0 0 0 1px var(--linea-oro);
+  z-index:1;
+}
+.plan--destaca::before{ transform:scaleX(1); }
+.plan--destaca .plan-nombre{ color:var(--cal); }
+@media (min-width:900px){
+  /* En escritorio además sobresale del bloque, como una lápida más alta */
+  .plan--destaca{ margin-block:-14px; padding-top:calc(var(--e4) + 14px); }
+}
+
+.plan-precio{
+  margin-top:var(--e3); padding-top:var(--e3);
+  border-top:1px solid var(--linea-oro);
+  display:flex; align-items:baseline; gap:8px; flex-wrap:nowrap;
+}
+.plan-monto{
+  font-family:var(--display); font-weight:700;
+  font-size:clamp(2.2rem,5.2vw,2.9rem); line-height:1;
+  letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums; white-space:nowrap;
+  /* El precio es lo que se compara: que sea la cifra más encendida */
+  background:linear-gradient(168deg, var(--cal) 0%, #E4DAB6 55%, var(--oro-luz) 100%);
+  -webkit-background-clip:text; background-clip:text;
+  color:transparent;
+}
+.plan-periodo{
+  font-family:var(--etiqueta-f); font-weight:500; font-size:.8125rem;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--cal-tenue);
+  white-space:nowrap;
+}
+
+.plan-lista{ margin-top:var(--e3); display:grid; gap:11px; flex:1; align-content:start; }
+.plan-lista li{
+  position:relative; padding-left:22px;
+  font-size:.9375rem; line-height:1.5;
+}
+.plan-lista li::before{
+  content:''; position:absolute; left:0; top:.55em;
+  width:5px; height:5px; background:var(--oro);
+  transform:rotate(45deg);
+}
+.plan .boton{ margin-top:var(--e4); width:100%; }
+
+.planes-pie{
+  margin-top:var(--e4);
+  display:flex; flex-wrap:wrap; align-items:center;
+  justify-content:space-between; gap:var(--e2);
+}
+.planes-pie p{ font-size:.9375rem; max-width:48ch; }
+
+/* ── 08 · RAZONES ──────────────────────────────────────────────────────── */
+.razones{
+  margin-top:var(--e5);
+  display:grid; gap:1px; background:var(--linea);
+  border-block:1px solid var(--linea);
+}
+@media (min-width:680px){ .razones{ grid-template-columns:repeat(2,1fr); } }
+@media (min-width:1040px){ .razones{ grid-template-columns:repeat(4,1fr); } }
+.razon{
+  background:var(--piedra); padding:var(--e4) var(--e3);
+  transition:background .3s var(--suave);
+}
+.razon:hover{ background:var(--nave); }
+.razon svg{
+  width:24px; height:24px; color:var(--oro);
+  stroke:currentColor; fill:none; stroke-width:1.4;
+  stroke-linecap:round; stroke-linejoin:round;
+}
+.razon h3{
+  margin-top:var(--e3);
+  font-family:var(--display); font-weight:700; font-size:1.25rem;
+  letter-spacing:.01em; text-transform:uppercase; color:var(--cal);
+  line-height:1.15;
+}
+.razon p{ margin-top:10px; font-size:.9375rem; }
+
+/* ── 09 · EL RECINTO ───────────────────────────────────────────────────── */
+/* Acá es donde entra el verde: es la sección que habla del espacio real, y
+   el piso de ese espacio es pasto sintético. */
+.recinto-tapa{
+  margin-top:var(--e5); position:relative;
+  border:1px solid var(--linea);
+  background:var(--nave);
+}
+.recinto-tapa video,
+.recinto-tapa img{ width:100%; height:auto; aspect-ratio:16/10; object-fit:cover; }
+@media (max-width:679px){
+  .recinto-tapa video,.recinto-tapa img{ aspect-ratio:4/5; }
+}
+.tour-play{
+  position:absolute; inset:0; width:100%;
+  display:grid; place-items:center; gap:var(--e2);
+  background:linear-gradient(180deg, rgba(8,9,10,.15), rgba(8,9,10,.72));
+  transition:background .3s var(--suave);
+}
+.tour-play:hover{ background:linear-gradient(180deg, rgba(8,9,10,.05), rgba(8,9,10,.6)); }
+.tour-play .disco{
+  width:74px; height:74px; border:1px solid var(--oro);
+  display:grid; place-items:center;
+  background:rgba(8,9,10,.55);
+  transform:rotate(45deg);
+  transition:background .3s var(--suave), transform .4s var(--salida);
+}
+.tour-play:hover .disco{ background:rgba(201,162,39,.16); transform:rotate(45deg) scale(1.06); }
+.tour-play .disco i{
+  width:0; height:0; margin-left:4px;
+  border-left:16px solid var(--oro-luz);
+  border-top:11px solid transparent; border-bottom:11px solid transparent;
+  transform:rotate(-45deg);
+}
+.tour-play .rotulo{
+  font-family:var(--etiqueta-f); font-weight:500; font-size:.8125rem;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--cal);
+}
+
+.galeria{
+  margin-top:1px;
+  display:grid; gap:1px; background:var(--linea);
+  grid-template-columns:repeat(2,1fr);
+}
+@media (min-width:760px){ .galeria{ grid-template-columns:repeat(4,1fr); } }
+/* La galería trabaja por CONTRASTE: en reposo las fotos están apagadas y
+   frías; la que recibe el cursor se enciende sola y las de al lado quedan
+   como fondo. El velo es un gradiente pintado una vez y lo que se anima es
+   su opacidad, no un filtro. */
+.galeria button{
+  position:relative; display:block; overflow:hidden;
+  background:var(--nave); aspect-ratio:1/1;
+  width:100%;
+}
+.galeria img{
+  width:100%; height:100%; object-fit:cover;
+  opacity:.5;
+  transition:transform .55s var(--salida), opacity .35s var(--suave);
+}
+/* Velo oscuro con una pizca de oro arriba: apaga la foto en reposo */
+.galeria button::before{
+  content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(8,9,10,.30), rgba(8,9,10,.86)),
+    radial-gradient(90% 70% at 50% 0%, rgba(201,162,39,.14), transparent 70%);
+  transition:opacity .35s var(--suave);
+}
+/* Filo dorado que se dibuja al entrar */
+.galeria button::after{
+  content:''; position:absolute; inset:0; z-index:2; pointer-events:none;
+  border:1px solid var(--oro);
+  opacity:0; transform:scale(.97);
+  transition:opacity .35s var(--suave), transform .45s var(--salida);
+}
+.galeria button:hover img,
+.galeria button:focus-visible img{ transform:scale(1.07); opacity:1; }
+.galeria button:hover::before,
+.galeria button:focus-visible::before{ opacity:.25; }
+.galeria button:hover::after,
+.galeria button:focus-visible::after{ opacity:1; transform:none; }
+
+/* El nombre de la zona, que antes solo existía en el visor */
+.galeria .pie-foto{
+  position:absolute; z-index:3; left:0; right:0; bottom:0;
+  padding:10px 12px;
+  font-family:var(--etiqueta-f); font-weight:500;
+  font-size:.75rem; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--cal); text-align:left;
+  text-shadow:0 1px 10px rgba(8,9,10,.9);
+  opacity:0; transform:translateY(8px);
+  transition:opacity .3s var(--suave), transform .35s var(--salida);
+}
+.galeria button:hover .pie-foto,
+.galeria button:focus-visible .pie-foto{ opacity:1; transform:none; }
+
+/* ── 10 · HORARIOS ─────────────────────────────────────────────────────── */
+.horario-cuerpo{
+  margin-top:var(--e5);
+  display:grid; gap:var(--e5);
+}
+@media (min-width:900px){ .horario-cuerpo{ grid-template-columns:1fr 1fr; } }
+
+.dias{ border-top:1px solid var(--linea); }
+.dias li{
+  display:flex; align-items:baseline; justify-content:space-between; gap:var(--e2);
+  padding:15px 0; border-bottom:1px solid var(--linea);
+}
+.dias .dia{
+  font-family:var(--etiqueta-f); font-weight:500;
+  font-size:1rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--cal-media);
+}
+.dias .rango{
+  font-family:var(--etiqueta-f); font-weight:500; font-size:1rem;
+  letter-spacing:.08em; color:var(--cal-media);
+  font-variant-numeric:tabular-nums;
+}
+.dias li.hoy .dia,
+.dias li.hoy .rango{ color:var(--oro-luz); }
+.dias li.hoy .dia::after{
+  content:'hoy'; margin-left:10px;
+  font-size:.625rem; letter-spacing:.2em; color:var(--oro);
+}
+
+.ficha{ border-top:1px solid var(--linea); }
+.ficha > div{ padding:18px 0; border-bottom:1px solid var(--linea); }
+.ficha dt{
+  font-family:var(--etiqueta-f); font-weight:500;
+  font-size:.75rem; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--cal-tenue); margin-bottom:5px;
+}
+.ficha dd{ color:var(--cal); }
+.ficha dd small{ display:block; margin-top:3px; font-size:.875rem; color:var(--cal-tenue); }
+/* Los enlaces sueltos (teléfono, Instagram) son enlaces de línea, pero igual
+   se tocan con el dedo: con este relleno pasan los 24px que pide la norma
+   para objetivos en línea. */
+.ficha dd a{ display:inline-block; padding-block:4px; }
+.ficha dd a:hover{ color:var(--oro-luz); }
+
+.mapa{
+  margin-top:var(--e3); position:relative;
+  aspect-ratio:16/10; border:1px solid var(--linea);
+  background:var(--nave);
+}
+.mapa iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+/* El velo va encima y no como filter sobre el iframe: un filtro obliga a
+   pasar por una etapa de filtrado todo lo que dibuja ese documento, y
+   adentro corre Google Maps, que se repinta solo. */
+.mapa::after{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:rgba(8,9,10,.12);
+}
+
+/* ── 11 · CONTACTO ─────────────────────────────────────────────────────── */
+.contacto-cuerpo{
+  margin-top:var(--e5);
+  display:grid; gap:var(--e5);
+}
+@media (min-width:900px){ .contacto-cuerpo{ grid-template-columns:1.05fr .95fr; } }
+
+.campo{ position:relative; margin-bottom:var(--e3); }
+.campo label{
+  display:block; margin-bottom:8px;
+  font-family:var(--etiqueta-f); font-weight:500;
+  font-size:.75rem; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--cal-tenue);
+}
+.campo input,
+.campo select,
+.campo textarea{
+  width:100%; padding:13px 0;
+  background:none; border:0; border-bottom:1px solid var(--linea);
+  color:var(--cal); border-radius:0;
+  transition:border-color .25s var(--suave);
+}
+/* El <select> nativo necesita fondo y color explícitos o en Windows con tema
+   oscuro sale con el gris del sistema, que acá desentona. */
+.campo select{ cursor:pointer; background-color:var(--piedra); color:var(--cal); }
+.campo select option{ background-color:var(--nave); color:var(--cal); }
+.campo textarea{ resize:vertical; min-height:88px; }
+.campo input::placeholder,
+.campo textarea::placeholder{ color:var(--cal-tenue); }
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus{ outline:none; border-bottom-color:var(--oro); }
+.campo input:focus-visible,
+.campo select:focus-visible,
+.campo textarea:focus-visible{ outline:2px solid var(--oro-luz); outline-offset:4px; }
+
+.campo-par{ display:grid; gap:var(--e3); }
+@media (min-width:560px){ .campo-par{ grid-template-columns:1fr 1fr; } }
+
+.form-nota{ margin-top:var(--e2); font-size:.8125rem; color:var(--cal-tenue); }
+
+/* El error va pegado a su campo, no en un cartel al final del formulario:
+   así se ve sin tener que buscarlo. */
+.campo-error{
+  display:block; margin-top:7px;
+  font-family:var(--etiqueta-f); font-weight:500;
+  font-size:.8125rem; letter-spacing:.06em;
+  color:var(--oro-luz);
+}
+.campo[data-mal] input{ border-bottom-color:var(--oro); }
+
+/* ── 12 · PIE ──────────────────────────────────────────────────────────── */
+.pie{
+  border-top:1px solid var(--linea);
+  background:var(--nave);
+  padding-block:var(--e5) var(--e4);
+}
+.pie-grilla{
+  display:grid; gap:var(--e4);
+}
+@media (min-width:760px){ .pie-grilla{ grid-template-columns:1.4fr 1fr 1fr; gap:var(--e5); } }
+.pie h4{
+  font-family:var(--etiqueta-f); font-weight:500;
+  font-size:.75rem; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--oro); margin-bottom:var(--e2);
+}
+.pie-lista{ display:grid; gap:4px; }
+.pie-lista li{ font-size:.9375rem; }
+/* Mismo motivo que en la ficha: en el pie hay una columna entera de enlaces
+   y en el teléfono se tocan con el pulgar. */
+.pie-lista a{ display:inline-block; padding-block:5px; }
+.pie-lista a:hover{ color:var(--oro-luz); }
+.pie-sello{ display:flex; align-items:center; gap:14px; margin-bottom:var(--e2); }
+.pie-sello img{ width:52px; height:52px; object-fit:contain; }
+.pie-sello b{
+  font-family:var(--display); font-weight:700; font-size:1.375rem;
+  letter-spacing:.02em; text-transform:uppercase; color:var(--cal);
+}
+.pie-legal{
+  margin-top:var(--e5); padding-top:var(--e3);
+  border-top:1px solid var(--linea);
+  display:flex; flex-wrap:wrap; gap:var(--e2);
+  justify-content:space-between;
+  font-size:.8125rem; color:var(--cal-tenue);
+}
+.pie-legal a{ display:inline-block; padding-block:4px; color:var(--cal-media); }
+.pie-legal a:hover{ color:var(--oro-luz); }
+
+/* ── 13 · WHATSAPP FLOTANTE ────────────────────────────────────────────── */
+.flotante{
+  position:fixed; z-index:90;
+  /* env() respeta la barra de gestos y el notch: sin esto, en un iPhone el
+     botón queda pisado por la franja de abajo. */
+  right:calc(var(--margen) + env(safe-area-inset-right));
+  bottom:calc(24px + env(safe-area-inset-bottom));
+  display:inline-flex; align-items:center; gap:10px;
+  min-height:48px; padding:12px 18px;
+  background:var(--pasto); color:#06210A;
+  font-family:var(--display); font-weight:700;
+  font-size:.875rem; letter-spacing:.12em; text-transform:uppercase;
+  transition:background .2s var(--suave), transform .2s var(--suave);
+}
+.flotante:hover{ background:#5FB53A; transform:translateY(-2px); }
+.flotante svg{ width:19px; height:19px; fill:currentColor; flex:none; }
+@media (max-width:559px){ .flotante .txt{ display:none; } .flotante{ padding:14px; } }
+
+/* ── 14 · VISOR DE FOTOS ───────────────────────────────────────────────── */
+.visor{
+  position:fixed; inset:0; z-index:150;
+  display:grid; grid-template-rows:auto 1fr auto; gap:var(--e2);
+  place-items:center; align-content:center;
+  padding:var(--e4) var(--margen);
+  background:rgba(6,7,8,.975);
+  overscroll-behavior:contain;    /* que el scroll no se escape a la página */
+  opacity:0; visibility:hidden; transition:opacity .28s, visibility .28s;
+}
+.visor.abierto{ opacity:1; visibility:visible; }
+.visor img{ max-width:100%; max-height:100%; object-fit:contain; }
+.visor-cerrar{
+  position:absolute; top:var(--e2); right:var(--margen);
+  width:44px; height:44px; display:grid; place-items:center;
+  font-family:var(--display); font-size:1.5rem; color:var(--cal-media);
+  border:1px solid transparent; transition:color .2s, border-color .2s;
+}
+.visor-cerrar:hover{ color:var(--oro-luz); border-color:var(--linea-oro); }
+.visor-pie{
+  font-family:var(--etiqueta-f); font-weight:500; font-size:.8125rem;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--cal-tenue);
+}
+
+/* ── 15 · ENTRADA AL SCROLL ────────────────────────────────────────────────
+   Solo opacity y transform, 350ms. Sin librerías: un IntersectionObserver
+   de doce líneas pone la clase y el CSS hace el resto.
+
+   Los estados ocultos viven bajo html.js, y hay un temporizador que quita
+   esa clase si el script no arranca: sin JS la página se ve completa.     */
+html.js .sube{
+  opacity:0; transform:translateY(14px);
+  transition:opacity .35s var(--suave), transform .35s var(--suave);
+  transition-delay:var(--retardo, 0s);
+}
+html.js .sube.dentro{ opacity:1; transform:none; }
+
+/* Fuera de pantalla no se anima nada. La clase la pone un observador puesto
+   sobre la sección — nunca sobre las capas, que van recortadas. */
+.quieta .fondos img,
+.quieta .luz i,
+.quieta .suelo::before,
+.quieta .inscripcion,
+.quieta .polvo i{ animation-play-state:paused; }
+
+@media (prefers-reduced-motion:reduce){
+  html.js .sube{ opacity:1; transform:none; transition:none; }
+  .fondos img:not(:first-child){ animation:none; }
+  .luz i,.suelo::before{ animation:none; }
+  /* Sin barrido: la inscripción se queda en el punto más luminoso */
+  .inscripcion{ animation:none; background-position:46% 0; }
+  .boton::after{ display:none; }
+  .polvo{ display:none; }        /* las partículas son puro movimiento */
+  .boton,.boton .punta,.galeria img,.plan,.razon,.tour-play .disco{ transition:none; }
+}
+
+/* En pantalla chica se aligera: el suelo y el polvo aportan poco a 375px y
+   son capas de más para una GPU de teléfono. */
+@media (max-width:699px){
+  .suelo{ display:none; }
+  .polvo i:nth-child(n+9){ display:none; }
+  .luz{ opacity:.6; }
+}
+
+/* ── 16 · PANTALLAS CHICAS ─────────────────────────────────────────────── */
+@media (max-width:559px){
+  :root{ --e5:48px; --e6:64px; --e7:88px; }
+}
+
+/* ── Reglas que reemplazan a los style= en linea (30-08-2026) ──────────────
+   La Content-Security-Policy con style-src 'self' bloquea los atributos
+   style del HTML. El retardo de la animacion de entrada pasa a data-retardo
+   y se lee desde aca. */
+[data-retardo="05"] { --retardo: .05s; }
+[data-retardo="06"] { --retardo: .06s; }
+[data-retardo="10"] { --retardo: .10s; }
+[data-retardo="12"] { --retardo: .12s; }
+[data-retardo="15"] { --retardo: .15s; }
+
+.sin-versalita { text-transform: none; letter-spacing: 0; }
+.boton--ancho  { width: 100%; }
+.nota-breve    { font-size: .9375rem; max-width: 34ch; }
